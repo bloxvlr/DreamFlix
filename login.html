@@ -8,36 +8,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src='auth.js'></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src='auth.js'></script>
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --brand: #E50914;
-            --bg: #000;
+            --bg: #060506;
             --text: #fff;
             --muted: #808080;
+            --accent1: rgba(229, 9, 20, 0.15); /* DreamFlix Red Tint */
+            --accent2: rgba(20, 20, 20, 0.8);
         }
         body {
-            background: var(--bg);
+            background: 
+                radial-gradient(1200px 800px at 80% 10%, rgba(229, 9, 20, 0.15), transparent 60%),
+                radial-gradient(1000px 700px at 10% 90%, rgba(229, 9, 20, 0.1), transparent 55%),
+                var(--bg);
             color: var(--text);
             font-family: 'Inter', system-ui, Arial, sans-serif;
-            min-height: 100vh;
+            min-height: 250vh; /* Allow scrolling for warp effect */
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
         }
 
-        /* --- Background Hero --- */
-        .login-bg {
-            position: fixed; inset: 0;
-            background: url('img/daredevil_hero.png') center/cover no-repeat;
-            filter: brightness(0.35);
-            z-index: 0;
+        /* --- STARS ANIMATION STICKY --- */
+        #star-container {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
         }
-        .login-bg-gradient {
-            position: fixed; inset: 0;
-            background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
-            z-index: 1;
+        .star {
+            position: absolute; background: white; border-radius: 50%; opacity: 0.8;
+            animation: twinkle var(--duration, 3s) infinite ease-in-out;
+            will-change: transform, opacity;
+        }
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
 
         /* --- Nav Logo --- */
@@ -169,8 +178,7 @@
     </style>
 </head>
 <body>
-    <div class="login-bg"></div>
-    <div class="login-bg-gradient"></div>
+    <div id="star-container"></div>
 
     <!-- Logo top left -->
     <nav class="login-nav">
@@ -222,14 +230,59 @@
                 DFAuth.redirectIfLoggedIn('index.html');
             }
 
-            // Init Google Auth when GIS library is ready
+            // --- 1. LENIS INITIALIZATION ---
+            const lenis = new Lenis({
+                duration: 1.2,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true,
+            });
+            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            requestAnimationFrame(raf);
+
+            // --- 2. STARS ANIMATION LOGIC ---
+            const container = document.getElementById('star-container');
+            const count = 100;
+            const stars = [];
+
+            for (let i = 0; i < count; i++) {
+                const s = document.createElement('div');
+                s.className = 'star';
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                const isStatic = Math.random() < 0.2;
+                const z = isStatic ? 0 : 0.1 + Math.random() * 0.4;
+                const size = isStatic ? 1 + Math.random() : 1 + Math.random() * 2;
+
+                s.style.left = x + '%';
+                s.style.top = y + '%';
+                s.style.width = size + 'px';
+                s.style.height = size + 'px';
+                s.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+                s.style.animationDelay = (Math.random() * 5) + 's';
+
+                container.appendChild(s);
+                stars.push({ el: s, initialY: y, speed: z });
+            }
+
+            // Sync stars with Scroll Velocity (WARP SPEED)
+            lenis.on('scroll', ({ scroll, velocity }) => {
+                const stretch = Math.max(1, Math.min(1 + Math.abs(velocity) * 0.12, 5));
+                stars.forEach(star => {
+                    if (star.speed === 0) return;
+                    let pos = (star.initialY - (scroll * star.speed * 0.04)) % 100;
+                    if (pos < 0) pos += 100;
+                    star.el.style.top = pos + '%';
+                    star.el.style.transform = `scaleY(${stretch})`;
+                });
+            });
+
+            // --- 3. GOOGLE AUTH INITIALIZATION ---
             const tryInit = () => {
                 if (typeof google !== 'undefined' && google.accounts) {
                     DFAuth.initGoogleAuth({
                         onSuccess: (user) => {
                             document.getElementById('loading').classList.add('visible');
                             document.getElementById('error-msg').classList.remove('visible');
-                            // Small delay for UX
                             setTimeout(() => { window.location.href = 'index.html'; }, 800);
                         },
                         onError: () => {
@@ -238,13 +291,7 @@
                         }
                     });
                     DFAuth.renderGoogleButton('google-btn', 'filled_black');
-                    
-                    // IF LOGOUT = TRUE, DON'T SHOW ONE TAP
-                    if (!isLogout) {
-                        google.accounts.id.prompt();
-                    } else {
-                        console.log('Logout detected: skipping One Tap prompt.');
-                    }
+                    if (!isLogout) google.accounts.id.prompt();
                 } else {
                     setTimeout(tryInit, 300);
                 }
