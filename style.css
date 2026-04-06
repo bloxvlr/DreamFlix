@@ -379,7 +379,8 @@ body {
     .df-card { flex: 0 0 160px; }
 
     /* Fix mobile header items */
-    .nav-right { gap: 8px; padding-left: 0; }
+    .df-nav { padding: 0 12px !important; }
+    .nav-right { gap: 8px; padding-left: 0; margin-right: 8px; }
     .nav-right i.fa-bell { display: none; }
     .nav-avatar { margin-left: 0; }
 
@@ -836,8 +837,11 @@ button.expand.loaded .expand-icon svg.second { display: block; transform: scale(
 .info-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
 
 @media (max-width: 768px) {
-    .info-banner { height: 300px; }
-    .info-banner-detail h2 { font-size: 2rem; }
+    .modal-overlay { align-items: flex-start; padding-top: 80px; }
+    .info-content-wrap { width: 82%; }
+    .close-info { top: 12px; right: 12px; width: 34px; height: 34px; font-size: 1.1rem; }
+    .info-banner { height: 260px; }
+    .info-banner-detail h2 { font-size: 1.7rem; }
     .info-grid { grid-template-columns: 1fr; gap: 20px; }
     .info-body { padding: 25px; }
 }
