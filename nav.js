@@ -67,8 +67,8 @@ const NAV_HTML = `
         <i class="fas fa-search nav-search-icon"></i>
         <input type="text" class="nav-search" placeholder="Rechercher des séries, films...">
     </div>
-    <div class="nav-right" style="display:flex;align-items:center;gap:18px">
-        <i class="fas fa-bell" style="cursor:pointer"></i>
+    <div class="nav-right">
+        <i class="fas fa-bell"></i>
         <div id="nav-profile-area" style="display:flex;align-items:center;gap:10px;cursor:pointer;position:relative">
             <img id="nav-avatar" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
                  style="width:34px;height:34px;border-radius:8px;object-fit:cover;border:2px solid rgba(255,255,255,0.15)">

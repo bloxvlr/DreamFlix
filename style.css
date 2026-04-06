@@ -96,7 +96,6 @@ body {
     width: 32px; height: 32px; border-radius: 6px;
     background: url('https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png') center/cover;
     cursor: pointer; flex-shrink: 0;
-    margin-left: 5px; /* Separation from adjacent items */
 }
 
 /* ===================================================
@@ -365,8 +364,22 @@ body {
     .df-card { flex: 0 0 160px; }
 
     /* Fix mobile header items */
-    .nav-right { gap: 14px; }
+    .nav-right { gap: 8px; padding-left: 0; }
     .nav-right i.fa-bell { display: none; }
+    .nav-avatar { margin-left: 0; }
+
+    /* Leaderboard Title Fix */
+    .page-shell h1.leaderboard-title { 
+        font-size: 1.5rem; flex-direction: column; text-align: center; justify-content: center;
+        gap: 10px; margin-bottom: 5px;
+    }
+    .page-shell .page-subtitle { text-align: center; font-size: 0.85rem; }
+
+    /* Teleparty Spacing */
+    .tp-soon-page { padding-top: 100px !important; }
+
+    /* Table Column Hider */
+    .hide-mobile { display: none !important; }
 }
 
 @media (max-width: 480px) {
