@@ -133,6 +133,25 @@ function requireAuth() {
     } else { startHeartbeat(); }
 }
 
+async function deleteAccount() {
+    const user = getUser();
+    if (!user) return;
+
+    if (_supabase) {
+        try {
+            // 1. Delete profile from Supabase
+            await _supabase.from('profiles').delete().eq('id', user.sub);
+            // (Optional) Delete favorites or other linked data if necessary
+            await _supabase.from('favorites').delete().eq('user_id', user.sub);
+        } catch (e) {
+            console.error('Failed to delete Supabase profile:', e);
+        }
+    }
+
+    // 2. Perform regular Logout steps (Revoke Google, Clear LocalStorage)
+    logOut();
+}
+
 function redirectIfLoggedIn(destination = 'index.html') {
     if (getUser()) { window.location.href = destination; }
 }
@@ -232,4 +251,4 @@ const UI = {
     }
 };
 
-window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };
+window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, deleteAccount, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };

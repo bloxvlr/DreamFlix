@@ -132,6 +132,25 @@
                 </div>
             </div>
 
+            <!-- Danger Zone -->
+            <div class="settings-section" style="border-top: 1px solid rgba(229, 9, 20, 0.2); margin-top: 50px; padding-top: 30px;">
+                <h3 style="color:#ff4444"><i class="fas fa-exclamation-triangle"></i> Zone de Danger</h3>
+                <div class="settings-row" style="flex-direction:column; align-items:flex-start; gap:15px">
+                    <div>
+                        <div class="settings-label" style="color:#fff">Supprimer le compte définitivement</div>
+                        <div class="settings-sub">Cette action est irréversible. Toutes vos données seront effacées sous 30 jours.</div>
+                    </div>
+                    
+                    <div id="delete-confirm-box" style="width:100%; display:none; flex-direction:column; gap:10px; padding:15px; background:rgba(229, 9, 20, 0.1); border-radius:12px; border:1px solid rgba(229, 9, 20, 0.2)">
+                        <div style="font-size:0.8rem; color:#ffbaba">Veuillez taper <strong>"suprimer"</strong> pour confirmer :</div>
+                        <input type="text" id="delete-confirm-input" class="form-input" style="width:100%; padding:10px; background:rgba(0,0,0,0.3); border:1px solid rgba(229,9,20,0.5); border-radius:8px; color:#fff; outline:none" placeholder="suprimer">
+                        <button class="btn-pill" style="background:#E50914; color:#fff; width:100%; padding:10px" onclick="confirmFinalDelete()">CONFIRMER LA SUPPRESSION</button>
+                    </div>
+
+                    <button class="btn-pill btn-pill-ghost" style="color:#ff4444; border-color:#ff4444; font-size:0.8rem" id="show-delete-btn" onclick="document.getElementById('delete-confirm-box').style.display='flex'; this.style.display='none'">Supprimer mon compte</button>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
@@ -177,6 +196,18 @@
             msg.style.display = 'block';
             msg.style.color = '#ff4444';
             msg.innerHTML = '<i class="fas fa-times-circle"></i> Code incorrect.';
+        }
+    }
+
+    // Account Deletion Final Confirmation
+    function confirmFinalDelete() {
+        const input = document.getElementById('delete-confirm-input').value;
+        if (input === 'suprimer') {
+            if (confirm('ÊTES-VOUS ABSOLUMENT SÛR ? Cette action supprimera définitivement vos données.')) {
+                DFAuth.deleteAccount();
+            }
+        } else {
+            alert('Veuillez taper "suprimer" correctement pour confirmer.');
         }
     }
 </script>
