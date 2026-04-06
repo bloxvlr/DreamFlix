@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -91,6 +91,22 @@
                 </div>
             </div>
 
+            <!-- Admin Access -->
+            <div class="settings-section">
+                <h3 style="color:var(--brand)"><i class="fas fa-user-shield"></i> Admin Access</h3>
+                <div class="settings-row">
+                    <div style="flex:1">
+                        <div class="settings-label">Unlock Admin Panel</div>
+                        <div class="settings-sub">Enter the 7-digit security code to access management tools.</div>
+                        <div id="admin-msg" style="font-size:0.75rem;margin-top:8px;display:none"></div>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:10px">
+                    <input type="text" id="admin-code-input" class="form-input" placeholder="Enter code..." style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:12px;color:#fff;outline:none">
+                    <button class="btn-pill btn-pill-white" onclick="unlockAdmin()">Unlock</button>
+                </div>
+            </div>
+
             <!-- Danger -->
             <div class="settings-section">
                 <h3>Account</h3>
@@ -106,6 +122,24 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src='auth.js'></script><script src="nav.js"></script>
 <script src="script.js"></script>
+<script>
+    function unlockAdmin() {
+        const input = document.getElementById('admin-code-input').value;
+        const msg = document.getElementById('admin-msg');
+        
+        if (input === window.DFConfig?.ADMIN_CODE) {
+            msg.innerText = 'Correct! Unlocking Admin Panel...';
+            msg.style.color = '#46d369';
+            msg.style.display = 'block';
+            localStorage.setItem('df_admin_unlocked', 'true');
+            setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+        } else {
+            msg.innerText = 'Invalid Admin Code.';
+            msg.style.color = '#ff4444';
+            msg.style.display = 'block';
+        }
+    }
+</script>
 </body>
 </html>
 
