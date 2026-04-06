@@ -55,7 +55,6 @@ const NAV_HTML = `
 
 const SIDEBAR_HTML = `
 <aside class="df-sidebar">
-    <div id="sidebar-pill" class="sidebar-pill"></div>
     <div class="sidebar-group" id="sidebar-admin-group" style="display:none">
         <p class="sidebar-label">Administration</p>
         <a href="admin.html" class="sidebar-link" style="font-weight:700"><i class="fas fa-user-shield"></i> Admin Panel</a>
@@ -206,51 +205,4 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
-
-// --- Liquid Sidebar Pill Logic ---
-(function initSidebarPill() {
-    const sidebar = document.querySelector('.df-sidebar');
-    const pill = document.getElementById('sidebar-pill');
-    const links = document.querySelectorAll('.sidebar-link');
-    if (!sidebar || !pill) return;
-
-    function movePill(target, smooth = true) {
-        if (!target) {
-            pill.style.opacity = '0';
-            return;
-        }
-        pill.style.opacity = '1';
-        pill.style.transition = smooth ? 'transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.3s ease' : 'none';
-        
-        // Calculate position relative to the sidebar
-        const rect = target.getBoundingClientRect();
-        const sideRect = sidebar.getBoundingClientRect();
-        const top = rect.top - sideRect.top;
-        
-        pill.style.transform = `translateY(${top}px)`;
-    }
-
-    // Initial position on active link
-    setTimeout(() => {
-        const active = document.querySelector('.sidebar-link.active');
-        if (active) movePill(active, false);
-    }, 100);
-
-    // Hover effect
-    links.forEach(link => {
-        link.addEventListener('mouseenter', () => movePill(link));
-    });
-
-    // Reset on mouse leave sidebar
-    sidebar.addEventListener('mouseleave', () => {
-        const active = document.querySelector('.sidebar-link.active');
-        movePill(active);
-    });
-
-    // Handle Resize
-    window.addEventListener('resize', () => {
-        const active = document.querySelector('.sidebar-link.active');
-        if (active) movePill(active, false);
-    });
-})();
 
