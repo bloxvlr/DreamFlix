@@ -107,9 +107,23 @@ async function startHeartbeat() {
 
 // --- Auth Controls ---
 function logOut() {
-    google?.accounts?.id?.disableAutoSelect();
+    const user = getUser();
+    
+    // 1. Disable Auto-Select and Revoke Google Token for a "clean" logout
+    if (typeof google !== 'undefined' && google.accounts) {
+        if (user && user.email) {
+            google.accounts.id.revoke(user.email, () => {
+                console.log('Google session revoked for:', user.email);
+            });
+        }
+        google.accounts.id.disableAutoSelect();
+    }
+    
+    // 2. Clear local DreamFlix session
     localStorage.removeItem(SESSION_KEY);
     localStorage.removeItem('df_admin_unlocked');
+    
+    // 3. Redirect to login
     window.location.href = 'login.html';
 }
 
