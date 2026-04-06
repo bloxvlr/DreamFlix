@@ -23,12 +23,12 @@
         }
         body {
             background: 
-                radial-gradient(1200px 800px at 80% 10%, rgba(229, 9, 20, 0.15), transparent 60%),
-                radial-gradient(1000px 700px at 10% 90%, rgba(229, 9, 20, 0.1), transparent 55%),
+                radial-gradient(1400px 900px at 80% 10%, rgba(229, 9, 20, 0.22), transparent 70%),
+                radial-gradient(1100px 800px at 20% 80%, rgba(229, 9, 20, 0.15), transparent 60%),
                 var(--bg);
             color: var(--text);
             font-family: 'Inter', system-ui, Arial, sans-serif;
-            min-height: 250vh; /* Allow scrolling for warp effect */
+            min-height: 250vh; /* Keep for warp effect */
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
@@ -52,18 +52,19 @@
         /* --- Nav Logo --- */
         .login-nav {
             position: relative; z-index: 10;
-            padding: 28px 5%;
+            padding: 35px 5%;
         }
-        .login-nav img { width: 130px; mix-blend-mode: screen; }
+        .login-nav img { width: 140px; mix-blend-mode: screen; opacity: 0.9; }
 
-        /* --- Card --- */
+        /* --- Card Placement --- */
         .login-wrapper {
             flex: 1;
             display: flex;
-            align-items: center;
+            align-items: flex-start; /* Move to top */
             justify-content: center;
             position: relative; z-index: 10;
             padding: 20px;
+            padding-top: 60px; /* Spacing from top */
         }
 
         .login-card {
