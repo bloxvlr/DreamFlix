@@ -460,6 +460,7 @@ AUDIO_ASSETS.shine.preload = 'auto';
 AUDIO_ASSETS.shine.volume = 0.1; // Professional level
 
 let isAudioUnlocked = false;
+let lastHoveredElement = null;
 
 const primeAudio = () => {
     if (isAudioUnlocked) return;
@@ -469,9 +470,9 @@ const primeAudio = () => {
         p.play().catch(() => {});
     });
     isAudioUnlocked = true;
-    ['mousedown', 'keydown', 'touchstart'].forEach(ev => window.removeEventListener(ev, primeAudio));
+    ['mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'mouseover'].forEach(ev => window.removeEventListener(ev, primeAudio));
 };
-['mousedown', 'keydown', 'touchstart', 'click'].forEach(ev => window.addEventListener(ev, primeAudio));
+['mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'mouseover'].forEach(ev => window.addEventListener(ev, primeAudio, { passive: true }));
 
 window.playEliteSound = (type) => {
     if (!AUDIO_ASSETS[type]) return;
@@ -491,11 +492,20 @@ document.addEventListener('click', (e) => {
 
 // Hover (Desktop Only)
 if (isHoverCapable) {
-    document.addEventListener('mouseenter', (e) => {
+    document.addEventListener('mouseover', (e) => {
         const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
-        if (target) {
+        if (target && target !== lastHoveredElement) {
+            lastHoveredElement = target;
             const isSub = target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
             if (!isSub) window.playEliteSound('hover');
+        }
+    }, true);
+
+    document.addEventListener('mouseout', (e) => {
+        const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
+        // Only reset if we are leaving the component entirely (not moving child-to-child)
+        if (target && !target.contains(e.relatedTarget)) {
+            lastHoveredElement = null;
         }
     }, true);
 }
