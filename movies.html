@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — Movies</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="df-page df-page-with-sidebar">
+    <div class="page-shell">
+        <h1>Movies</h1>
+        <p class="page-subtitle">Films & Cinematic Experiences</p>
+
+        <div class="chips">
+            <div class="chip active">All</div>
+            <div class="chip">Action</div>
+            <div class="chip">Drama</div>
+            <div class="chip">Sci-Fi</div>
+            <div class="chip">Comedy</div>
+        </div>
+
+        <!-- Coming Soon Cinematic State -->
+        <div class="empty-state">
+            <div class="icon" style="font-size: 5rem;">🎬</div>
+            <h3>The Meme Movie — En Production</h3>
+            <p>Le long-métrage "Viral Chaos: The Meme Movie" est actuellement en production dans les studios DreamFlix AI. Sortie prévue pour 2027.</p>
+            <br>
+            <button class="btn-pill btn-pill-ghost" style="margin: 0 auto; display:inline-flex;" onclick="location.href='mylist.html'"><i class="fas fa-bell"></i> Notifiez-moi</button>
+        </div>
+    </div>
+</div>
+
+<script src="nav.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

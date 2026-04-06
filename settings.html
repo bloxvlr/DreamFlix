@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — Settings</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="df-page df-page-with-sidebar">
+    <div class="page-shell">
+        <h1>Settings</h1>
+        <p class="page-subtitle">Manage your DreamFlix account</p>
+
+        <div style="max-width:640px">
+
+            <!-- Profile -->
+            <div class="settings-section">
+                <h3>Profile</h3>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Display Name</div>
+                        <div class="settings-sub">User_1234</div>
+                    </div>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Edit</button>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Email</div>
+                        <div class="settings-sub">user@dreamflix.ai</div>
+                    </div>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Edit</button>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Plan</div>
+                        <div class="settings-sub">DreamFlix Premium</div>
+                    </div>
+                    <span style="color:#46d369;font-size:0.8rem;font-weight:700">Active</span>
+                </div>
+            </div>
+
+            <!-- Playback -->
+            <div class="settings-section">
+                <h3>Playback</h3>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Auto-Play Next Episode</div>
+                        <div class="settings-sub">Automatically plays the next episode</div>
+                    </div>
+                    <div class="toggle on"></div>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Subtitles</div>
+                        <div class="settings-sub">Show subtitles by default</div>
+                    </div>
+                    <div class="toggle"></div>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">High Quality Streaming</div>
+                        <div class="settings-sub">4K UHD when available</div>
+                    </div>
+                    <div class="toggle on"></div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="settings-section">
+                <h3>Notifications</h3>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">New Episodes</div>
+                        <div class="settings-sub">Notify when a new episode drops</div>
+                    </div>
+                    <div class="toggle on"></div>
+                </div>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Friends Activity</div>
+                        <div class="settings-sub">When friends start watching</div>
+                    </div>
+                    <div class="toggle on"></div>
+                </div>
+            </div>
+
+            <!-- Danger -->
+            <div class="settings-section">
+                <h3>Account</h3>
+                <div class="settings-row">
+                    <div class="settings-label">Log Out</div>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem;color:#E50914;border:1px solid #E50914" onclick="if(confirm('Se déconnecter ?')) location.href='index.html'">Log Out</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="nav.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — My List</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="df-page df-page-with-sidebar">
+    <div class="page-shell">
+        <h1>My List</h1>
+        <p class="page-subtitle">Your saved content</p>
+
+        <div class="df-grid" id="my-list-grid">
+            <!-- Pre-saved Daredevil -->
+            <div class="df-grid-card" id="saved-daredevil">
+                <img src="img/daredevil_hero.png" alt="Daredevil">
+                <div class="df-grid-card-body">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <div class="df-grid-card-title">Daredevil</div>
+                        <i class="fas fa-times" style="color:#808080;cursor:pointer;font-size:0.8rem" onclick="this.closest('.df-grid-card').remove()"></i>
+                    </div>
+                    <div class="df-grid-card-meta">Series · 18+</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" id="empty-list" style="display:none">
+            <div class="icon"><i class="fas fa-bookmark"></i></div>
+            <h3>Your list is empty</h3>
+            <p>Browse series and movies and click <strong>+</strong> to save them here.</p>
+            <br>
+            <button class="btn-pill btn-pill-white" onclick="location.href='series.html'">Browse Series</button>
+        </div>
+    </div>
+</div>
+
+<script src="nav.js"></script>
+<script src="script.js"></script>
+<script>
+    // If all cards are removed show the empty state
+    const observer = new MutationObserver(() => {
+        const grid = document.getElementById('my-list-grid');
+        document.getElementById('empty-list').style.display = grid.children.length === 0 ? 'block' : 'none';
+    });
+    observer.observe(document.getElementById('my-list-grid'), { childList: true });
+</script>
+</body>
+</html>

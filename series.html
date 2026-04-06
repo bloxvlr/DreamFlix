@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — Series</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="df-page df-page-with-sidebar">
+    <div class="page-shell">
+        <h1>Series</h1>
+        <p class="page-subtitle">All DreamFlix Original Series</p>
+
+        <div class="chips">
+            <div class="chip active">All</div>
+            <div class="chip">Action</div>
+            <div class="chip">Drama</div>
+            <div class="chip">Sci-Fi</div>
+            <div class="chip">Comedy</div>
+            <div class="chip">Thriller</div>
+        </div>
+
+        <div class="df-grid">
+            <!-- Daredevil -->
+            <div class="df-grid-card" onclick="location.href='index.html'">
+                <img src="img/daredevil_hero.png" alt="Daredevil">
+                <div class="df-grid-card-body">
+                    <div class="df-grid-card-title">Daredevil</div>
+                    <div class="df-grid-card-meta">Action • 3 Seasons • 18+</div>
+                </div>
+            </div>
+            <!-- Viral Chaos -->
+            <div class="df-grid-card" onclick="location.href='index.html'">
+                <img src="img/viral_chaos.jpg" alt="Viral Chaos">
+                <div class="df-grid-card-body">
+                    <div class="df-grid-card-title">Viral Chaos: The Meme Odyssey</div>
+                    <div class="df-grid-card-meta">Comedy • Season 1 • 13+</div>
+                </div>
+            </div>
+            <!-- Placeholder cards for depth -->
+            <div class="df-grid-card">
+                <div style="width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,#1a1a1a,#2a2a2a)"></div>
+                <div class="df-grid-card-body"><div class="df-grid-card-title">Coming Soon</div><div class="df-grid-card-meta">2026 • DreamFlix Original</div></div>
+            </div>
+            <div class="df-grid-card">
+                <div style="width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,#1a1a2e,#16213e)"></div>
+                <div class="df-grid-card-body"><div class="df-grid-card-title">In Production</div><div class="df-grid-card-meta">Sci-Fi • 2027</div></div>
+            </div>
+            <div class="df-grid-card">
+                <div style="width:100%;aspect-ratio:2/3;background:linear-gradient(135deg,#0f3460,#533483)"></div>
+                <div class="df-grid-card-body"><div class="df-grid-card-title">Announced</div><div class="df-grid-card-meta">Drama • 2027</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="nav.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
