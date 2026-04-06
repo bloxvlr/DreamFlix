@@ -237,7 +237,14 @@ const UI = {
 
         if (item.video_url) {
             card.addEventListener('click', () => {
-                if (DFAuth.canInteract()) this.openPlayer(item.video_url, item.title);
+                if (!DFAuth.canInteract()) return;
+                
+                // If it's a page (ends with .html or similar), redirect instead of modal
+                if (item.video_url.includes('.html')) {
+                    window.location.href = item.video_url;
+                } else {
+                    this.openPlayer(item.video_url, item.title);
+                }
             });
         }
         return card;
