@@ -447,31 +447,49 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
-// --- Sound System ---
-// --- Click Sound System (Shine) ---
-window.playShineSound = () => {
-    const audio = new Audio('sound/shine.mp3');
-    audio.volume = 0.3; 
-    audio.play().catch(() => {});
+// --- Elite Audio Engine (Zero Latency) ---
+const AUDIO_ASSETS = {
+    hover: new Audio('sound/hover.mp3'),
+    shine: new Audio('sound/shine.mp3')
+};
+AUDIO_ASSETS.hover.preload = 'auto';
+AUDIO_ASSETS.hover.volume = 0.08;
+AUDIO_ASSETS.shine.preload = 'auto';
+AUDIO_ASSETS.shine.volume = 0.35;
+
+let isAudioUnlocked = false;
+
+const primeAudio = () => {
+    if (isAudioUnlocked) return;
+    // Play silent version to unlock
+    Object.values(AUDIO_ASSETS).forEach(aud => {
+        const p = aud.cloneNode(true);
+        p.volume = 0;
+        p.play().catch(() => {});
+    });
+    isAudioUnlocked = true;
+    console.log('[Audio] Elite System Primed');
+    ['mousedown', 'keydown', 'touchstart'].forEach(ev => window.removeEventListener(ev, primeAudio));
+};
+['mousedown', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, primeAudio));
+
+window.playEliteSound = (type) => {
+    if (!isAudioUnlocked || !AUDIO_ASSETS[type]) return;
+    const sound = AUDIO_ASSETS[type].cloneNode(true);
+    sound.volume = AUDIO_ASSETS[type].volume;
+    sound.play().catch(() => {});
 };
 
+// Event Listeners
 document.addEventListener('click', (e) => {
-    const link = e.target.closest('a[href="subscriptions.html"]');
-    const mobileLink = e.target.closest('.mobile-tab-subs');
-    if (link || mobileLink) window.playShineSound();
+    if (e.target.closest('a[href="subscriptions.html"], .mobile-tab-subs')) {
+        window.playEliteSound('shine');
+    }
 });
 
-// --- Hover Sound System ---
-window.playHoverSound = () => {
-    const audio = new Audio('sound/hover.mp3');
-    audio.volume = 0.08; // Very low for frequent hovers
-    audio.play().catch(() => {}); 
-};
-
-// Delegate hover sound to interactive elements
 document.addEventListener('mouseenter', (e) => {
-    const el = e.target;
-    if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.classList.contains('df-card') || el.classList.contains('mobile-tab') || el.classList.contains('sidebar-link')) {
-        window.playHoverSound();
+    const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
+    if (target) {
+        window.playEliteSound('hover');
     }
 }, true);
