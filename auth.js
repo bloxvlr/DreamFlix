@@ -108,12 +108,27 @@ async function startHeartbeat() {
     const user = getUser();
     if (!user || !_supabase) return;
     
+    // 1. One-minute heartbeat for "Online Status" (Admin Panel)
     setInterval(async () => {
-        // Just update last_seen globally
         await _supabase.from('profiles').update({ 
             last_seen: new Date().toISOString() 
         }).eq('id', user.sub);
-    }, 60000); // Every minute
+    }, 60000);
+
+    // 2. Ten-minute heartbeat for "Fidelity Time" (Leaderboard)
+    setInterval(async () => {
+        try {
+            // Increment watch_duration_seconds by 600 (10 mins)
+            const { data: profile } = await _supabase.from('profiles').select('watch_duration_seconds').eq('id', user.sub).single();
+            const currentSeconds = profile?.watch_duration_seconds || 0;
+            
+            await _supabase.from('profiles').update({ 
+                watch_duration_seconds: currentSeconds + 600 
+            }).eq('id', user.sub);
+            
+            console.log('[Heartbeat] Fidelity updated (+10 min)');
+        } catch (e) { console.error('Fidelity update failed:', e); }
+    }, 600000); 
 }
 
 // --- Auth Controls ---

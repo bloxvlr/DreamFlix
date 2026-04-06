@@ -226,48 +226,15 @@
 
         renderSidebar();
 
-        // --- Watch Time Accumulator (Mobile & Efficiency Focus) ---
-        let watchSecondsAccumulated = 0;
-        let isVideoPlaying = false;
-
-        // Count every second only if playing and visible
-        setInterval(() => {
-            if (isVideoPlaying && !document.hidden) {
-                watchSecondsAccumulated++;
-            }
-        }, 1000);
-
-        // Sync every 5 minutes (300s)
-        async function syncWatchTime() {
-            if (watchSecondsAccumulated < 10) return; // Ignore tiny blips
-            const user = DFAuth.getUser();
-            if (!user || !DFAuth._supabase) return;
-            
-            try {
-                // Fetch current then increment (budget atomic update)
-                const { data: profile } = await DFAuth._supabase.from('profiles').select('watch_duration_seconds').eq('id', user.sub).single();
-                if (profile) {
-                    await DFAuth._supabase.from('profiles').update({
-                        watch_duration_seconds: (profile.watch_duration_seconds || 0) + watchSecondsAccumulated
-                    }).eq('id', user.sub);
-                    console.log(`[Leaderboard] +${watchSecondsAccumulated}s synced.`);
-                    watchSecondsAccumulated = 0;
-                }
-            } catch(e) { console.error('WatchTime Sync Error:', e); }
-        }
-
-        setInterval(syncWatchTime, 600000); 
-        // Also sync on leave
-        window.onbeforeunload = () => { syncWatchTime(); };
+        renderSidebar();
 
         // --- Switch Video Logic ---
         function switchEpisode(index) {
             activeEpIndex = index;
             const ep = EPISODES[activeEpIndex];
             
-            // Clean player area & sync before switching
+            // Clean player area
             playerContainer.innerHTML = '';
-            syncWatchTime();
             
             // Inject new Wistia Embed
             const scriptEmbed = document.createElement('script');
@@ -291,11 +258,10 @@
             _wq.push({
                 id: "_all",
                 onReady: function(video) {
-                    video.bind("play", () => { isVideoPlaying = true; });
-                    video.bind("pause", () => { isVideoPlaying = false; });
-                    video.bind("seek", () => { isVideoPlaying = true; });
+                    video.bind("play", () => { });
+                    video.bind("pause", () => { });
+                    video.bind("seek", () => { });
                     video.bind("end", function() {
-                        isVideoPlaying = false;
                         console.log("EP Finished, loading next...");
                         if (activeEpIndex < EPISODES.length - 1) {
                             switchEpisode(activeEpIndex + 1);
