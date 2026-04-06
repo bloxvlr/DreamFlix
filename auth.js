@@ -298,4 +298,26 @@ const UI = {
     }
 };
 
-window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, canInteract, deleteAccount, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };
+async function upgradePlan(newPlan) {
+    const user = getUser();
+    if (!user || !_supabase) return;
+    
+    try {
+        const { error } = await _supabase.from('profiles').update({ 
+            subscription_type: newPlan 
+        }).eq('id', user.sub);
+        
+        if (error) throw error;
+        
+        // Push locally for instant UI update
+        const updatedUser = { ...user, plan: newPlan };
+        localStorage.setItem(SESSION_KEY, JSON.stringify(updatedUser));
+        console.log(`[Auth] Plan upgraded to ${newPlan}`);
+        return true;
+    } catch(e) {
+        console.error('Plan upgrade failed:', e);
+        return false;
+    }
+}
+
+window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, canInteract, upgradePlan, deleteAccount, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };
