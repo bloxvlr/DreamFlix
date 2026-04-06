@@ -126,7 +126,7 @@ const GLOBAL_PLAYER_HTML = `
 <!-- Global Info Modal -->
 <div id="info-modal" class="modal-overlay" style="display:none">
     <div class="info-content-wrap">
-        <div class="close-info" onclick="DFAuth.UI.closeInfo()"><i class="fas fa-times"></i></div>
+        <div class="close-info" id="close-info-modal"><i class="fas fa-times"></i></div>
         <div class="info-banner">
             <img id="info-img" src="" alt="">
             <div class="info-banner-overlay"></div>
@@ -139,7 +139,6 @@ const GLOBAL_PLAYER_HTML = `
                 </div>
                 <div style="display:flex;gap:10px;margin-top:20px">
                     <button class="btn-pill btn-pill-white" id="info-play-btn"><i class="fas fa-play"></i> Regarder</button>
-                    <button class="btn-pill-icon" id="info-fav-btn"><i class="fas fa-plus"></i></button>
                 </div>
             </div>
         </div>
@@ -295,7 +294,7 @@ if (typeof DFAuth !== 'undefined') {
         if (id === 'skibidi' || id === 'fruit-island') {
             data = {
                 title: "L'ÎLE DE LA SKIBIDITENTAFRUIT",
-                image_url: "img/fruit image.jpg",
+                image_url: "img/header image.jpg",
                 description: "The Fruit Wars of 2026 have begun. Dans cette production originale explosive, huit couples de fruits frais sont abandonnés sur une île tropicale où les intrigues politiques de jus et les smoothies à enjeux élevés déterminent leur destin. Entre des baisers d'agrumes interdits et la légende des ananas d'or des Caraïbes, qui survivra au mixeur final ? Une épopée juteuse de trahison, de passion et de vitamines.",
                 year: "2026",
                 rating: "Absurde",
@@ -330,6 +329,13 @@ if (typeof DFAuth !== 'undefined') {
             document.getElementById('info-modal').style.display = 'none';
         }});
     };
+
+    // Attach Close Handler Robustly
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('#close-info-modal') || e.target.classList.contains('modal-overlay')) {
+            DFAuth.UI.closeInfo();
+        }
+    });
 }
 
 // --- Profile Dropdown Toggle ---
