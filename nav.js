@@ -66,6 +66,8 @@ const SIDEBAR_HTML = `
         <a href="movies.html" class="sidebar-link"><i class="fas fa-film"></i> Films</a>
         <a href="popular.html" class="sidebar-link"><i class="fas fa-fire"></i> Populaire</a>
         <a href="mylist.html" class="sidebar-link"><i class="fas fa-bookmark"></i> Ma Liste</a>
+        <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Classement</a>
+        <a href="subscriptions.html" class="sidebar-link"><i class="fas fa-gem"></i> Abonnements</a>
     </div>
     <div class="sidebar-group">
         <p class="sidebar-label">Social</p>
@@ -105,8 +107,8 @@ const MOBILE_BAR_HTML = `
         <div class="liquidGlass-shine"></div>
         <div class="liquidGlass-icons">
             <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Accueil</span></a>
-            <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Séries</span></a>
-            <a href="movies.html" class="mobile-tab"><i class="fas fa-film"></i><span>Films</span></a>
+            <a href="leaderboard.html" class="mobile-tab"><i class="fas fa-trophy"></i><span>Classement</span></a>
+            <a href="subscriptions.html" class="mobile-tab"><i class="fas fa-gem"></i><span>Abonnement</span></a>
             <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Ma Liste</span></a>
             <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profil</span></a>
         </div>

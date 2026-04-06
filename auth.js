@@ -98,11 +98,26 @@ function requireAdmin() {
 async function startHeartbeat() {
     const user = getUser();
     if (!user || !_supabase) return;
+    
     setInterval(async () => {
-        await _supabase.from('profiles').update({ 
-            last_seen: new Date().toISOString() 
-        }).eq('email', user.email);
-    }, 120000);
+        const isWatching = window.location.pathname.includes('watch.html');
+        
+        // 1. Update last_seen
+        let updateData = { last_seen: new Date().toISOString() };
+        
+        // 2. Increment watch time if on player page
+        if (isWatching && !document.hidden) {
+            // We use a simple fetch + update for now to avoid the need for complex RPCs
+            try {
+                const { data: profile } = await _supabase.from('profiles').select('watch_duration_seconds').eq('id', user.sub).single();
+                if (profile) {
+                    updateData.watch_duration_seconds = (profile.watch_duration_seconds || 0) + 60;
+                }
+            } catch(e) {}
+        }
+
+        await _supabase.from('profiles').update(updateData).eq('id', user.sub);
+    }, 60000); // Every minute
 }
 
 // --- Auth Controls ---

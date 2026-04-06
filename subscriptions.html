@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — Abonnements</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="df-page df-page-with-sidebar">
+    <div class="page-shell" style="display:flex;flex-direction:column;align-items:center;padding-top:60px">
+        <h1 style="text-align:center;font-size:clamp(2rem, 5vw, 3.5rem);font-weight:900;letter-spacing:-2px">
+            Choisissez votre <span style="background:linear-gradient(135deg, #E50914, #ff3c00);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">prestige</span>.
+        </h1>
+        <p class="page-subtitle" style="text-align:center;max-width:550px">Débloquez des fonctionnalités exclusives, des styles de pseudos uniques et soutenez la génération d'épisodes par IA.</p>
+
+        <div class="pricing-grid">
+            <!-- GOLD CARD -->
+            <div class="pricing-card">
+                <div style="font-size:2.5rem;color:#ff3c00;margin-bottom:15px"><i class="fas fa-shield-halved"></i></div>
+                <h2 style="font-weight:900;letter-spacing:1px;color:#ff3c00">GOLD</h2>
+                <div class="price-value">3,99 € <span>/ mois</span></div>
+                <ul class="benefit-list">
+                    <li><i class="fas fa-check"></i> <strong>Accès Anticipé :</strong> Regarde avant tes potes.</li>
+                    <li><i class="fas fa-check"></i> <strong>Thèmes Secrets :</strong> Débloque 3 thèmes exclusifs.</li>
+                    <li><i class="fas fa-check"></i> <strong>Alerte IA :</strong> Notifications dès génération.</li>
+                    <li><i class="fas fa-check"></i> <strong>Style Prestige :</strong> Pseudo Rouge Glow.</li>
+                </ul>
+                <button class="tp-btn-red" style="width:100%;font-weight:900" 
+                        onclick="showToast('⭐ Offre bientôt disponible ! Gardez votre code admin en attendant.')">
+                    S'ABONNER MAINTENANT
+                </button>
+            </div>
+
+            <!-- DIAMANT PRO CARD -->
+            <div class="pricing-card diamant">
+                <div style="font-size:2.5rem;color:cyan;margin-bottom:15px"><i class="fas fa-gem"></i></div>
+                <h2 style="font-weight:900;letter-spacing:1px;background:linear-gradient(135deg, #00ffff, #00b7ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">DIAMANT PRO</h2>
+                <div class="price-value">9,99 € <span>/ mois</span></div>
+                <ul class="benefit-list">
+                    <li style="color:cyan"><i class="fas fa-star" style="color:cyan"></i> Tout le contenu <strong>GOLD</strong> inclus.</li>
+                    <li><i class="fas fa-check" style="color:cyan"></i> <strong>Zéro Pub :</strong> Expérience fluide sans interruption.</li>
+                    <li><i class="fas fa-check" style="color:cyan"></i> <strong>Style Ultime :</strong> Pseudo RGB + Couronne Dorée.</li>
+                    <li><i class="fas fa-check" style="color:cyan"></i> <strong>Priorité Serveur :</strong> Chargement instantané.</li>
+                </ul>
+                <button class="tp-btn-red pulse-premium" style="width:100%;font-weight:900;background:linear-gradient(135deg, #00ffff, #00b7ff);box-shadow:0 8px 30px rgba(0,255,255,0.3)" 
+                        onclick="showToast('💎 Le prestige ultime arrive bientôt !')">
+                    DEVENIR DIAMANT PRO
+                </button>
+            </div>
+        </div>
+
+        <p style="margin-top:60px;font-size:0.75rem;color:rgba(255,255,255,0.25);max-width:500px;text-align:center">
+            Abonnement sans engagement, résiliable à tout moment. Les avantages "Regardez avant tout le monde" dépendent du cycle de génération de l'IA de DreamFlix.
+        </p>
+
+    </div>
+</div>
+
+<div class="tp-toast" id="tp-toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
+<script src="nav.js"></script>
+<script>
+    function showToast(msg) {
+        const t = document.getElementById('tp-toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+</script>
+</body>
+</html>
