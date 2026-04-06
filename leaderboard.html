@@ -53,8 +53,11 @@
 
             if (error) throw error;
 
+            const blacklist = ['Coline CAMPISTROUS', 'Kélyann Charolais', 'KÃ©lyann Charolais'];
+            const filteredProfiles = profiles.filter(p => !blacklist.includes(p.full_name));
+
             tbody.innerHTML = '';
-            profiles.forEach((p, idx) => {
+            filteredProfiles.forEach((p, idx) => {
                 const rank = idx + 1;
                 const hours = Math.floor(p.watch_duration_seconds / 3600);
                 const mins = Math.floor((p.watch_duration_seconds % 3600) / 60);
