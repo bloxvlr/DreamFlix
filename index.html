@@ -31,7 +31,7 @@
             <p class="df-hero-desc">Huit couples de fruits frais voient leur jus mis à l'épreuve sur une île paradisiaque. Entre trahisons sucrées et smoothies renversants, qui finira en salade de fruits ? 🍎🍌 <a href="#" style="color:var(--brand); text-decoration:none; font-weight:700;">En savoir plus</a></p>
             <div class="df-hero-actions">
                 <div class="galaxy-button">
-                    <button>
+                    <button onclick="if(DFAuth.canInteract()) window.location.href='watch.html'">
                         <span class="spark"></span>
                         <span class="backdrop"></span>
                         <span class="galaxy__container">
@@ -48,17 +48,28 @@
                                 <span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span>
                             </span>
                         </span>
-                        <span class="text" onclick="if(DFAuth.canInteract()) window.location.href='watch.html'"><i class="fas fa-play"></i> REGARDER</span>
+                        <span class="text"><i class="fas fa-play"></i> REGARDER</span>
                     </button>
                 </div>
-                <button class="btn-pill btn-pill-ghost"><i class="fas fa-info-circle"></i> Info</button>
-                <button class="btn-pill-icon"><i class="fas fa-plus"></i></button>
+                <button class="btn-pill btn-pill-ghost" onclick="DFAuth.UI.showInfo('skibidi')"><i class="fas fa-info-circle"></i> Info</button>
+                <button class="btn-pill-icon" onclick="DFAuth.UI.toggleFavorite('skibidi', this)"><i class="fas fa-plus"></i></button>
             </div>
         </div>
     </div>
 
     <!-- Catalog -->
     <div class="df-catalog" id="catalog-container">
+
+        <!-- Search Results (Hidden) -->
+        <div class="df-row" id="search-results-row" style="display:none; border-bottom: 2px solid var(--brand); padding-bottom: 20px;">
+            <div class="df-row-header" style="color:var(--brand)">
+                <i class="fas fa-search"></i> Résultats de recherche
+            </div>
+            <div class="df-slider-wrap">
+                <div class="df-slider" id="search-results-slider">
+                </div>
+            </div>
+        </div>
 
         <div class="df-row" id="row-continue" style="display:none">
             <div class="df-row-header">

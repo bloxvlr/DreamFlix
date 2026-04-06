@@ -107,8 +107,8 @@ const MOBILE_BAR_HTML = `
         <div class="liquidGlass-shine"></div>
         <div class="liquidGlass-icons">
             <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Accueil</span></a>
-            <a href="leaderboard.html" class="mobile-tab"><i class="fas fa-trophy"></i><span>Classement</span></a>
-            <a href="subscriptions.html" class="mobile-tab"><i class="fas fa-gem"></i><span>Abonnement</span></a>
+            <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Séries</span></a>
+            <a href="teleparty.html" class="mobile-tab" id="mobile-tp-tab" style="display:none"><i class="fas fa-gem" style="color:#00ffff"></i><span>Party</span></a>
             <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Ma Liste</span></a>
             <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profil</span></a>
         </div>
@@ -121,6 +121,40 @@ const GLOBAL_PLAYER_HTML = `
     <div style="position:absolute;top:30px;right:40px;color:#fff;font-size:2rem;cursor:pointer;z-index:10" onclick="DFAuth.UI.closePlayer()"><i class="fas fa-times"></i></div>
     <video id="player-el" controls style="max-width:90%;max-height:80vh;border-radius:12px;box-shadow:0 30px 100px rgba(0,0,0,1)"></video>
     <h2 id="player-title" style="margin-top:25px;font-size:1.8rem;font-weight:900;text-align:center;letter-spacing:-1px"></h2>
+</div>
+
+<!-- Global Info Modal -->
+<div id="info-modal" class="modal-overlay" style="display:none">
+    <div class="info-content-wrap">
+        <div class="close-info" onclick="DFAuth.UI.closeInfo()"><i class="fas fa-times"></i></div>
+        <div class="info-banner">
+            <img id="info-img" src="" alt="">
+            <div class="info-banner-overlay"></div>
+            <div class="info-banner-detail">
+                <h2 id="info-title"></h2>
+                <div class="info-meta">
+                    <span id="info-match" style="color:#46d369;font-weight:700"></span>
+                    <span id="info-year"></span>
+                    <span id="info-rating" class="df-hero-rating"></span>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:20px">
+                    <button class="btn-pill btn-pill-white" id="info-play-btn"><i class="fas fa-play"></i> Regarder</button>
+                    <button class="btn-pill-icon" id="info-fav-btn"><i class="fas fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="info-body">
+            <div class="info-grid">
+                <div class="info-left">
+                    <p id="info-desc" style="font-size:1.1rem;line-height:1.6;color:rgba(255,255,255,0.9)"></p>
+                </div>
+                <div class="info-right">
+                    <div style="margin-bottom:15px"><span style="color:#808080">Distribution:</span> <span id="info-cast" style="font-size:0.85rem">Élite IA, Fruits Frais</span></div>
+                    <div><span style="color:#808080">Genres:</span> <span id="info-genres" style="font-size:0.85rem">Absurde, Comédie, Drame</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>`;
 
 // --- Guard: require auth ONLY on specific pages (handled in those files) ---
@@ -194,7 +228,109 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
         if (sideGrp) sideGrp.style.display = 'block';
     }
 
+    // --- DIAMANT PRO Mobile Teleparty ---
+    (async () => {
+        const { data: profile } = await DFAuth._supabase.from('profiles').select('subscription_type').eq('id', user.sub).single();
+        if (profile && profile.subscription_type === 'DIAMANT') {
+            const tpTab = document.getElementById('mobile-tp-tab');
+            if (tpTab) tpTab.style.display = 'flex';
+        }
     })();
+
+    })();
+
+// --- Search Functionality ---
+document.addEventListener('input', (e) => {
+    if (e.target.classList.contains('nav-search')) {
+        const query = e.target.value.trim().toLowerCase();
+        handleGlobalSearch(query);
+    }
+});
+
+function handleGlobalSearch(query) {
+    const resultsRow = document.getElementById('search-results-row');
+    const resultsSlider = document.getElementById('search-results-slider');
+    if (!resultsRow || !resultsSlider) return;
+
+    if (query.length < 2) {
+        resultsRow.style.display = 'none';
+        return;
+    }
+
+    // Simple client-side search across all currently loaded or discoverable cards
+    // In a real app, this would be a Supabase RPC or text search
+    resultsRow.style.display = 'block';
+    const allContent = document.querySelectorAll('.df-card, .df-grid-card');
+    let hits = 0;
+    
+    // Clear previous results but we match existing cards for now
+    // Better: Query Supabase
+    DFAuth._supabase.from('content').select('*').ilike('title', `%${query}%`).then(({data}) => {
+        if (data && data.length > 0) {
+            resultsSlider.innerHTML = data.map(item => `
+                <div class="df-card" onclick="DFAuth.UI.showInfo('${item.id}')">
+                    <img src="${item.image_url}" alt="${item.title}">
+                    <div class="df-card-body">
+                        <div class="df-card-title">${item.title}</div>
+                        <div class="df-card-sub">${item.category} • ${item.year}</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            resultsSlider.innerHTML = `<p style="padding:20px;color:#808080">Aucun résultat pour "${query}"</p>`;
+        }
+    });
+}
+
+// --- Global UI Logic Extensions ---
+if (typeof DFAuth !== 'undefined') {
+    DFAuth.UI = DFAuth.UI || {};
+    
+    DFAuth.UI.showInfo = async (id) => {
+        const modal = document.getElementById('info-modal');
+        if (!modal) return;
+
+        // Special case for Skibidi
+        let data = null;
+        if (id === 'skibidi' || id === 'fruit-island') {
+            data = {
+                title: "L'ÎLE DE LA SKIBIDITENTAFRUIT",
+                image_url: "img/fruit image.jpg",
+                description: "Huit couples de fruits frais voient leur jus mis à l'épreuve sur une île paradisiaque. Entre trahisons sucrées et smoothies renversants, qui finira en salade de fruits ?",
+                year: "2026",
+                rating: "Absurde",
+                category: "Série Originale",
+                match: "98% d'Adéquation"
+            };
+        } else {
+            const { data: dbData } = await DFAuth._supabase.from('content').select('*').eq('id', id).single();
+            data = dbData;
+        }
+
+        if (!data) return;
+
+        document.getElementById('info-title').innerText = data.title;
+        document.getElementById('info-img').src = data.image_url;
+        document.getElementById('info-desc').innerText = data.description || "Aucune description disponible.";
+        document.getElementById('info-year').innerText = data.year;
+        document.getElementById('info-rating').innerText = data.rating || "18+";
+        document.getElementById('info-match').innerText = data.match || "95% Match";
+
+        document.getElementById('info-play-btn').onclick = () => {
+            DFAuth.UI.closeInfo();
+            window.location.href = 'watch.html';
+        };
+
+        modal.style.display = 'flex';
+        gsap.fromTo('.info-content-wrap', { y: 100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, ease: 'power4.out' });
+    };
+
+    DFAuth.UI.closeInfo = () => {
+        gsap.to('.info-content-wrap', { y: 100, opacity: 0, duration: 0.3, onComplete: () => {
+            document.getElementById('info-modal').style.display = 'none';
+        }});
+    };
+}
 
 // --- Profile Dropdown Toggle ---
 document.addEventListener('click', (e) => {
