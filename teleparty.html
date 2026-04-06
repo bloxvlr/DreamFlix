@@ -8,241 +8,165 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
-        /* =============================================
-           TELEPARTY — PAGE STYLES
-        ============================================= */
-        .tp-page { display: flex; flex-direction: column; min-height: 100vh; }
-
-        /* ---- LOBBY ---- */
-        #view-lobby {
-            display: flex; align-items: center; justify-content: center;
-            flex: 1; padding: 40px 20px;
+        .tp-soon-page {
+            min-height: calc(100vh - var(--nav-h));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
         }
-        .lobby-card {
-            background: rgba(14,14,14,0.9);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px;
-            padding: 60px 50px;
-            max-width: 520px; width: 100%;
-            box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-            backdrop-filter: blur(30px);
+
+        /* Background glow blobs */
+        .tp-glow-1 {
+            position: absolute; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(229,9,20,0.12) 0%, transparent 70%);
+            top: -100px; right: -100px; pointer-events: none;
+            animation: float1 8s ease-in-out infinite;
+        }
+        .tp-glow-2 {
+            position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(229,9,20,0.07) 0%, transparent 70%);
+            bottom: -100px; left: -100px; pointer-events: none;
+            animation: float2 10s ease-in-out infinite;
+        }
+        @keyframes float1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,30px)} }
+        @keyframes float2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(30px,-20px)} }
+
+        .tp-soon-card {
+            position: relative; z-index: 2;
+            max-width: 700px; width: 100%;
             text-align: center;
         }
-        .lobby-icon {
-            width: 80px; height: 80px; border-radius: 50%;
-            background: linear-gradient(135deg, #E50914, #ff3c00);
+
+        /* Badge */
+        .tp-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(229,9,20,0.12);
+            border: 1px solid rgba(229,9,20,0.3);
+            border-radius: 50px; padding: 8px 20px;
+            font-size: 0.75rem; font-weight: 700;
+            color: var(--brand); letter-spacing: 1.5px;
+            text-transform: uppercase; margin-bottom: 32px;
+        }
+        .tp-badge-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: var(--brand);
+            animation: blink 1.5s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* Title */
+        .tp-soon-title {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 900;
+            line-height: 1.05;
+            margin-bottom: 20px;
+            letter-spacing: -1.5px;
+        }
+        .tp-soon-title span {
+            background: linear-gradient(135deg, #E50914, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tp-soon-desc {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+            line-height: 1.7;
+            max-width: 520px;
+            margin: 0 auto 50px;
+        }
+
+        /* Feature cards */
+        .tp-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 50px;
+            text-align: left;
+        }
+        .tp-feature-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 22px 20px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .tp-feature-card:hover {
+            border-color: rgba(229,9,20,0.25);
+            transform: translateY(-3px);
+        }
+        .tp-feature-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: rgba(229,9,20,0.1);
+            border: 1px solid rgba(229,9,20,0.2);
             display: flex; align-items: center; justify-content: center;
-            font-size: 2rem; margin: 0 auto 30px;
-            box-shadow: 0 15px 40px rgba(229,9,20,0.4);
+            font-size: 1.1rem; color: var(--brand);
+            margin-bottom: 14px;
         }
-        .lobby-card h1 { font-size: 2rem; font-weight: 900; margin-bottom: 8px; }
-        .lobby-card p { color: #808080; font-size: 0.9rem; margin-bottom: 40px; line-height: 1.6; }
-
-        .lobby-divider {
-            display: flex; align-items: center; gap: 15px;
-            margin: 30px 0; color: rgba(255,255,255,0.2); font-size: 0.75rem;
+        .tp-feature-title {
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin-bottom: 6px;
         }
-        .lobby-divider::before, .lobby-divider::after {
-            content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.1);
-        }
-
-        .tp-input {
-            width: 100%; padding: 14px 18px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px; color: #fff;
-            font-size: 1rem; outline: none;
-            transition: border 0.2s; font-family: var(--font);
-            letter-spacing: 0.1em; text-align: center; text-transform: uppercase;
-        }
-        .tp-input:focus { border-color: var(--brand); }
-        .tp-input::placeholder { color: rgba(255,255,255,0.25); letter-spacing: 0; text-transform: none; }
-
-        .tp-btn-red {
-            width: 100%; padding: 15px;
-            background: linear-gradient(135deg, #E50914, #ff3c00);
-            border: none; border-radius: 12px; color: #fff;
-            font-weight: 800; font-size: 1rem; cursor: pointer;
-            transition: opacity 0.2s, transform 0.15s;
-            font-family: var(--font);
-            box-shadow: 0 8px 25px rgba(229,9,20,0.4);
-        }
-        .tp-btn-red:hover { opacity: 0.9; transform: translateY(-1px); }
-        .tp-btn-ghost {
-            width: 100%; padding: 14px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px; color: #fff;
-            font-weight: 700; font-size: 0.95rem; cursor: pointer;
-            transition: background 0.2s; font-family: var(--font);
-        }
-        .tp-btn-ghost:hover { background: rgba(255,255,255,0.1); }
-
-        .select-episode {
-            width: 100%; padding: 13px 18px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px; color: #fff;
-            font-size: 0.9rem; outline: none; cursor: pointer;
-            font-family: var(--font); margin-bottom: 14px;
-            appearance: none; -webkit-appearance: none;
-        }
-        .select-episode option { background: #1a1a1a; }
-
-        /* ---- ROOM ---- */
-        #view-room {
-            display: none;
-            flex-direction: column;
-            height: calc(100vh - var(--nav-h));
+        .tp-feature-desc {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.5;
         }
 
-        /* Room Header */
-        .tp-room-header {
-            display: flex; align-items: center; gap: 15px;
-            padding: 14px 24px;
-            background: rgba(10,10,10,0.97);
-            border-bottom: 1px solid rgba(255,255,255,0.07);
+        /* How it works */
+        .tp-how {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 40px;
+            text-align: left;
+        }
+        .tp-how-title {
+            font-size: 0.7rem; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase;
+            color: var(--brand); margin-bottom: 24px;
+        }
+        .tp-steps {
+            display: flex; flex-direction: column; gap: 18px;
+        }
+        .tp-step {
+            display: flex; align-items: flex-start; gap: 16px;
+        }
+        .tp-step-num {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: var(--brand); color: #fff;
+            font-size: 0.8rem; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
-        .tp-party-code {
-            font-family: monospace; font-size: 1rem;
-            background: rgba(229,9,20,0.15); border: 1px solid rgba(229,9,20,0.3);
-            padding: 6px 14px; border-radius: 8px; color: var(--brand);
-            font-weight: 700; letter-spacing: 3px; cursor: pointer;
-            transition: background 0.2s;
-        }
-        .tp-party-code:hover { background: rgba(229,9,20,0.25); }
-        .tp-participants {
-            display: flex; gap: -8px; margin-left: auto;
-        }
-        .tp-participant-avatar {
-            width: 34px; height: 34px; border-radius: 50%;
-            border: 2px solid #000; object-fit: cover;
-            margin-left: -8px; background: #333;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-        }
-        .tp-participant-count {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            border: 2px solid #000; margin-left: -8px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.65rem; font-weight: 700;
-        }
-        .tp-leave-btn {
-            background: rgba(229,9,20,0.15); border: 1px solid rgba(229,9,20,0.3);
-            color: var(--brand); padding: 8px 16px; border-radius: 8px;
-            cursor: pointer; font-size: 0.8rem; font-weight: 700; font-family: var(--font);
-            transition: background 0.2s;
-        }
-        .tp-leave-btn:hover { background: rgba(229,9,20,0.3); }
+        .tp-step-text strong { font-size: 0.87rem; display: block; margin-bottom: 2px; }
+        .tp-step-text span { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
 
-        /* Room Body */
-        .tp-room-body {
-            display: flex; flex: 1; overflow: hidden;
+        /* CTA */
+        .tp-notify-section {
+            display: flex; flex-direction: column; align-items: center; gap: 14px;
+        }
+        .tp-notify-text {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.35);
+        }
+        .tp-lock-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+            display: block;
+            filter: grayscale(1);
+            opacity: 0.4;
         }
 
-        /* Player Side */
-        .tp-player-side {
-            flex: 1; display: flex; flex-direction: column;
-            background: #000; position: relative;
-        }
-        .tp-video-wrap {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            background: #000; position: relative;
-        }
-        #tp-video {
-            width: 100%; max-height: calc(100vh - var(--nav-h) - 60px - 72px);
-            outline: none;
-        }
-        .tp-sync-badge {
-            position: absolute; top: 16px; left: 16px;
-            background: rgba(70,211,105,0.15); border: 1px solid rgba(70,211,105,0.3);
-            border-radius: 8px; padding: 5px 12px;
-            font-size: 0.72rem; color: #46d369; font-weight: 700;
-            display: flex; align-items: center; gap: 6px;
-            opacity: 0; transition: opacity 0.5s;
-        }
-        .tp-sync-badge.visible { opacity: 1; }
-        .tp-sync-dot { width: 7px; height: 7px; border-radius: 50%; background: #46d369; animation: pulse-green 1.5s infinite; }
-        @keyframes pulse-green { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
-
-        .tp-player-info {
-            padding: 12px 20px;
-            background: rgba(10,10,10,0.95);
-            border-top: 1px solid rgba(255,255,255,0.07);
-            display: flex; align-items: center; gap: 15px;
-            flex-shrink: 0;
-        }
-        .tp-ep-title { font-weight: 700; font-size: 0.9rem; }
-        .tp-ep-sub { font-size: 0.75rem; color: #808080; }
-
-        /* Chat Side */
-        .tp-chat-side {
-            width: 320px; flex-shrink: 0;
-            display: flex; flex-direction: column;
-            border-left: 1px solid rgba(255,255,255,0.07);
-            background: rgba(8,8,8,0.98);
-        }
-        .tp-chat-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.07);
-            font-weight: 700; font-size: 0.9rem;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .tp-chat-messages {
-            flex: 1; overflow-y: auto; padding: 16px;
-            display: flex; flex-direction: column; gap: 12px;
-        }
-        .tp-msg { display: flex; gap: 10px; align-items: flex-start; animation: fadeInUp 0.3s ease; }
-        @keyframes fadeInUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-        .tp-msg-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; background: #333; }
-        .tp-msg-content {}
-        .tp-msg-name { font-size: 0.7rem; font-weight: 700; color: var(--brand); margin-bottom: 3px; }
-        .tp-msg-text { font-size: 0.82rem; color: rgba(255,255,255,0.85); line-height: 1.4; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 0 10px 10px 10px; }
-        .tp-msg.me { flex-direction: row-reverse; }
-        .tp-msg.me .tp-msg-text { background: rgba(229,9,20,0.2); border-radius: 10px 0 10px 10px; }
-        .tp-msg.me .tp-msg-name { text-align: right; }
-        .tp-msg-system { text-align: center; font-size: 0.72rem; color: #808080; font-style: italic; }
-
-        .tp-chat-input-wrap {
-            padding: 14px 16px;
-            border-top: 1px solid rgba(255,255,255,0.07);
-            display: flex; gap: 10px;
-        }
-        .tp-chat-input {
-            flex: 1; padding: 10px 14px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; color: #fff;
-            font-size: 0.85rem; outline: none;
-            font-family: var(--font);
-            transition: border 0.2s;
-        }
-        .tp-chat-input:focus { border-color: rgba(255,255,255,0.25); }
-        .tp-chat-input::placeholder { color: rgba(255,255,255,0.25); }
-        .tp-send-btn {
-            width: 38px; height: 38px; border-radius: 10px;
-            background: var(--brand); border: none; color: #fff;
-            cursor: pointer; transition: opacity 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .tp-send-btn:hover { opacity: 0.85; }
-
-        /* Toast */
-        .tp-toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
-            background: rgba(10,10,10,0.95); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 12px 24px;
-            font-size: 0.85rem; z-index: 99999;
-            opacity: 0; transition: opacity 0.3s;
-            pointer-events: none;
-        }
-        .tp-toast.show { opacity: 1; }
-
-        /* Responsive */
-        @media(max-width: 768px) {
-            .tp-chat-side { display: none; }
-            .lobby-card { padding: 40px 24px; }
+        @media(max-width: 600px) {
+            .tp-features { grid-template-columns: 1fr 1fr; }
+            .tp-how { padding: 22px 18px; }
         }
     </style>
 </head>
@@ -250,455 +174,104 @@
 <div id="nav-placeholder"></div>
 <div id="sidebar-placeholder"></div>
 
-<div class="df-page df-page-with-sidebar tp-page">
+<div class="df-page df-page-with-sidebar tp-soon-page">
+    <div class="tp-glow-1"></div>
+    <div class="tp-glow-2"></div>
 
-    <!-- ===== LOBBY VIEW ===== -->
-    <div id="view-lobby">
-        <div class="lobby-card">
-            <div class="lobby-icon"><i class="fas fa-film"></i></div>
-            <h1>DreamFlix Teleparty</h1>
-            <p>Regardez vos séries en synchronisation parfaite avec vos amis, où qu'ils soient dans le monde. Aucun plugin requis.</p>
+    <div class="tp-soon-card">
 
-            <!-- Create Section -->
-            <select class="select-episode" id="ep-select">
-                <option value="1">Épisode 1 — Arrivée sur l'île</option>
-                <option value="2">Épisode 2 — Pool Party Smoothies</option>
-                <option value="3">Épisode 3 — Citrus Drama</option>
-                <option value="4">Épisode 4 — Coucher de soleil romantique</option>
-                <option value="6">Épisode 6 — Vérité ou Défi</option>
-                <option value="7">Épisode 7 — Girls Night</option>
-                <option value="8">Épisode 8 — Feu de camp</option>
-                <option value="9">Épisode 9 — L'Ananas Milliardaire</option>
-                <option value="10">Épisode 10 — Premier Baiser</option>
-                <option value="11">Épisode 11 — Spa Day</option>
-                <option value="12">Épisode 12 — Bal Masqué</option>
-                <option value="14">Épisode 14 — Nuit d'Orage</option>
-                <option value="15">Épisode 15 — Décisions Finales</option>
-                <option value="16">Épisode 16 — Grande Finale</option>
-            </select>
-            <button class="tp-btn-red" id="btn-create" onclick="createParty()">
-                <i class="fas fa-plus"></i>&nbsp; Créer une Watch Party
-            </button>
-
-            <div class="lobby-divider">ou rejoindre une room existante</div>
-
-            <input type="text" class="tp-input" id="join-code-input" placeholder="Entrez le code (ex: A3K7F2)" maxlength="6">
-            <div style="height:12px"></div>
-            <button class="tp-btn-ghost" onclick="joinParty()">
-                <i class="fas fa-link"></i>&nbsp; Rejoindre avec un code
-            </button>
-
-            <p id="lobby-error" style="color:var(--brand);margin-top:16px;font-size:0.82rem;display:none"></p>
-        </div>
-    </div>
-
-    <!-- ===== ROOM VIEW ===== -->
-    <div id="view-room">
-        <!-- Room Header -->
-        <div class="tp-room-header">
-            <i class="fas fa-film" style="color:var(--brand)"></i>
-            <span style="font-weight:700;font-size:0.9rem">Watch Party</span>
-            <span class="tp-party-code" id="room-code-display" onclick="copyCode()" title="Cliquez pour copier">––––––</span>
-            <div style="margin-left:4px;font-size:0.72rem;color:#808080"><i class="fas fa-copy"></i> Copier</div>
-            <div class="tp-participants" id="participants-row"></div>
-            <button class="tp-leave-btn" onclick="leaveParty()"><i class="fas fa-sign-out-alt"></i> Quitter</button>
+        <!-- Badge -->
+        <div class="tp-badge">
+            <div class="tp-badge-dot"></div>
+            Bientôt disponible
         </div>
 
-        <!-- Room Body -->
-        <div class="tp-room-body">
-            <!-- Video Side -->
-            <div class="tp-player-side">
-                <div class="tp-video-wrap">
-                    <video id="tp-video" controls preload="metadata">
-                        <source src="" type="video/mp4">
-                        Votre navigateur ne supporte pas la lecture vidéo.
-                    </video>
-                    <div class="tp-sync-badge" id="sync-badge">
-                        <div class="tp-sync-dot"></div> Synchronisé
-                    </div>
-                </div>
-                <div class="tp-player-info">
-                    <img id="tp-ep-thumb" src="" style="width:60px;height:38px;object-fit:cover;border-radius:6px;background:#1a1a1a">
-                    <div>
-                        <div class="tp-ep-title" id="tp-ep-title">—</div>
-                        <div class="tp-ep-sub">L'Île de la Skibiditentafruit • 2026</div>
-                    </div>
-                    <div style="margin-left:auto;font-size:0.75rem;color:#46d369" id="tp-host-label"></div>
-                </div>
+        <!-- Title -->
+        <h1 class="tp-soon-title">
+            Regardez ensemble.<br>
+            <span>Partout dans le monde.</span>
+        </h1>
+
+        <p class="tp-soon-desc">
+            <strong style="color:#fff">DreamFlix Teleparty</strong> est notre fonctionnalité de Watch Party synchronisée.
+            Regardez n'importe quel épisode au même moment que vos amis, peu importe où ils se trouvent —
+            avec un chat en temps réel et une synchronisation parfaite automatique.
+        </p>
+
+        <!-- Features -->
+        <div class="tp-features">
+            <div class="tp-feature-card">
+                <div class="tp-feature-icon"><i class="fas fa-bolt"></i></div>
+                <div class="tp-feature-title">Sync Instantanée</div>
+                <div class="tp-feature-desc">Play, pause et avance rapide synchronisés en temps réel pour tous.</div>
             </div>
+            <div class="tp-feature-card">
+                <div class="tp-feature-icon"><i class="fas fa-comment-dots"></i></div>
+                <div class="tp-feature-title">Chat en Direct</div>
+                <div class="tp-feature-desc">Réagissez ensemble avec un chat intégré à côté de la vidéo.</div>
+            </div>
+            <div class="tp-feature-card">
+                <div class="tp-feature-icon"><i class="fas fa-users"></i></div>
+                <div class="tp-feature-title">Jusqu'à 20 Amis</div>
+                <div class="tp-feature-desc">Créez une room et invitez vos proches avec un simple code à 6 chiffres.</div>
+            </div>
+            <div class="tp-feature-card">
+                <div class="tp-feature-icon"><i class="fas fa-lock-open"></i></div>
+                <div class="tp-feature-title">Sans Plugin</div>
+                <div class="tp-feature-desc">Entièrement intégré à DreamFlix. Aucune extension à installer.</div>
+            </div>
+        </div>
 
-            <!-- Chat Side -->
-            <div class="tp-chat-side">
-                <div class="tp-chat-header">
-                    <i class="fas fa-comment-dots" style="color:var(--brand)"></i>
-                    Chat de la room
-                    <span id="chat-member-count" style="margin-left:auto;font-size:0.72rem;color:#808080;font-weight:400">0 membre(s)</span>
+        <!-- How it works -->
+        <div class="tp-how">
+            <div class="tp-how-title"><i class="fas fa-info-circle"></i> &nbsp;Comment ça marchera</div>
+            <div class="tp-steps">
+                <div class="tp-step">
+                    <div class="tp-step-num">1</div>
+                    <div class="tp-step-text">
+                        <strong>Choisissez un épisode</strong>
+                        <span>Sélectionnez l'épisode de Skibidi TentaFruit que vous voulez regarder ensemble.</span>
+                    </div>
                 </div>
-                <div class="tp-chat-messages" id="chat-messages">
-                    <div class="tp-msg-system">Bienvenue dans la Watch Party ! 🍉</div>
+                <div class="tp-step">
+                    <div class="tp-step-num">2</div>
+                    <div class="tp-step-text">
+                        <strong>Créez votre room</strong>
+                        <span>Un code unique à 6 caractères est généré instantanément. Partagez-le à vos amis.</span>
+                    </div>
                 </div>
-                <div class="tp-chat-input-wrap">
-                    <input type="text" class="tp-chat-input" id="chat-input" placeholder="Envoyer un message..." maxlength="200"
-                           onkeydown="if(event.key==='Enter') sendChat()">
-                    <button class="tp-send-btn" onclick="sendChat()"><i class="fas fa-paper-plane"></i></button>
+                <div class="tp-step">
+                    <div class="tp-step-num">3</div>
+                    <div class="tp-step-text">
+                        <strong>Vos amis rejoignent</strong>
+                        <span>Ils entrent le code sur leur DreamFlix — et tout le monde est synchronisé en quelques secondes.</span>
+                    </div>
+                </div>
+                <div class="tp-step">
+                    <div class="tp-step-num">4</div>
+                    <div class="tp-step-text">
+                        <strong>Regardez &amp; réagissez</strong>
+                        <span>Chaque action (pause, avance) est synchronisée automatiquement. Le chat s'affiche en direct à côté.</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
+        <!-- Lock -->
+        <div class="tp-notify-section">
+            <i class="fas fa-hourglass-half tp-lock-icon"></i>
+            <p style="font-size:0.95rem;color:rgba(255,255,255,0.5);max-width:380px;line-height:1.6;">
+                Cette fonctionnalité est en cours de finalisation et sera disponible prochainement. Restez connectés ! 
+            </p>
+            <p class="tp-notify-text">© 2026 DreamFlix IA — Teleparty arrive bientôt.</p>
+        </div>
+
+    </div>
 </div>
-
-<!-- Toast -->
-<div class="tp-toast" id="tp-toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="auth.js"></script>
 <script src="nav.js"></script>
 <script src="script.js"></script>
-
-<script>
-// =============================================
-// TELEPARTY ENGINE — Supabase Realtime Broadcast
-// =============================================
-
-const EP_EPISODES = {
-    1:  { title: 'Épisode 1 — Arrivée sur l\'île',         img: 'img/ep1.png' },
-    2:  { title: 'Épisode 2 — Pool Party Smoothies',        img: 'img/ep2.png' },
-    3:  { title: 'Épisode 3 — Citrus Drama',                img: 'img/ep3.png' },
-    4:  { title: 'Épisode 4 — Coucher de soleil romantique', img: 'img/ep4.png' },
-    6:  { title: 'Épisode 6 — Vérité ou Défi',              img: 'img/ep6.png' },
-    7:  { title: 'Épisode 7 — Girls Night',                 img: 'img/ep7.png' },
-    8:  { title: 'Épisode 8 — Feu de camp',                 img: 'img/ep8.png' },
-    9:  { title: 'Épisode 9 — L\'Ananas Milliardaire',      img: 'img/ep9.png' },
-    10: { title: 'Épisode 10 — Premier Baiser',             img: 'img/ep10.png' },
-    11: { title: 'Épisode 11 — Spa Day',                    img: 'img/ep11.png' },
-    12: { title: 'Épisode 12 — Bal Masqué',                 img: 'img/ep12.png' },
-    14: { title: 'Épisode 14 — Nuit d\'Orage',              img: 'img/ep14.png' },
-    15: { title: 'Épisode 15 — Décisions Finales',          img: 'img/ep15.png' },
-    16: { title: 'Épisode 16 — Grande Finale',              img: 'img/ep16.png' },
-};
-
-// State
-let roomCode = null;
-let channel = null;
-let isHost = false;
-let isSyncing = false; // Flag to prevent feedback loop
-let currentEpNum = 1;
-const machineId = crypto.randomUUID();
-
-const video = document.getElementById('tp-video');
-
-// ---- Generate random 6-char room code ----
-function generateCode() {
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-}
-
-// ---- Show toast notification ----
-function showToast(msg, duration = 2500) {
-    const t = document.getElementById('tp-toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), duration);
-}
-
-// ---- Flash sync badge ----
-function flashSync() {
-    const badge = document.getElementById('sync-badge');
-    badge.classList.add('visible');
-    setTimeout(() => badge.classList.remove('visible'), 2000);
-}
-
-// ---- Copy code to clipboard ----
-function copyCode() {
-    if (!roomCode) return;
-    navigator.clipboard.writeText(roomCode).then(() => showToast('✅ Code copié : ' + roomCode));
-}
-
-// ---- Setup episode in player ----
-function loadEpisode(epNum) {
-    currentEpNum = epNum;
-    const ep = EP_EPISODES[epNum];
-    if (!ep) return;
-
-    // Use placeholder video (no real video files on DreamFlix yet)
-    // When real videos exist, change this to: `video/ep${epNum}.mp4`
-    video.src = `https://www.w3schools.com/html/mov_bbb.mp4`; // placeholder
-    video.poster = ep.img;
-
-    document.getElementById('tp-ep-title').textContent = ep.title;
-    document.getElementById('tp-ep-thumb').src = ep.img;
-}
-
-// ---- JOIN or CREATE logic ----
-function createParty() {
-    if (!DFAuth.canInteract()) return;
-    const epNum = parseInt(document.getElementById('ep-select').value);
-    const code = generateCode();
-    enterRoom(code, true, epNum);
-}
-
-function joinParty() {
-    if (!DFAuth.canInteract()) return;
-    const raw = document.getElementById('join-code-input').value.trim().toUpperCase();
-    if (raw.length < 6) {
-        const err = document.getElementById('lobby-error');
-        err.textContent = '⚠️ Le code doit faire 6 caractères.';
-        err.style.display = 'block';
-        return;
-    }
-    document.getElementById('lobby-error').style.display = 'none';
-    enterRoom(raw, false, null);
-}
-
-// ---- Enter room (host or guest) ----
-async function enterRoom(code, host, epNum) {
-    if (!DFAuth._supabase) { showToast('⚠️ Supabase non disponible'); return; }
-
-    roomCode = code;
-    isHost = host;
-    const user = DFAuth.getUser();
-
-    // Switch views
-    document.getElementById('view-lobby').style.display = 'none';
-    const roomView = document.getElementById('view-room');
-    roomView.style.display = 'flex';
-    document.getElementById('room-code-display').textContent = code;
-
-    if (isHost) {
-        loadEpisode(epNum);
-        document.getElementById('tp-host-label').innerHTML = '<i class="fas fa-crown"></i> Hôte';
-    }
-
-    // Subscribe to Supabase Realtime Channel
-    channel = DFAuth._supabase.channel(`teleparty:${code}`, {
-        config: { broadcast: { self: false } }  // don't receive your own broadcasts
-    });
-
-    // ---- PRESENCE (who's in the room) ----
-    channel.on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        renderParticipants(state);
-    });
-
-    // ---- BROADCAST EVENTS ----
-    channel.on('broadcast', { event: 'sync' }, ({ payload }) => {
-        if (payload.senderId === machineId) return; // ignore own events
-        isSyncing = true;
-
-        if (payload.action === 'play') {
-            if (Math.abs(video.currentTime - payload.time) > 2) {
-                video.currentTime = payload.time;
-            }
-            video.play().catch(() => {});
-            flashSync();
-        } else if (payload.action === 'pause') {
-            video.currentTime = payload.time;
-            video.pause();
-            flashSync();
-        } else if (payload.action === 'seek') {
-            video.currentTime = payload.time;
-            flashSync();
-        }
-
-        setTimeout(() => { isSyncing = false; }, 300);
-    });
-
-    channel.on('broadcast', { event: 'chat' }, ({ payload }) => {
-        appendChatMessage(payload, false);
-    });
-
-    // Host responds to sync requests from late joiners
-    channel.on('broadcast', { event: 'requestSync' }, () => {
-        if (!isHost) return;
-        channel.send({
-            type: 'broadcast', event: 'responseSync',
-            payload: {
-                time: video.currentTime,
-                paused: video.paused,
-                epNum: currentEpNum
-            }
-        });
-    });
-
-    // Guest receives the host's state when joining
-    channel.on('broadcast', { event: 'responseSync' }, ({ payload }) => {
-        if (isHost) return;
-        loadEpisode(payload.epNum);
-        video.currentTime = payload.time;
-        if (!payload.paused) { video.play().catch(() => {}); }
-        flashSync();
-    });
-
-    // Subscribe and track presence
-    await channel.subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-            // Track this user in presence
-            await channel.track({
-                userId: user?.sub || machineId,
-                name: user?.name || 'Invité',
-                avatar: user?.picture || null,
-                isHost: isHost
-            });
-
-            // Guest: request current state from host
-            if (!isHost) {
-                addSystemMessage('🔗 Connexion à la room en cours...');
-                setTimeout(() => {
-                    channel.send({ type: 'broadcast', event: 'requestSync', payload: {} });
-                }, 800);
-            } else {
-                addSystemMessage(`🎬 Room créée ! Partagez le code <strong>${code}</strong> à vos amis.`);
-            }
-        }
-    });
-
-    // ---- VIDEO PLAYER EVENT LISTENERS ----
-    video.addEventListener('play', () => {
-        if (isSyncing) return;
-        channel.send({
-            type: 'broadcast', event: 'sync',
-            payload: { action: 'play', time: video.currentTime, senderId: machineId }
-        });
-    });
-
-    video.addEventListener('pause', () => {
-        if (isSyncing) return;
-        channel.send({
-            type: 'broadcast', event: 'sync',
-            payload: { action: 'pause', time: video.currentTime, senderId: machineId }
-        });
-    });
-
-    let seekTimer;
-    video.addEventListener('seeked', () => {
-        if (isSyncing) return;
-        clearTimeout(seekTimer);
-        seekTimer = setTimeout(() => {
-            channel.send({
-                type: 'broadcast', event: 'sync',
-                payload: { action: 'seek', time: video.currentTime, senderId: machineId }
-            });
-        }, 250); // debounce seeks
-    });
-}
-
-// ---- Leave room ----
-async function leaveParty() {
-    if (channel) {
-        await channel.untrack();
-        await DFAuth._supabase.removeChannel(channel);
-        channel = null;
-    }
-    // Remove video listeners by replacing the element
-    video.pause();
-    video.src = '';
-
-    document.getElementById('view-room').style.display = 'none';
-    document.getElementById('view-lobby').style.display = 'flex';
-    document.getElementById('chat-messages').innerHTML = '<div class="tp-msg-system">Bienvenue dans la Watch Party ! 🍉</div>';
-    roomCode = null;
-    isHost = false;
-}
-
-// ---- Chat ----
-function sendChat() {
-    if (!channel) return;
-    const input = document.getElementById('chat-input');
-    const text = input.value.trim();
-    if (!text) return;
-
-    const user = DFAuth.getUser();
-    const payload = {
-        text,
-        name: user?.name || 'Invité',
-        avatar: user?.picture || null,
-        senderId: machineId
-    };
-
-    // Show own message immediately
-    appendChatMessage(payload, true);
-    channel.send({ type: 'broadcast', event: 'chat', payload });
-    input.value = '';
-}
-
-function appendChatMessage(payload, isMe) {
-    const container = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.className = 'tp-msg' + (isMe ? ' me' : '');
-
-    const avatarHtml = payload.avatar
-        ? `<img class="tp-msg-avatar" src="${payload.avatar}" alt="${payload.name}">`
-        : `<div class="tp-msg-avatar" style="background:linear-gradient(135deg,#E50914,#ff3c00);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700">${(payload.name||'?')[0].toUpperCase()}</div>`;
-
-    div.innerHTML = `
-        ${avatarHtml}
-        <div class="tp-msg-content">
-            <div class="tp-msg-name">${escapeHtml(payload.name)}</div>
-            <div class="tp-msg-text">${escapeHtml(payload.text)}</div>
-        </div>
-    `;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-}
-
-function addSystemMessage(html) {
-    const container = document.getElementById('chat-messages');
-    const div = document.createElement('div');
-    div.className = 'tp-msg-system';
-    div.innerHTML = html;
-    container.appendChild(div);
-    container.scrollTop = container.scrollHeight;
-}
-
-function escapeHtml(str) {
-    const d = document.createElement('div');
-    d.appendChild(document.createTextNode(str));
-    return d.innerHTML;
-}
-
-// ---- Render Presence (participants) ----
-function renderParticipants(state) {
-    const row = document.getElementById('participants-row');
-    const users = Object.values(state).flat();
-    const count = document.getElementById('chat-member-count');
-    count.textContent = `${users.length} membre(s)`;
-
-    row.innerHTML = '';
-    const visible = users.slice(0, 5);
-    visible.forEach(u => {
-        if (u.avatar) {
-            const img = document.createElement('img');
-            img.className = 'tp-participant-avatar';
-            img.src = u.avatar;
-            img.title = u.name + (u.isHost ? ' (Hôte)' : '');
-            row.appendChild(img);
-        } else {
-            const div = document.createElement('div');
-            div.className = 'tp-participant-avatar';
-            div.style.cssText = 'background:linear-gradient(135deg,#E50914,#ff3c00);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:#fff';
-            div.textContent = (u.name || '?')[0].toUpperCase();
-            div.title = u.name;
-            row.appendChild(div);
-        }
-    });
-
-    if (users.length > 5) {
-        const extra = document.createElement('div');
-        extra.className = 'tp-participant-count';
-        extra.textContent = '+' + (users.length - 5);
-        row.appendChild(extra);
-    }
-
-    if (users.length > 0) {
-        addSystemMessage(`👥 ${users.length} participant(s) connecté(s)`);
-    }
-}
-
-// ---- Require auth ----
-window.addEventListener('load', () => {
-    if (!DFAuth.requireAuth()) return;
-});
-</script>
 </body>
 </html>
