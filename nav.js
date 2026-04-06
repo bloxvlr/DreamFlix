@@ -447,50 +447,4 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
-// --- Elite Audio Engine (Welcome Sound Update) ---
-const AUDIO_ASSETS = {
-    shine: new Audio('sound/shine.mp3')
-};
-AUDIO_ASSETS.shine.preload = 'auto';
-AUDIO_ASSETS.shine.volume = 0.15;
 
-let isAudioUnlocked = false;
-
-const primeAudio = () => {
-    if (isAudioUnlocked) return;
-    const p = AUDIO_ASSETS.shine.cloneNode(true);
-    p.volume = 0;
-    p.play().catch(() => {});
-    isAudioUnlocked = true;
-    ['mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'mouseover'].forEach(ev => window.removeEventListener(ev, primeAudio));
-    
-    // Auto-play shine if we're on the subscription page once unlocked
-    if (window.location.pathname.includes('subscriptions.html')) {
-        window.playEliteSound('shine');
-    }
-};
-
-['mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'mouseover'].forEach(ev => window.addEventListener(ev, primeAudio, { passive: true }));
-
-window.playEliteSound = (type) => {
-    if (type !== 'shine' || !AUDIO_ASSETS.shine) return;
-    const sound = AUDIO_ASSETS.shine.cloneNode(true);
-    sound.volume = AUDIO_ASSETS.shine.volume;
-    sound.play().catch(() => {
-        if (!isAudioUnlocked) primeAudio();
-    });
-};
-
-// --- Shine on Entry ---
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.location.pathname.includes('subscriptions.html')) {
-        // Attempt immediate playback (often works if navigating from within same domain)
-        window.playEliteSound('shine');
-    }
-});
-
-// --- Click Fallback ---
-document.addEventListener('click', (e) => {
-    const isSub = e.target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
-    if (isSub) window.playEliteSound('shine');
-});
