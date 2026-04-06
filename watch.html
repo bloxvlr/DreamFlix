@@ -256,7 +256,7 @@
             } catch(e) { console.error('WatchTime Sync Error:', e); }
         }
 
-        setInterval(syncWatchTime, 300000); 
+        setInterval(syncWatchTime, 600000); 
         // Also sync on leave
         window.onbeforeunload = () => { syncWatchTime(); };
 
