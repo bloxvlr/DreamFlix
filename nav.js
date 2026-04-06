@@ -25,25 +25,29 @@ window.DFNotif = {
         if (permission === 'granted' && callback) callback();
     },
 
-    sendLocal(title, message, url = 'index.html') {
+    async sendLocal(title, message, url = 'index.html') {
         if (Notification.permission === 'granted') {
-            // Priority 1: Service Worker (Background & Persistence)
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'SHOW_NOTIFICATION',
-                    title: title,
-                    body: message,
-                    url: url
-                });
-            } else {
-                // Fallback: Legacy Notification
-                const n = new Notification(title, {
-                    body: message,
-                    icon: 'img/logo_dreamflix.png',
-                    badge: 'img/logo_dreamflix.png'
-                });
-                n.onclick = () => { window.focus(); window.location.href = url; n.close(); };
-            }
+            try {
+                // Priority 1: Service Worker (Background & Persistence)
+                const registration = await navigator.serviceWorker.ready;
+                if (registration.active) {
+                    registration.active.postMessage({
+                        type: 'SHOW_NOTIFICATION',
+                        title: title,
+                        body: message,
+                        url: url
+                    });
+                    return;
+                }
+            } catch (e) { console.warn('[DFNotif] SW Ready check failed:', e); }
+
+            // Fallback: Legacy Notification (Foreground only)
+            const n = new Notification(title, {
+                body: message,
+                icon: 'img/logo_dreamflix.png',
+                badge: 'img/logo_dreamflix.png'
+            });
+            n.onclick = () => { window.focus(); window.location.href = url; n.close(); };
         }
     }
 };
@@ -127,7 +131,7 @@ if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
 
             // 0. Check if PUSH_TEST (Priority Diagnostic)
             if (type === 'PUSH_TEST') {
-                DFNotif.sendLocal(title, message, url);
+                await DFNotif.sendLocal(title, message, url);
                 DFAlert.show(title, message, url);
                 return;
             }
@@ -135,7 +139,7 @@ if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
             // 1. Check if Targeted (Private Message)
             const isTargeted = target_email && target_email.toLowerCase() === user.email.toLowerCase();
             if (isTargeted) {
-                DFNotif.sendLocal(title, message, url);
+                await DFNotif.sendLocal(title, message, url);
                 DFAlert.show(title, message, url);
                 return;
             }
@@ -159,7 +163,7 @@ if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
                 }
 
                 // 1. Browser Notification (for background/other tabs)
-                DFNotif.sendLocal(title, message, url);
+                await DFNotif.sendLocal(title, message, url);
                 
                 // 2. Real-Time UI Modal (The 'Netflix-Grade' Surprise)
                 DFAlert.show(title, message, url);

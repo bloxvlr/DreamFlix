@@ -75,6 +75,18 @@
             <!-- Notifications -->
             <div class="settings-section">
                 <h3>Notifications</h3>
+                
+                <!-- NEW: System Auth Check -->
+                <div class="settings-row" style="background:rgba(255,255,255,0.03); border-radius:12px; padding:15px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05)">
+                    <div style="flex:1">
+                        <div class="settings-label">Système de Notifications PUSH</div>
+                        <div class="settings-sub" id="push-status-text">Vérifiez si votre navigateur autorise les alertes DreamFlix.</div>
+                    </div>
+                    <button id="btn-auth-push" class="btn-pill btn-pill-white" style="font-size:0.75rem; padding:8px 15px" onclick="requestPushAuth()">
+                        VÉRIFIER LE STATUT
+                    </button>
+                </div>
+
                 <div class="settings-row" id="notif-episodes-row">
                     <div>
                         <div class="settings-label">Nouveaux épisodes <i class="fas fa-crown" style="color:#FFD700; font-size:0.7rem; margin-left:5px"></i></div>
@@ -187,7 +199,45 @@
         if (DFAuth.isAdmin()) {
             document.getElementById('admin-unlock-section').style.display = 'none';
         }
+
+        // Check Push Status immediately
+        checkPushStatus();
     });
+
+    function checkPushStatus() {
+        const btn = document.getElementById('btn-auth-push');
+        const text = document.getElementById('push-status-text');
+        if (!btn || !text) return;
+
+        if (!("Notification" in window)) {
+            text.innerText = "Navigateur non compatible.";
+            btn.style.display = 'none';
+            return;
+        }
+
+        if (Notification.permission === 'granted') {
+            text.innerHTML = '<span style="color:#46d369;font-weight:700">Autorisé ✅</span> — Vous recevrez les alertes sur cet appareil.';
+            btn.innerText = "TESTER LA RÉCEPTION";
+            btn.onclick = sendTestNotif;
+            btn.className = "btn-pill btn-pill-ghost";
+        } else if (Notification.permission === 'denied') {
+            text.innerHTML = '<span style="color:#ff4444;font-weight:700">Bloqué ❌</span> — Activez les notifs dans les réglages du navigateur.';
+            btn.innerText = "DÉBLOQUER";
+            btn.onclick = () => alert("Veuillez réinitialiser les permissions de DreamFlix dans la barre d'adresse de votre navigateur pour continuer.");
+        } else {
+            text.innerText = "Autorisez DreamFlix pour recevoir les alertes instantanées.";
+            btn.innerText = "ACTIVER SUR MON APPAREIL";
+            btn.onclick = requestPushAuth;
+        }
+    }
+
+    async function requestPushAuth() {
+        const permission = await Notification.requestPermission();
+        checkPushStatus();
+        if (permission === 'granted') {
+            DFNotif.sendLocal("DreamFlix", "Les notifications OS sont maintenant actives ! 🍿");
+        }
+    }
 
     function setToggle(id, val) {
         const el = document.getElementById(id);
