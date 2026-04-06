@@ -138,16 +138,32 @@
         `;
 
         // 2. Add all 14 Episodes to "Recommandations"
-        const EP_NUMS = [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16];
-        const recommendedHTML = EP_NUMS.map(num => `
-            <div class="df-card" onclick="window.open('watch.html?ep=${num}', '_blank')">
-                <img src="img/fruit image.jpg" alt="Épisode ${num}" style="filter: brightness(0.8)">
+        const EP_DATA = [
+            { num: 1,  img: "ep1_arrival_fruit_island_fixed_1775482055088.png" },
+            { num: 2,  img: "ep2_pool_party_smoothies_fixed_1775482075261.png" },
+            { num: 3,  img: "ep3_citrus_argument_drama_fixed_1775482087421.png" },
+            { num: 4,  img: "ep4_romantic_sunset_strawberry_retry_1775482114459.png" },
+            { num: 6,  img: "ep6_truth_or_dare_night_fruit_1775482131296.png" },
+            { num: 7,  img: "ep7_devilish_fruit_girls_night_1775482148799.png" },
+            { num: 8,  img: "ep8_campfire_selection_drama_1775482163814.png" },
+            { num: 9,  img: "ep9_pineapple_billionaire_arrival_1775482190771.png" },
+            { num: 10, img: "ep10_forbidden_fruit_kiss_jungle_1775482208387.png" },
+            { num: 11, img: "ep11_exotic_fruit_spa_day_1775482224654.png" },
+            { num: 12, img: "ep12_masquerade_ball_fruit_masks_1775482240655.png" },
+            { num: 14, img: "ep14_stormy_night_fruit_drama_1775482262346.png" },
+            { num: 15, img: "ep15_final_decisions_on_the_dock_1775482277300.png" },
+            { num: 16, img: "ep16_grand_finale_celebration_beach_1775482293530.png" }
+        ];
+
+        const recommendedHTML = EP_DATA.map(ep => `
+            <div class="df-card" onclick="window.open('watch.html?ep=${ep.num}', '_blank')">
+                <img src="${ep.img}" alt="Épisode ${ep.num}" style="filter: brightness(0.8)">
                 <div class="df-card-body">
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-                        <div class="df-card-title">Épisode ${num}</div>
+                        <div class="df-card-title">Épisode ${ep.num}</div>
                         <i class="fas fa-play" style="font-size:0.7rem;color:rgba(255,255,255,0.5)"></i>
                     </div>
-                    <div class="df-card-sub">Partie ${num} • 2 min</div>
+                    <div class="df-card-sub">Partie ${ep.num} • 2 min</div>
                 </div>
             </div>
         `).join('');
