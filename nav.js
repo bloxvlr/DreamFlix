@@ -4,7 +4,7 @@
 const NAV_HTML = `
 <nav class="df-nav" id="df-nav">
     <div style="display:flex;align-items:center;gap:28px;flex:1">
-        <a href="index.html" class="df-logo"><img src="img/Logo dreamflix.png" alt="DreamFlix"></a>
+        <a href="index.html" class="df-logo"><img src="img/logo_dreamflix.png" alt="DreamFlix"></a>
         <ul class="nav-links-top">
             <li onclick="location.href='index.html'">Home</li>
             <li onclick="location.href='series.html'">Series</li>
@@ -31,6 +31,13 @@ const NAV_HTML = `
                 backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,0.8);z-index:5000;
             ">
                 <div id="nav-dropdown-email" style="padding:12px 18px 8px;font-size:0.72rem;color:#808080;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:4px"></div>
+                
+                <!-- Admin Link -->
+                <a href="admin.html" id="nav-admin-link" style="display:none;align-items:center;gap:12px;padding:11px 18px;color:var(--brand);font-size:0.85rem;text-decoration:none;font-weight:700;transition:0.15s" onmouseenter="this.style.opacity='0.8'" onmouseleave="this.style.opacity='1'">
+                    <i class="fas fa-user-shield" style="width:16px;text-align:center"></i> Admin Panel
+                </a>
+                <div id="nav-admin-divider" style="display:none;border-top:1px solid rgba(255,255,255,0.08);margin:4px 0"></div>
+
                 <a href="settings.html" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;transition:0.15s" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='rgba(255,255,255,0.75)'">
                     <i class="fas fa-cog" style="width:16px;text-align:center"></i> Settings
                 </a>
@@ -48,6 +55,10 @@ const NAV_HTML = `
 
 const SIDEBAR_HTML = `
 <aside class="df-sidebar">
+    <div class="sidebar-group" id="sidebar-admin-group" style="display:none">
+        <p class="sidebar-label">Administration</p>
+        <a href="admin.html" class="sidebar-link" style="color:var(--brand);font-weight:700"><i class="fas fa-user-shield"></i> Admin Panel</a>
+    </div>
     <div class="sidebar-group">
         <p class="sidebar-label">Menu</p>
         <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
@@ -87,7 +98,7 @@ document.getElementById('nav-placeholder')?.insertAdjacentHTML('afterend', NAV_H
 document.getElementById('sidebar-placeholder')?.insertAdjacentHTML('afterend', SIDEBAR_HTML);
 document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
 
-// --- Populate user info in navbar ---
+// --- Populate user info in navbar & Check Admin ---
 (function populateUser() {
     if (typeof DFAuth === 'undefined') return;
     const user = DFAuth.getUser();
@@ -106,6 +117,27 @@ document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
     }
     if (emailEl) {
         emailEl.textContent = user.email || '';
+    }
+
+    // --- Admin Link Logic ---
+    if (DFAuth.isAdmin()) {
+        const navLink = document.getElementById('nav-admin-link');
+        const navDiv = document.getElementById('nav-admin-divider');
+        const sideGrp = document.getElementById('sidebar-admin-group');
+        if (navLink) navLink.style.display = 'flex';
+        if (navDiv) navDiv.style.display = 'block';
+        if (sideGrp) sideGrp.style.display = 'block';
+    }
+
+    // --- Easter Egg: Admin Code ---
+    const searchInput = document.querySelector('.nav-search');
+    if (searchInput && window.DFConfig?.ADMIN_CODE) {
+        searchInput.addEventListener('input', (e) => {
+            if (e.target.value === window.DFConfig.ADMIN_CODE) {
+                localStorage.setItem('df_admin_unlocked', 'true');
+                window.location.href = 'admin.html';
+            }
+        });
     }
 })();
 

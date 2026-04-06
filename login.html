@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix — Sign In</title>
+    <title>DreamFlix â€” Sign In</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src='auth.js'></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -174,21 +174,21 @@
 
     <!-- Logo top left -->
     <nav class="login-nav">
-        <img src="img/Logo dreamflix.png" alt="DreamFlix">
+        <img src="img/logo_dreamflix.png" alt="DreamFlix">
     </nav>
 
     <div class="login-wrapper">
         <div class="login-card">
 
             <div class="login-logo-wrap">
-                <img src="img/Logo dreamflix.png" alt="DreamFlix">
+                <img src="img/logo_dreamflix.png" alt="DreamFlix">
             </div>
 
             <h1 class="login-title">Bienvenue</h1>
-            <p class="login-sub">Connectez-vous pour accéder à DreamFlix et profiter de toutes nos séries et films IA.</p>
+            <p class="login-sub">Connectez-vous pour accÃ©der Ã  DreamFlix et profiter de toutes nos sÃ©ries et films IA.</p>
 
             <div class="error-msg" id="error-msg">
-                <i class="fas fa-exclamation-circle"></i> Connexion échouée. Veuillez réessayer.
+                <i class="fas fa-exclamation-circle"></i> Connexion Ã©chouÃ©e. Veuillez rÃ©essayer.
             </div>
             <div class="loading" id="loading">
                 <div class="spinner"></div> Connexion en cours...
@@ -207,7 +207,7 @@
             <p class="login-terms">
                 En continuant, vous acceptez les
                 <a href="#">Conditions d'utilisation</a> et la
-                <a href="#">Politique de confidentialité</a> de DreamFlix.
+                <a href="#">Politique de confidentialitÃ©</a> de DreamFlix.
             </p>
         </div>
     </div>
@@ -244,3 +244,4 @@
     </script>
 </body>
 </html>
+

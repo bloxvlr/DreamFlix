@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — Admin Panel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    <script src="auth.js"></script>
+    <style>
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 30px; }
+        .admin-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 30px; backdrop-filter: blur(10px); }
+        .admin-card h2 { font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .admin-card h2 i { color: var(--brand); }
+        
+        .stat-bar { display: flex; gap: 20px; margin-bottom: 30px; }
+        .stat-item { flex: 1; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-val { font-size: 1.8rem; font-weight: 900; color: var(--brand); }
+        .stat-label { font-size: 0.75rem; color: #808080; text-transform: uppercase; letter-spacing: 1px; }
+
+        .user-list { list-style: none; display: flex; flex-direction: column; gap: 12px; max-height: 400px; overflow-y: auto; }
+        .user-item { display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.02); }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .user-status { width: 8px; height: 8px; border-radius: 50%; background: #46d369; box-shadow: 0 0 10px #46d369; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.8rem; color: #808080; margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; outline: none; }
+        .form-input:focus { border-color: var(--brand); }
+
+        .content-list { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+        .content-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 10px; }
+        .btn-delete { color: #ff4444; cursor: pointer; padding: 8px; transition: 0.2s; }
+        .btn-delete:hover { opacity: 0.7; }
+
+        @media (max-width: 1024px) { .admin-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div id="nav-placeholder"></div>
+<div id="sidebar-placeholder"></div>
+
+<div class="df-page df-page-with-sidebar">
+    <div class="page-shell">
+        <h1 style="display:flex;align-items:center;gap:15px"><i class="fas fa-user-shield" style="color:var(--brand)"></i> Admin Space</h1>
+        <p class="page-subtitle">Exclusif pour the.furtive.guys@gmail.com</p>
+
+        <div class="stat-bar">
+            <div class="stat-item">
+                <div class="stat-val" id="count-users">0</div>
+                <div class="stat-label">Users Online</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-val" id="count-content">0</div>
+                <div class="stat-label">Videos Total</div>
+            </div>
+        </div>
+
+        <div class="admin-grid">
+            
+            <!-- Online Users Tracker -->
+            <div class="admin-card">
+                <h2><i class="fas fa-signal"></i> Real-time Activity</h2>
+                <div id="online-users-container">
+                    <ul class="user-list" id="user-list">
+                        <!-- Users will be injected here -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Content Manager -->
+            <div class="admin-card">
+                <h2><i class="fas fa-plus-circle"></i> Post New Content</h2>
+                <form id="add-content-form">
+                    <div class="form-group">
+                        <label class="form-label">Titre</label>
+                        <input type="text" id="title" class="form-input" placeholder="ex: Daredevil: The New Hero" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Image URL</label>
+                        <input type="url" id="image_url" class="form-input" placeholder="https://..." required>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+                        <div class="form-group">
+                            <label class="form-label">Catégorie</label>
+                            <select id="category" class="form-input">
+                                <option value="Series">Series</option>
+                                <option value="Movies">Movies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <input type="text" id="year" class="form-input" placeholder="2024">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-pill btn-pill-white" style="width:100%;margin-top:10px">Post Video</button>
+                </form>
+
+                <h2 style="margin-top:40px"><i class="fas fa-list-ul"></i> Manage Posted</h2>
+                <div class="content-list" id="manage-content-list">
+                    <!-- Dynamic content management here -->
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="nav.js"></script>
+<script src="script.js"></script>
+<script>
+    // --- Secure Access ---
+    DFAuth.requireAdmin();
+
+    const _sb = DFAuth._supabase;
+
+    // --- Fetch Real Users Online (active in last 5 min) ---
+    async function loadOnlineUsers() {
+        const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+        const { data, error } = await _sb
+            .from('profiles')
+            .select('*')
+            .gt('last_seen', fiveMinAgo)
+            .order('last_seen', { ascending: false });
+
+        if (error) return;
+
+        const list = document.getElementById('user-list');
+        list.innerHTML = '';
+        document.getElementById('count-users').innerText = data.length;
+
+        data.forEach(u => {
+            const li = document.createElement('li');
+            li.className = 'user-item';
+            li.innerHTML = `
+                <img src="${u.avatar_url}" class="user-avatar">
+                <div style="flex:1">
+                    <div style="font-weight:700;font-size:0.9rem">${u.full_name}</div>
+                    <div style="font-size:0.7rem;color:#808080">${u.email}</div>
+                </div>
+                <div class="user-status"></div>
+            `;
+            list.appendChild(li);
+        });
+    }
+
+    // --- Content Management ---
+    async function loadContent() {
+        const { data, error } = await _sb.from('content').select('*').order('created_at', { ascending: false });
+        if (error) return;
+
+        document.getElementById('count-content').innerText = data.length;
+        const list = document.getElementById('manage-content-list');
+        list.innerHTML = '';
+
+        data.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'content-item';
+            div.innerHTML = `
+                <div style="display:flex;align-items:center;gap:10px">
+                    <img src="${item.image_url}" style="width:40px;height:40px;border-radius:4px;object-fit:cover">
+                    <div style="font-size:0.85rem;font-weight:600">${item.title}</div>
+                </div>
+                <i class="fas fa-trash btn-delete" onclick="deleteItem('${item.id}')"></i>
+            `;
+            list.appendChild(div);
+        });
+    }
+
+    async function deleteItem(id) {
+        if (!confirm('Delete this video?')) return;
+        const { error } = await _sb.from('content').delete().eq('id', id);
+        if (!error) loadContent();
+    }
+
+    document.getElementById('add-content-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.innerText = 'Posting...';
+        btn.disabled = true;
+
+        const newItem = {
+            title: document.getElementById('title').value,
+            image_url: document.getElementById('image_url').value,
+            category: document.getElementById('category').value,
+            year: document.getElementById('year').value || '2024',
+            rating: '18+',
+            match_percent: '99%'
+        };
+
+        const { error } = await _sb.from('content').insert([newItem]);
+        
+        btn.innerText = 'Post Video';
+        btn.disabled = false;
+
+        if (!error) {
+            e.target.reset();
+            loadContent();
+        } else {
+            alert('Error: ' + error.message);
+        }
+    });
+
+    // --- Init ---
+    loadOnlineUsers();
+    loadContent();
+    setInterval(loadOnlineUsers, 30000); // Refresh online users every 30s
+</script>
+</body>
+</html>

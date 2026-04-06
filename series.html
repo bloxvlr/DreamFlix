@@ -61,8 +61,32 @@
     </div>
 </div>
 
-<script src="auth.js"></script><script src="nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src='auth.js'></script><script src="nav.js"></script>
 <script src="script.js"></script>
-</body>
+
+<script>
+    async function loadAdminSeries() {
+        const _sb = DFAuth._supabase;
+        const { data, error } = await _sb.from('content').select('*').eq('category', 'Series').order('created_at', { ascending: false });
+        if (error || !data.length) return;
+
+        const grid = document.querySelector('.df-grid');
+        data.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'df-grid-card';
+            card.innerHTML = 
+                <img src="\" alt="\">
+                <div class="df-grid-card-body">
+                    <div class="df-grid-card-title">\</div>
+                    <div class="df-grid-card-meta">\ • \ • 18+</div>
+                </div>
+            ;
+            grid.prepend(card);
+        });
+    }
+    window.addEventListener('load', loadAdminSeries);
+</script></body>
 </html>
+
+
 
