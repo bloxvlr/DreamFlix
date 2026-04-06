@@ -145,4 +145,76 @@ function renderGoogleButton(containerId, theme = 'outline') {
     });
 }
 
-window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase };
+// --- UI HELPERS (SHARED ACROSS ALL PAGES) ---
+const UI = {
+    openPlayer(url, title) {
+        const modal = document.getElementById('video-modal');
+        const player = document.getElementById('player-el');
+        const titleEl = document.getElementById('player-title');
+        if (!modal || !player || !titleEl) return;
+
+        player.src = url;
+        titleEl.innerText = title;
+        modal.style.display = 'flex';
+        player.play();
+
+        document.getElementById('df-nav').style.opacity = '0';
+        document.querySelector('.df-sidebar').style.opacity = '0';
+    },
+
+    closePlayer() {
+        const modal = document.getElementById('video-modal');
+        const player = document.getElementById('player-el');
+        if (!modal || !player) return;
+
+        player.pause();
+        player.src = '';
+        modal.style.display = 'none';
+
+        document.getElementById('df-nav').style.opacity = '1';
+        document.querySelector('.df-sidebar').style.opacity = '1';
+    },
+
+    createCard(item, isGrid = false) {
+        const card = document.createElement('div');
+        card.className = isGrid ? 'df-grid-card' : 'df-card';
+        
+        card.innerHTML = `
+            <img src="${item.image_url}" alt="${item.title}">
+            <div class="${isGrid ? 'df-grid-card-body' : 'df-card-body'}">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                    <div class="${isGrid ? 'df-grid-card-title' : 'df-card-title'}">${item.title}</div>
+                    <i class="fas fa-plus add-fav-btn" style="font-size:0.8rem;cursor:pointer;color:var(--muted)" onclick="event.stopPropagation(); DFAuth.UI.toggleFavorite('${item.id}', this)"></i>
+                </div>
+                <div class="${isGrid ? 'df-grid-card-meta' : 'df-card-sub'}">${item.category} • ${item.year}</div>
+            </div>
+        `;
+
+        if (item.video_url) {
+            card.addEventListener('click', () => this.openPlayer(item.video_url, item.title));
+        }
+        return card;
+    },
+
+    async toggleFavorite(contentId, btnEl) {
+        const user = getUser();
+        if (!user || !_supabase) return;
+
+        try {
+            // Check if already favorite
+            const { data: existing } = await _supabase.from('favorites').select('id').eq('user_id', user.sub).eq('content_id', contentId).single();
+
+            if (existing) {
+                await _supabase.from('favorites').delete().eq('id', existing.id);
+                btnEl.className = 'fas fa-plus';
+                btnEl.style.color = 'var(--muted)';
+            } else {
+                await _supabase.from('favorites').insert({ user_id: user.sub, content_id: contentId });
+                btnEl.className = 'fas fa-check';
+                btnEl.style.color = '#46d369';
+            }
+        } catch (e) { console.error('Favorite Toggle failed:', e); }
+    }
+};
+
+window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };

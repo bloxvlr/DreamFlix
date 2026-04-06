@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix â€” My List</title>
+    <title>DreamFlix — My List</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -19,41 +19,68 @@
         <p class="page-subtitle">Your saved content</p>
 
         <div class="df-grid" id="my-list-grid">
-            <!-- Pre-saved Daredevil -->
-            <div class="df-grid-card" id="saved-daredevil">
-                <img src="img/daredevil_hero.png" alt="Daredevil">
-                <div class="df-grid-card-body">
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <div class="df-grid-card-title">Daredevil</div>
-                        <i class="fas fa-times" style="color:#808080;cursor:pointer;font-size:0.8rem" onclick="this.closest('.df-grid-card').remove()"></i>
-                    </div>
-                    <div class="df-grid-card-meta">Series Â· 18+</div>
-                </div>
-            </div>
+            <!-- Dynamic favorites here -->
         </div>
 
         <div class="empty-state" id="empty-list" style="display:none">
             <div class="icon"><i class="fas fa-bookmark"></i></div>
-            <h3>Your list is empty</h3>
-            <p>Browse series and movies and click <strong>+</strong> to save them here.</p>
+            <h3>Votre liste est vide</h3>
+            <p>Explorez les séries et films et cliquez sur <strong>+</strong> pour les enregistrer ici.</p>
             <br>
-            <button class="btn-pill btn-pill-white" onclick="location.href='series.html'">Browse Series</button>
+            <button class="btn-pill btn-pill-white" onclick="location.href='index.html'">Découvrir</button>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src='auth.js'></script><script src="nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
+<script src="nav.js"></script>
 <script src="script.js"></script>
+
 <script>
-    // If all cards are removed show the empty state
-    const observer = new MutationObserver(() => {
+    async function loadMyList() {
+        if (typeof DFAuth === 'undefined' || !DFAuth._supabase) return;
+        const _sb = DFAuth._supabase;
+        const user = DFAuth.getUser();
+        if (!user) return;
+
         const grid = document.getElementById('my-list-grid');
-        document.getElementById('empty-list').style.display = grid.children.length === 0 ? 'block' : 'none';
-    });
-    observer.observe(document.getElementById('my-list-grid'), { childList: true });
+        const empty = document.getElementById('empty-list');
+        grid.innerHTML = '';
+
+        try {
+            // 1. Get favorite IDs
+            const { data: favs } = await _sb.from('favorites').select('content_id').eq('user_id', user.sub);
+            
+            if (!favs || favs.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+
+            // 2. Fetch content for those IDs
+            const ids = favs.map(f => f.content_id);
+            const { data: content, error } = await _sb.from('content').select('*').in('id', ids);
+
+            if (error || !content || content.length === 0) {
+                empty.style.display = 'block';
+            } else {
+                empty.style.display = 'none';
+                content.forEach(item => {
+                    grid.appendChild(DFAuth.UI.createCard(item, true));
+                });
+                
+                // Update favorite buttons to 'checked' state in My List
+                setTimeout(() => {
+                    document.querySelectorAll('.add-fav-btn').forEach(btn => {
+                        btn.className = 'fas fa-check';
+                        btn.style.color = '#46d369';
+                    });
+                }, 100);
+            }
+        } catch (e) { console.error('My List Load failed:', e); }
+    }
+
+    window.addEventListener('load', loadMyList);
 </script>
 </body>
 </html>
-
-
-

@@ -114,6 +114,14 @@ const MOBILE_BAR_HTML = `
     </div>
 </div>`;
 
+const GLOBAL_PLAYER_HTML = `
+<!-- Global Video Player Modal -->
+<div id="video-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:99999;flex-direction:column;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(15px)">
+    <div style="position:absolute;top:30px;right:40px;color:#fff;font-size:2rem;cursor:pointer;z-index:10" onclick="DFAuth.UI.closePlayer()"><i class="fas fa-times"></i></div>
+    <video id="player-el" controls style="max-width:90%;max-height:80vh;border-radius:12px;box-shadow:0 30px 100px rgba(0,0,0,1)"></video>
+    <h2 id="player-title" style="margin-top:25px;font-size:1.8rem;font-weight:900;text-align:center;letter-spacing:-1px"></h2>
+</div>`;
+
 // --- Guard: require auth before injecting nav ---
 if (typeof DFAuth !== 'undefined') {
     DFAuth.requireAuth();
@@ -124,6 +132,7 @@ document.body.insertAdjacentHTML('afterbegin', GLASS_SVG);
 document.getElementById('nav-placeholder')?.insertAdjacentHTML('afterend', NAV_HTML);
 document.getElementById('sidebar-placeholder')?.insertAdjacentHTML('afterend', SIDEBAR_HTML);
 document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
+document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
 
 // --- Populate user info in navbar & Check Admin ---
 (function populateUser() {
