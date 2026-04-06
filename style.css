@@ -256,6 +256,7 @@ body {
 .df-grid-card-meta { font-size: 0.7rem; color: var(--muted); margin-top: 3px; }
 
 /* Empty State */
+.add-fav-btn { transition: none !important; }
 .empty-state { text-align: center; padding: 80px 20px; color: var(--muted); }
 .empty-state .icon { font-size: 3.5rem; margin-bottom: 20px; }
 .empty-state h3 { font-size: 1.4rem; color: #fff; margin-bottom: 10px; }
@@ -345,6 +346,8 @@ body {
     body { padding-bottom: 95px; }
 
     .df-hero-title { font-size: 2.8rem; }
+    .df-hero { height: 60vh; }
+    .df-hero-img { object-position: center top; }
     .df-hero-desc { display: none; } /* Cleaner on mobile */
 
     .df-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }

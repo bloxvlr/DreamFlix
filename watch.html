@@ -188,42 +188,59 @@
             { num: 16, id: 'vb87gw39la', title: 'Finale en salade', img: 'img/ep16.png' }
         ];
 
-        const listContainer = document.getElementById('sidebar-list');
-        const playerContainer = document.getElementById('main-player-container');
-        let activeEpIndex = 0;
-
-        // --- Render Sidebar ---
-        function renderSidebar() {
-            listContainer.innerHTML = '';
-            EPISODES.forEach((ep, i) => {
-                const li = document.createElement('li');
-                li.className = `ep-item ${i === activeEpIndex ? 'active' : ''}`;
-                li.onclick = () => switchEpisode(i);
-                li.innerHTML = `
-                    <div class="ep-thumb">
-                        <img src="${ep.img}" alt="Episode ${ep.num}">
-                        <i class="fas fa-play"></i>
-                    </div>
-                    <div class="ep-info" style="flex:1">
-                        <div style="display:flex;justify-content:space-between;align-items:center">
-                            <div class="ep-num">Épisode ${ep.num}</div>
-                            <i class="fas fa-plus add-fav-btn" style="font-size:0.75rem;cursor:pointer;color:rgba(255,255,255,0.3)" onclick="event.stopPropagation(); if(DFAuth.canInteract()) DFAuth.UI.toggleFavorite('ep${ep.num}', this)"></i>
-                        </div>
-                        <div class="ep-title">${ep.title}</div>
-                        <div class="ep-duration">2-3 min</div>
-                    </div>
-                `;
-                listContainer.appendChild(li);
-            });
+        // Initial Load with Deep Linking
+        const urlParams = new URLSearchParams(window.location.search);
+        const startEp = parseInt(urlParams.get('ep'));
+        if (startEp) {
+            const idx = EPISODES.findIndex(e => e.num === startEp);
+            if (idx !== -1) activeEpIndex = idx;
         }
+
+        renderSidebar();
+        switchEpisode(activeEpIndex); // Load determined episode
+
+        // --- Watch Time Accumulator (Mobile & Efficiency Focus) ---
+        let watchSecondsAccumulated = 0;
+        let isVideoPlaying = false;
+
+        // Count every second only if playing and visible
+        setInterval(() => {
+            if (isVideoPlaying && !document.hidden) {
+                watchSecondsAccumulated++;
+            }
+        }, 1000);
+
+        // Sync every 5 minutes (300s)
+        async function syncWatchTime() {
+            if (watchSecondsAccumulated < 10) return; // Ignore tiny blips
+            const user = DFAuth.getUser();
+            if (!user || !DFAuth._supabase) return;
+            
+            try {
+                // Fetch current then increment (budget atomic update)
+                const { data: profile } = await DFAuth._supabase.from('profiles').select('watch_duration_seconds').eq('id', user.sub).single();
+                if (profile) {
+                    await DFAuth._supabase.from('profiles').update({
+                        watch_duration_seconds: (profile.watch_duration_seconds || 0) + watchSecondsAccumulated
+                    }).eq('id', user.sub);
+                    console.log(`[Leaderboard] +${watchSecondsAccumulated}s synced.`);
+                    watchSecondsAccumulated = 0;
+                }
+            } catch(e) { console.error('WatchTime Sync Error:', e); }
+        }
+
+        setInterval(syncWatchTime, 300000); 
+        // Also sync on leave
+        window.onbeforeunload = () => { syncWatchTime(); };
 
         // --- Switch Video Logic ---
         function switchEpisode(index) {
             activeEpIndex = index;
             const ep = EPISODES[activeEpIndex];
             
-            // Clean player area
+            // Clean player area & sync before switching
             playerContainer.innerHTML = '';
+            syncWatchTime();
             
             // Inject new Wistia Embed
             const scriptEmbed = document.createElement('script');
@@ -238,20 +255,20 @@
             playerContainer.appendChild(scriptEmbed);
             playerContainer.appendChild(playerTag);
 
-            // Re-render sidebar active state
             renderSidebar();
-            
-            // Re-attach API listener for next episode
             attachApiListener();
         }
 
-        // --- Autoscroll / Next Episode Link ---
         function attachApiListener() {
             window._wq = window._wq || [];
             _wq.push({
                 id: "_all",
                 onReady: function(video) {
+                    video.bind("play", () => { isVideoPlaying = true; });
+                    video.bind("pause", () => { isVideoPlaying = false; });
+                    video.bind("seek", () => { isVideoPlaying = true; });
                     video.bind("end", function() {
+                        isVideoPlaying = false;
                         console.log("EP Finished, loading next...");
                         if (activeEpIndex < EPISODES.length - 1) {
                             switchEpisode(activeEpIndex + 1);
@@ -260,17 +277,6 @@
                 }
             });
         }
-
-        // Initial Load with Deep Linking
-        const urlParams = new URLSearchParams(window.location.search);
-        const startEp = parseInt(urlParams.get('ep'));
-        if (startEp) {
-            const idx = EPISODES.findIndex(e => e.num === startEp);
-            if (idx !== -1) activeEpIndex = idx;
-        }
-
-        renderSidebar();
-        switchEpisode(activeEpIndex); // Load determined episode
 
         // Handle navigation protection
         window.history.pushState(null, null, window.location.href);

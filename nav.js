@@ -296,7 +296,7 @@ if (typeof DFAuth !== 'undefined') {
             data = {
                 title: "L'ÎLE DE LA SKIBIDITENTAFRUIT",
                 image_url: "img/fruit image.jpg",
-                description: "Huit couples de fruits frais voient leur jus mis à l'épreuve sur une île paradisiaque. Entre trahisons sucrées et smoothies renversants, qui finira en salade de fruits ?",
+                description: "The Fruit Wars of 2026 have begun. Dans cette production originale explosive, huit couples de fruits frais sont abandonnés sur une île tropicale où les intrigues politiques de jus et les smoothies à enjeux élevés déterminent leur destin. Entre des baisers d'agrumes interdits et la légende des ananas d'or des Caraïbes, qui survivra au mixeur final ? Une épopée juteuse de trahison, de passion et de vitamines.",
                 year: "2026",
                 rating: "Absurde",
                 category: "Série Originale",
