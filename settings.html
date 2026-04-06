@@ -2,8 +2,16 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>DreamFlix — Paramètres</title>
+    
+    <!-- PWA & Mobile Optimization -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="img/logo_dreamflix.png">
+    <meta name="theme-color" content="#E50914">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -209,8 +217,20 @@
         const text = document.getElementById('push-status-text');
         if (!btn || !text) return;
 
-        if (!("Notification" in window)) {
-            text.innerText = "Navigateur non compatible.";
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+        // --- iOS Special Handling ---
+        if (isIOS && !isStandalone) {
+            text.innerHTML = '<span style="color:var(--brand);font-weight:700"><i class="fas fa-info-circle"></i> État : Site Web</span><br>Apple requiert que vous installiez l\'app pour activer les notifications.';
+            btn.innerHTML = '<i class="fas fa-plus-square"></i> Installer DreamFlix';
+            btn.onclick = () => alert("Tapez sur l'icône de Partage (en bas de Safari) puis sélectionnez 'Sur l'écran d'accueil' pour débloquer les notifications.");
+            btn.className = "btn-pill btn-pill-white";
+            return;
+        }
+
+        if (!("Notification" in window) && !('serviceWorker' in navigator)) {
+            text.innerText = "Navigateur non compatible sur cette platforme.";
             btn.style.display = 'none';
             return;
         }
