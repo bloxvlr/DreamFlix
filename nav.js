@@ -68,8 +68,7 @@ const SIDEBAR_HTML = `
         <a href="mylist.html" class="sidebar-link"><i class="fas fa-bookmark"></i> Ma Liste</a>
     </div>
     <div class="sidebar-group">
-        <p class="sidebar-label">Réseau</p>
-        <a href="friends.html" class="sidebar-link"><i class="fas fa-users"></i> Amis</a>
+        <p class="sidebar-label">Social</p>
         <a href="teleparty.html" class="sidebar-link"><i class="fas fa-desktop"></i> Teleparty</a>
     </div>
     <div class="sidebar-group">
