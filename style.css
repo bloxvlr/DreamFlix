@@ -257,24 +257,50 @@ body {
 .friend-watching { margin-left: auto; font-size: 0.72rem; color: var(--brand); white-space: nowrap; }
 
 /* ===================================================
-   MOBILE BAR (Bottom Tab Navigation)
+   LIQUID GLASS MOBILE DOCK (Bottom Navigation)
    =================================================== */
 .df-mobile-bar {
     display: none;
-    position: fixed; bottom: 0; left: 0; right: 0;
-    height: 65px; background: var(--glass); backdrop-filter: var(--blur);
-    border-top: 1px solid var(--border);
-    z-index: 3000;
-    align-items: center; justify-content: space-around;
+    position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+    width: 90%; max-width: 480px; height: 68px;
+    z-index: 5000;
 }
+
+.liquidGlass-wrapper {
+    position: relative; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    box-shadow: 0 15px 45px rgba(0,0,0,0.4);
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: space-around;
+}
+
+/* Glass Detail Layers */
+.liquidGlass-effect { position: absolute; inset: 0; filter: url('#glass-distortion'); pointer-events: none; opacity: 0.4; }
+.liquidGlass-tint { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent); pointer-events: none; }
+.liquidGlass-shine { position: absolute; top: 0; left: 0; width: 100%; height: 50%; background: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent); pointer-events: none; border-radius: 20px 20px 0 0; }
+
+.liquidGlass-icons {
+    display: flex; width: 100%; height: 100%;
+    align-items: center; justify-content: space-around;
+    padding: 0 10px; z-index: 5;
+}
+
 .mobile-tab {
     display: flex; flex-direction: column; align-items: center; gap: 4px;
-    color: var(--muted); cursor: pointer; font-size: 0.62rem; text-decoration: none;
-    transition: color var(--fast);
+    color: rgba(255,255,255,0.5); cursor: pointer; text-decoration: none;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s;
+    flex: 1; padding: 10px 0;
 }
-.mobile-tab i { font-size: 1.3rem; }
-.mobile-tab.active, .mobile-tab:hover { color: #fff; }
-.mobile-tab.active i { color: var(--brand); }
+.mobile-tab i { font-size: 1.4rem; transition: transform 0.2s; }
+.mobile-tab span { font-size: 0.65rem; font-weight: 500; opacity: 0.8; }
+
+/* Magnification Effect */
+.mobile-tab:hover { color: #fff; transform: translateY(-8px) scale(1.25); }
+.mobile-tab.active { color: #fff; }
+.mobile-tab.active i { color: var(--brand); text-shadow: 0 0 15px rgba(229,9,20,0.5); }
 
 /* ===================================================
    RESPONSIVE
@@ -282,7 +308,7 @@ body {
 @media (min-width: 1024px) {
     .df-sidebar { display: flex; }
     .df-page-with-sidebar { padding-left: var(--sidebar-w); }
-    .nav-links-top { display: none; } /* Hidden in favor of sidebar */
+    .nav-links-top { display: none; }
     .nav-center { display: block; }
 }
 
@@ -291,8 +317,8 @@ body {
     .df-page-with-sidebar { padding-left: 0; }
     .nav-center { display: none; }
     .nav-links-top { display: flex; gap: 14px; font-size: 0.78rem; }
-    .df-mobile-bar { display: flex; }
-    body { padding-bottom: 65px; }
+    .df-mobile-bar { display: block; }
+    body { padding-bottom: 95px; }
 
     .df-hero { height: 70vh; }
     .df-hero-content { width: 90%; left: 5%; bottom: 10%; }

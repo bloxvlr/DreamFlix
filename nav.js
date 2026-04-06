@@ -1,4 +1,4 @@
-// DreamFlix — shared nav + mobile bar injected into every page
+// DreamFlix â€” shared nav + mobile bar injected into every page
 // Requires: auth.js to be loaded BEFORE this file
 
 const NAV_HTML = `
@@ -79,13 +79,39 @@ const SIDEBAR_HTML = `
     </div>
 </aside>`;
 
+// --- SVG Filter for Liquid Glass Effect ---
+const GLASS_SVG = `
+<svg style="display: none">
+    <filter id="glass-distortion" x="0%" y="0%" width="100%" height="100%" filterUnits="objectBoundingBox">
+        <feTurbulence type="fractalNoise" baseFrequency="0.01 0.01" numOctaves="1" seed="5" result="turbulence" />
+        <feComponentTransfer in="turbulence" result="mapped">
+            <feFuncR type="gamma" amplitude="1" exponent="10" offset="0.5" />
+            <feFuncG type="gamma" amplitude="0" exponent="1" offset="0" />
+            <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5" />
+        </feComponentTransfer>
+        <feGaussianBlur in="turbulence" stdDeviation="3" result="softMap" />
+        <feSpecularLighting in="softMap" surfaceScale="5" specularConstant="1" specularExponent="100" lighting-color="white" result="specLight">
+            <fePointLight x="-200" y="-200" z="300" />
+        </feSpecularLighting>
+        <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" result="litImage" />
+        <feDisplacementMap in="SourceGraphic" in2="softMap" scale="150" xChannelSelector="R" yChannelSelector="G" />
+    </filter>
+</svg>`;
+
 const MOBILE_BAR_HTML = `
 <div class="df-mobile-bar">
-    <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Home</span></a>
-    <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Series</span></a>
-    <a href="movies.html" class="mobile-tab"><i class="fas fa-film"></i><span>Movies</span></a>
-    <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>My List</span></a>
-    <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profile</span></a>
+    <div class="liquidGlass-wrapper">
+        <div class="liquidGlass-effect"></div>
+        <div class="liquidGlass-tint"></div>
+        <div class="liquidGlass-shine"></div>
+        <div class="liquidGlass-icons">
+            <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Series</span></a>
+            <a href="movies.html" class="mobile-tab"><i class="fas fa-film"></i><span>Movies</span></a>
+            <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>My List</span></a>
+            <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profile</span></a>
+        </div>
+    </div>
 </div>`;
 
 // --- Guard: require auth before injecting nav ---
@@ -94,6 +120,7 @@ if (typeof DFAuth !== 'undefined') {
 }
 
 // Inject HTML
+document.body.insertAdjacentHTML('afterbegin', GLASS_SVG);
 document.getElementById('nav-placeholder')?.insertAdjacentHTML('afterend', NAV_HTML);
 document.getElementById('sidebar-placeholder')?.insertAdjacentHTML('afterend', SIDEBAR_HTML);
 document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
@@ -129,16 +156,7 @@ document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
         if (sideGrp) sideGrp.style.display = 'block';
     }
 
-    // --- Easter Egg: Admin Code ---
-    const searchInput = document.querySelector('.nav-search');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            if (DFAuth.tryUnlockAdmin(e.target.value)) {
-                window.location.href = 'admin.html';
-            }
-        });
-    }
-})();
+    })();
 
 // --- Profile Dropdown Toggle ---
 document.addEventListener('click', (e) => {
@@ -157,7 +175,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('click', (e) => {
     if (e.target.closest('#nav-logout-btn') || e.target.closest('#sidebar-logout')) {
         e.preventDefault();
-        if (confirm('Se déconnecter de DreamFlix ?')) {
+        if (confirm('Se dÃ©connecter de DreamFlix ?')) {
             DFAuth.logOut();
         }
     }
@@ -178,3 +196,4 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
+

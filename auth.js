@@ -5,18 +5,23 @@
 const SESSION_KEY = 'df_user';
 const ADMIN_EMAIL = 'the.furtive.guys@gmail.com';
 
-// Supabase Configuration (Public Anon Key provided for Client Use)
+// Supabase Configuration (Public Anon Key)
 const SUPABASE_URL = "https://pcmaxibgvpatazpxuqkd.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjbWF4aWJndnBhdGF6cHh1cWtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTA1MzAsImV4cCI6MjA5MDEyNjUzMH0.-hqsL58wE8DT6S7biILN_R88BXaQCY_8i9AwsLVHG6c";
 
 // Obfuscated Admin Secret (Base64 mtq1njm5nq==)
 const ADMIN_CHECK = "MTQ1NjM5NQ=="; 
 
-// Initialize Supabase Client
-const { createClient } = supabase;
-const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Initialize Supabase Client with safety check
+let _supabase = null;
+if (typeof supabase !== 'undefined') {
+    const { createClient } = supabase;
+    _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+} else {
+    console.error('Supabase SDK not loaded. Dynamic features will be disabled.');
+}
 
-// --- Decode a Google JWT (id_token) ---
+// --- Decode a Google JWT ---
 function parseJwt(token) {
     try {
         const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -24,7 +29,7 @@ function parseJwt(token) {
     } catch { return null; }
 }
 
-// --- Save user session & Synchronize with Supabase ---
+// --- Save user session & Update Supabase ---
 async function saveSession(payload) {
     const user = {
         name:    payload.name,
@@ -35,16 +40,17 @@ async function saveSession(payload) {
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(user));
 
-    try {
-        await _supabase.from('profiles').upsert({
-            id: payload.sub,
-            email: payload.email,
-            full_name: payload.name,
-            avatar_url: payload.picture,
-            last_seen: new Date().toISOString()
-        });
-    } catch (e) { console.error('Supabase Sync failed:', e); }
-
+    if (_supabase) {
+        try {
+            await _supabase.from('profiles').upsert({
+                id: payload.sub,
+                email: payload.email,
+                full_name: payload.name,
+                avatar_url: payload.picture,
+                last_seen: new Date().toISOString()
+            });
+        } catch (e) { console.error('Supabase Profile Sync failed:', e); }
+    }
     return user;
 }
 
@@ -62,11 +68,10 @@ function getUser() {
     } catch { return null; }
 }
 
-// --- Admin Checks (Email or persistent unlock flag) ---
+// --- Admin status check ---
 function isAdmin() {
     const user = getUser();
-    const isUnlocked = localStorage.getItem('df_admin_unlocked') === 'true';
-    return (user && user.email === ADMIN_EMAIL) || isUnlocked;
+    return (user && user.email === ADMIN_EMAIL);
 }
 
 function requireAdmin() {
@@ -75,19 +80,10 @@ function requireAdmin() {
     }
 }
 
-// --- Unlock Admin via Code ---
-function tryUnlockAdmin(code) {
-    if (btoa(code) === ADMIN_CHECK) {
-        localStorage.setItem('df_admin_unlocked', 'true');
-        return true;
-    }
-    return false;
-}
-
-// --- Heartbeat: Keep user online status updated ---
+// --- Status heartbeats ---
 async function startHeartbeat() {
     const user = getUser();
-    if (!user) return;
+    if (!user || !_supabase) return;
     setInterval(async () => {
         await _supabase.from('profiles').update({ 
             last_seen: new Date().toISOString() 
@@ -95,7 +91,7 @@ async function startHeartbeat() {
     }, 120000);
 }
 
-// --- Log out ---
+// --- Auth Controls ---
 function logOut() {
     google?.accounts?.id?.disableAutoSelect();
     localStorage.removeItem(SESSION_KEY);
@@ -128,12 +124,11 @@ function initGoogleAuth({ onSuccess, onError } = {}) {
 
 function renderGoogleButton(containerId, theme = 'outline') {
     const el = document.getElementById(containerId);
-    if (el) {
-        google.accounts.id.renderButton(el, {
-            type: 'standard', size: 'large', theme: theme,
-            text: 'continue_with', shape: 'pill', width: 300
-        });
-    }
+    if (!el) return;
+    google.accounts.id.renderButton(el, {
+        type: 'standard', size: 'large', theme: theme,
+        text: 'continue_with', shape: 'pill', width: 300
+    });
 }
 
 window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase };
