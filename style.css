@@ -845,3 +845,47 @@ button.expand.loaded .expand-icon svg.second { display: block; transform: scale(
     .info-grid { grid-template-columns: 1fr; gap: 20px; }
     .info-body { padding: 25px; }
 }
+
+/* ===================================================
+   CONTINUOUS CONVERSION BUTTON ANIMATIONS
+   =================================================== */
+@keyframes btn-shimmer-sweep {
+    0% { transform: skewX(-45deg) translateX(-250%); }
+    100% { transform: skewX(-45deg) translateX(250%); }
+}
+
+@keyframes btn-glow-pulse {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.02); filter: brightness(1.15); }
+}
+
+.btn-shiny {
+    position: relative !important;
+    overflow: hidden !important;
+    z-index: 1;
+}
+
+.btn-shiny::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 50px; height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-45deg);
+    animation: btn-shimmer-sweep 3s infinite linear;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Specific pulse for CTAs */
+.cta-btn-xl.btn-shiny {
+    animation: btn-glow-pulse 2s infinite ease-in-out;
+}
+.tp-btn-red.btn-shiny {
+    animation: btn-glow-pulse 2s infinite ease-in-out;
+}
