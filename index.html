@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+    <!-- Wistia Core Player -->
+    <script src="https://fast.wistia.com/player.js" async></script>
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -31,7 +33,7 @@
             <p class="df-hero-desc">Huit couples de fruits frais voient leur jus mis Ã  l'Ã©preuve sur une Ã®le paradisiaque. Entre trahisons sucrÃ©es et smoothies renversants, qui finira en salade de fruits ? 🍎🍌 <a href="#" style="color:var(--brand); text-decoration:none; font-weight:700;">En savoir plus</a></p>
             <div class="df-hero-actions">
                 <div class="galaxy-button">
-                    <button>
+                    <button onclick="openSkibidiPlayer()">
                         <span class="spark"></span>
                         <span class="backdrop"></span>
                         <span class="galaxy__container">
@@ -174,7 +176,135 @@
         });
     }
 
-    window.addEventListener('load', loadAdminContent);
-</script>
-</body>
-</html>
+    <!-- TikTok-Style Player Overlay -->
+    <div id="skibidi-player-overlay" class="df-player-overlay">
+        <div class="player-controls">
+            <button class="btn-player-back" onclick="closeSkibidiPlayer()"><i class="fas fa-arrow-left"></i></button>
+            <div class="episode-indicator" id="episode-indicator">Épisode 1 / 14</div>
+        </div>
+
+        <!-- Episode 1 -->
+        <div class="episode-slide" data-ep="1">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/11fw23sowu.js" async type="module"></script>
+                <wistia-player media-id="11fw23sowu" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 2 -->
+        <div class="episode-slide" data-ep="2">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/sus4nihbct.js" async type="module"></script>
+                <wistia-player media-id="sus4nihbct" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 3 -->
+        <div class="episode-slide" data-ep="3">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/k9ebfe9p7t.js" async type="module"></script>
+                <wistia-player media-id="k9ebfe9p7t" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 4 -->
+        <div class="episode-slide" data-ep="4">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/xfvs6sgxl8.js" async type="module"></script>
+                <wistia-player media-id="xfvs6sgxl8" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 6 (Skipped 5) -->
+        <div class="episode-slide" data-ep="5">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/qp3b52ule9.js" async type="module"></script>
+                <wistia-player media-id="qp3b52ule9" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 7 -->
+        <div class="episode-slide" data-ep="6">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/vyp8uc535n.js" async type="module"></script>
+                <wistia-player media-id="vyp8uc535n" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 8 -->
+        <div class="episode-slide" data-ep="7">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/d3z3tvibaq.js" async type="module"></script>
+                <wistia-player media-id="d3z3tvibaq" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 9 -->
+        <div class="episode-slide" data-ep="8">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/wdefzrrk8o.js" async type="module"></script>
+                <wistia-player media-id="wdefzrrk8o" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 10 -->
+        <div class="episode-slide" data-ep="9">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/0fzex7oke7.js" async type="module"></script>
+                <wistia-player media-id="0fzex7oke7" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 11 -->
+        <div class="episode-slide" data-ep="10">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/pgv4soog38.js" async type="module"></script>
+                <wistia-player media-id="pgv4soog38" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 12 -->
+        <div class="episode-slide" data-ep="11">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/5kuqfb5f3z.js" async type="module"></script>
+                <wistia-player media-id="5kuqfb5f3z" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 14 (Skipped 13) -->
+        <div class="episode-slide" data-ep="12">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/8370hytydw.js" async type="module"></script>
+                <wistia-player media-id="8370hytydw" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 15 -->
+        <div class="episode-slide" data-ep="13">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/d3m3z3rqo3.js" async type="module"></script>
+                <wistia-player media-id="d3m3z3rqo3" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+        <!-- Episode 16 -->
+        <div class="episode-slide" data-ep="14">
+            <div class="wistia-video-wrapper">
+                <script src="https://fast.wistia.com/embed/vb87gw39la.js" async type="module"></script>
+                <wistia-player media-id="vb87gw39la" aspect="0.5625"></wistia-player>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // --- Skibidi Player Logic ---
+    const overlay = document.getElementById('skibidi-player-overlay');
+    const indicator = document.getElementById('episode-indicator');
+    
+    function openSkibidiPlayer() {
+        overlay.classList.add('visible');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeSkibidiPlayer() {
+        overlay.classList.remove('visible');
+        document.body.style.overflow = '';
+        // Stop all videos (optional, but good for performance)
+        const players = document.querySelectorAll('wistia-player');
+        players.forEach(p => p.pause && p.pause());
+    }
+
+    // Indicator logic
+    overlay.addEventListener('scroll', () => {
+        const index = Math.round(overlay.scrollTop / window.innerHeight);
+        indicator.innerText = `Épisode ${index + 1} / 14`;
+    });
+
+    // --- Admin & Catalog Logic ---
