@@ -774,13 +774,14 @@ button.expand.loaded .expand-icon svg.second { display: block; transform: scale(
     box-shadow: 0 20px 60px rgba(0,0,0,0.9);
 }
 .close-info {
-    position: absolute; top: 20px; right: 20px; width: 44px; height: 44px;
-    background: #181818; border-radius: 50%; color: #fff;
+    position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
+    background: rgba(30, 30, 30, 0.8); border-radius: 50%; color: #fff;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; z-index: 999; font-size: 1.4rem;
-    transition: 0.2s; border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer; z-index: 100000 !important; font-size: 1.5rem;
+    transition: 0.15s; border: 1px solid rgba(255,255,255,0.2);
+    pointer-events: all; backdrop-filter: blur(5px);
 }
-.close-info:hover { background: #333; transform: scale(1.1); }
+.close-info:hover { background: #E50914; transform: scale(1.1); border-color: #E50914; }
 .info-banner { height: 450px; position: relative; }
 .info-banner img { width: 100%; height: 100%; object-fit: cover; }
 .info-banner-overlay {

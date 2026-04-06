@@ -133,7 +133,7 @@ const GLOBAL_PLAYER_HTML = `
 <!-- Global Info Modal -->
 <div id="info-modal" class="modal-overlay" style="display:none">
     <div class="info-content-wrap">
-        <div class="close-info" id="close-info-modal"><i class="fas fa-times"></i></div>
+        <div class="close-info" id="close-info-modal" onclick="DFAuth.UI.closeInfo()"><i class="fas fa-times"></i></div>
         <div class="info-banner">
             <img id="info-img" src="" alt="">
             <div class="info-banner-overlay"></div>
@@ -345,10 +345,28 @@ if (typeof DFAuth !== 'undefined') {
         }
     };
 
-    // Attach Close Handler Robustly
+    DFAuth.UI.closeInfo = (instant = false) => {
+        const wrap = document.querySelector('.info-content-wrap');
+        const modal = document.getElementById('info-modal');
+        if (!wrap || !modal) return;
+
+        if (instant || typeof gsap === 'undefined') {
+            modal.style.display = 'none';
+        } else {
+            gsap.to(wrap, { y: 100, opacity: 0, duration: 0.2, onComplete: () => {
+                modal.style.display = 'none';
+            }});
+        }
+    };
+
+    // Attach Close Handlers (Escape & Click Overlay)
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') DFAuth.UI.closeInfo(true);
+    });
+
     document.addEventListener('click', (e) => {
-        if (e.target.closest('#close-info-modal') || e.target.classList.contains('modal-overlay')) {
-            DFAuth.UI.closeInfo();
+        if (e.target.closest('#close-info-modal') || e.target.id === 'info-modal') {
+            DFAuth.UI.closeInfo(true); // Close instantly on direct intent
         }
     });
 }
