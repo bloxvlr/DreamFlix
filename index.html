@@ -185,7 +185,7 @@
                 <div class="df-card-body">
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
                         <div class="df-card-title">Épisode ${ep.num}</div>
-                        <i class="fas fa-play" style="font-size:0.7rem;color:rgba(255,255,255,0.5)"></i>
+                        <i class="fas fa-plus add-fav-btn" style="font-size:0.7rem;cursor:pointer;color:rgba(255,255,255,0.5)" onclick="event.stopPropagation(); if(DFAuth.canInteract()) DFAuth.UI.toggleFavorite('ep${ep.num}', this)"></i>
                     </div>
                     <div class="df-card-sub">Partie ${ep.num} • 2 min</div>
                 </div>

@@ -344,16 +344,19 @@ body {
     .df-mobile-bar { display: block; }
     body { padding-bottom: 95px; }
 
-    .df-hero { height: 70vh; }
-    .df-hero-content { width: 90%; left: 5%; bottom: 10%; }
     .df-hero-title { font-size: 2.8rem; }
     .df-hero-desc { display: none; } /* Cleaner on mobile */
 
     .df-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
     .df-card { flex: 0 0 160px; }
+
+    /* Fix mobile header items */
+    .nav-right { gap: 10px; }
+    .nav-right i.fa-bell { display: none; }
 }
 
 @media (max-width: 480px) {
+    .df-logo { width: 90px; }
     .df-hero-title { font-size: 2.2rem; }
     .btn-pill { padding: 10px 22px; font-size: 0.85rem; }
     .df-catalog { padding: 15px 4% 80px; }

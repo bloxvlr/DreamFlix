@@ -59,17 +59,44 @@
 
             // 2. Fetch content for those IDs
             const ids = favs.map(f => f.content_id);
-            const { data: content, error } = await _sb.from('content').select('*').in('id', ids);
+            const { data: dbContent, error } = await _sb.from('content').select('*').in('id', ids);
 
-            if (error || !content || content.length === 0) {
+            let allContent = dbContent || [];
+
+            // 3. Handle Hardcoded Episodes (Skibidi TentaFruit)
+            const EP_META = {
+                'ep1': { title: 'Épisode 1', image_url: 'img/ep1.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=1' },
+                'ep2': { title: 'Épisode 2', image_url: 'img/ep2.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=2' },
+                'ep3': { title: 'Épisode 3', image_url: 'img/ep3.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=3' },
+                'ep4': { title: 'Épisode 4', image_url: 'img/ep4.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=4' },
+                'ep6': { title: 'Épisode 6', image_url: 'img/ep6.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=6' },
+                'ep7': { title: 'Épisode 7', image_url: 'img/ep7.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=7' },
+                'ep8': { title: 'Épisode 8', image_url: 'img/ep8.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=8' },
+                'ep9': { title: 'Épisode 9', image_url: 'img/ep9.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=9' },
+                'ep10': { title: 'Épisode 10', image_url: 'img/ep10.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=10' },
+                'ep11': { title: 'Épisode 11', image_url: 'img/ep11.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=11' },
+                'ep12': { title: 'Épisode 12', image_url: 'img/ep12.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=12' },
+                'ep14': { title: 'Épisode 14', image_url: 'img/ep14.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=14' },
+                'ep15': { title: 'Épisode 15', image_url: 'img/ep15.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=15' },
+                'ep16': { title: 'Épisode 16', image_url: 'img/ep16.png', category: 'Série Originale', year: 2026, video_url: 'watch.html?ep=16' },
+                'skibidi-tentafruit': { title: "L'Île de la Skibiditentafruit", image_url: 'img/fruit image.jpg', category: 'Série Originale', year: 2026, video_url: 'watch.html' }
+            };
+
+            ids.forEach(id => {
+                if (EP_META[id] && !allContent.find(c => c.id === id)) {
+                    allContent.push({ id, ...EP_META[id] });
+                }
+            });
+
+            if (allContent.length === 0) {
                 empty.style.display = 'block';
             } else {
                 empty.style.display = 'none';
-                content.forEach(item => {
+                allContent.forEach(item => {
                     grid.appendChild(DFAuth.UI.createCard(item, true));
                 });
                 
-                // Update favorite buttons to 'checked' state in My List
+                // Update favorite buttons to 'checked' state
                 setTimeout(() => {
                     document.querySelectorAll('.add-fav-btn').forEach(btn => {
                         btn.className = 'fas fa-check';

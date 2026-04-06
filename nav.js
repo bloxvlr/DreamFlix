@@ -147,7 +147,11 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
     if (!user) {
         // Guest Mode
         if (profileArea) {
-            profileArea.innerHTML = `<button class="btn-pill" onclick="location.href='login.html'" style="background:var(--brand);color:#fff;font-size:0.8rem;padding:8px 20px">S'identifier</button>`;
+            profileArea.innerHTML = `
+                <button class="btn-pill" onclick="location.href='login.html'" 
+                        style="background:var(--brand);color:#fff;font-size:0.75rem;padding:6px 14px;white-space:nowrap;display:flex;align-items:center;justify-content:center;">
+                    S'identifier
+                </button>`;
         }
         // Hide private sidebar items
         sideLinks.forEach(link => {

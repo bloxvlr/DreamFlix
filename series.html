@@ -53,6 +53,17 @@
         const { data, error } = await _sb.from('content').select('*').eq('category', 'Series').order('created_at', { ascending: false });
         
         allSeries = data || [];
+        
+        // Manually Inject Skibidi TentaFruit (Original)
+        allSeries.unshift({
+            id: 'skibidi-tentafruit',
+            title: "L'Île de la Skibiditentafruit",
+            image_url: 'img/fruit image.jpg',
+            category: 'Série Originale',
+            year: 2026,
+            video_url: 'watch.html'
+        });
+
         renderSeries('All');
     }
 

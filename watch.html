@@ -203,8 +203,11 @@
                         <img src="${ep.img}" alt="Episode ${ep.num}">
                         <i class="fas fa-play"></i>
                     </div>
-                    <div class="ep-info">
-                        <div class="ep-num">Épisode ${ep.num}</div>
+                    <div class="ep-info" style="flex:1">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div class="ep-num">Épisode ${ep.num}</div>
+                            <i class="fas fa-plus add-fav-btn" style="font-size:0.75rem;cursor:pointer;color:rgba(255,255,255,0.3)" onclick="event.stopPropagation(); if(DFAuth.canInteract()) DFAuth.UI.toggleFavorite('ep${ep.num}', this)"></i>
+                        </div>
                         <div class="ep-title">${ep.title}</div>
                         <div class="ep-duration">2-3 min</div>
                     </div>
