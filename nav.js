@@ -125,6 +125,13 @@ if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
 
             const { title, message, url, target_email, type } = payload.new;
 
+            // 0. Check if PUSH_TEST (Priority Diagnostic)
+            if (type === 'PUSH_TEST') {
+                DFNotif.sendLocal(title, message, url);
+                DFAlert.show(title, message, url);
+                return;
+            }
+
             // 1. Check if Targeted (Private Message)
             const isTargeted = target_email && target_email.toLowerCase() === user.email.toLowerCase();
             if (isTargeted) {

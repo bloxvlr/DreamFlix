@@ -165,7 +165,27 @@
                 <div id="bc-status" style="margin-top:15px; font-size:0.75rem; text-align:center; font-weight:700"></div>
             </div>
 
-            <!-- NEW: Direct User Alert (Real-time Popup) -->
+            <!-- NEW: Push Notification Test (Verification Tool) -->
+            <div class="admin-card">
+                <h2><i class="fas fa-microchip"></i> Push Notification Test</h2>
+                <div class="form-group">
+                    <label class="form-label">Message de Test (Direct OS UI)</label>
+                    <input type="text" id="pt-message" class="form-input" placeholder="Si vous lisez ceci, les notifications Push marchent !">
+                </div>
+                <button onclick="sendPushTest(event)" id="pt-btn" class="expand" style="width:100%; margin-top:20px">
+                    <span>Tester Notification Push</span>
+                    <span class="expand-icon">
+                        <svg class="first" xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 32 32">
+                            <path d="M8.489 31.975c-0.271 0-0.549-0.107-0.757-0.316-0.417-0.417-0.417-1.098 0-1.515l14.258-14.264-14.050-14.050c-0.417-0.417-0.417-1.098 0-1.515s1.098-0.417 1.515 0l14.807 14.807c0.417 0.417 0.417 1.098 0 1.515l-15.015 15.022c-0.208 0.208-0.486 0.316-0.757 0.316z" />
+                        </svg>
+                        <span class="loader"></span>
+                        <svg class="second" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
+                            <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 5L8 15l-5-4" />
+                        </svg>
+                    </span>
+                </button>
+                <div id="pt-status" style="margin-top:15px; font-size:0.75rem; text-align:center; font-weight:700"></div>
+            </div>
             <div class="admin-card">
                 <h2><i class="fas fa-envelope-open-text"></i> Direct User Alert</h2>
                 <div class="form-group">
@@ -413,6 +433,39 @@
             status.innerText = 'Broadcast envoyé avec succès !';
             document.getElementById('bc-title').value = '';
             document.getElementById('bc-message').value = '';
+            setTimeout(() => { 
+                btn.classList.remove('loaded');
+                btn.disabled = false;
+                status.innerText = ''; 
+            }, 3000);
+        }
+    }
+
+    async function sendPushTest(e) {
+        const btn = e.currentTarget;
+        const message = document.getElementById('pt-message').value.trim() || "Test réussi ! Les notifications OS sont actives 🍿";
+        const status = document.getElementById('pt-status');
+
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        const { error } = await _sb.from('broadcasts').insert([{ 
+            title: "DreamFlix Test", 
+            message: message, 
+            url: 'index.html',
+            type: 'PUSH_TEST' 
+        }]);
+
+        btn.classList.remove('loading');
+
+        if (error) {
+            btn.disabled = false;
+            status.style.color = '#ff4444';
+            status.innerText = 'Fail: ' + error.message;
+        } else {
+            btn.classList.add('loaded');
+            status.style.color = '#46d369';
+            status.innerText = 'Test de notification envoyé à tous !';
             setTimeout(() => { 
                 btn.classList.remove('loaded');
                 btn.disabled = false;
