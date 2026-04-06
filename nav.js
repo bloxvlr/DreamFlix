@@ -37,14 +37,93 @@ window.DFNotif = {
     }
 };
 
-// Start Realtime Listener for Platinum/Gold Alerts
+// --- Elite Real-Time Alert System (Popups) ---
+window.DFAlert = {
+    show(title, message, url = 'index.html') {
+        // Create Alert Modal
+        const modal = document.createElement('div');
+        modal.id = 'df-realtime-alert';
+        modal.style = `
+            position: fixed; inset: 0; z-index: 10000;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+            opacity: 0; transition: opacity 0.4s ease; padding: 20px;
+        `;
+
+        modal.innerHTML = `
+            <div style="
+                background: linear-gradient(145deg, #181818, #0a0a0a);
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 24px; padding: 40px; width: 100%; max-width: 450px;
+                text-align: center; box-shadow: 0 30px 100px rgba(0,0,0,1);
+                transform: scale(0.9); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                position: relative; overflow: hidden;
+            ">
+                <!-- Decorative Glow -->
+                <div style="position:absolute;top:-50px;left:-50px;width:150px;height:150px;background:var(--brand);filter:blur(100px);opacity:0.3;pointer-events:none"></div>
+                
+                <i class="fas fa-bullhorn" style="font-size:3rem;color:var(--brand);margin-bottom:20px;display:block"></i>
+                <h2 style="font-size:1.8rem;font-weight:900;margin-bottom:12px;color:#fff">${title}</h2>
+                <p style="font-size:1rem;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:30px">${message}</p>
+                
+                <div style="display:flex;flex-direction:column;gap:12px">
+                    <button id="alert-ok-btn" class="btn-pill btn-pill-white" style="width:100%;justify-content:center;font-weight:900">
+                        VOIR LES DÉTAILS
+                    </button>
+                    <button id="alert-close-btn" style="background:transparent;border:none;color:#808080;font-size:0.8rem;cursor:pointer;text-decoration:underline">
+                        Ignorer
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Trigger entrance
+        requestAnimationFrame(() => {
+            modal.style.opacity = '1';
+            modal.querySelector('div').style.transform = 'scale(1)';
+        });
+
+        // Event: OK
+        modal.querySelector('#alert-ok-btn').addEventListener('click', () => {
+            this.hide();
+            window.location.href = url;
+        });
+
+        // Event: Close
+        modal.querySelector('#alert-close-btn').addEventListener('click', () => this.hide());
+    },
+
+    hide() {
+        const modal = document.getElementById('df-realtime-alert');
+        if (!modal) return;
+        modal.style.opacity = '0';
+        modal.querySelector('div').style.transform = 'scale(0.9)';
+        setTimeout(() => modal.remove(), 400);
+    }
+};
+
+// Start Realtime Listener for Targeted Alerts & Global Broadcasts
 if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
     DFAuth._supabase
         .channel('public:broadcasts')
         .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcasts' }, payload => {
             const user = DFAuth.getUser();
-            if (user && (user.plan === 'GOLD' || user.plan === 'DIAMANT')) {
-                DFNotif.sendLocal(payload.new.title, payload.new.message, payload.new.url);
+            if (!user) return;
+
+            const { title, message, url, target_email } = payload.new;
+
+            // Logic: Global OR Targeted
+            const isGlobal = !target_email;
+            const isTargeted = target_email && target_email.toLowerCase() === user.email.toLowerCase();
+
+            if (isGlobal || isTargeted) {
+                // 1. Browser Notification (for background/other tabs)
+                DFNotif.sendLocal(title, message, url);
+                
+                // 2. Real-Time UI Modal (The 'Netflix-Grade' Surprise)
+                DFAlert.show(title, message, url);
             }
         })
         .subscribe();
