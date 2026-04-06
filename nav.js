@@ -158,9 +158,10 @@ const MOBILE_BAR_HTML = `
         <div class="liquidGlass-shine"></div>
         <div class="liquidGlass-icons">
             <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Accueil</span></a>
-            <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Séries</span></a>
-            <a href="teleparty.html" class="mobile-tab" id="mobile-tp-tab" style="display:none"><i class="fas fa-gem" style="color:#00ffff"></i><span>Party</span></a>
-            <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Ma Liste</span></a>
+            <a href="teleparty.html" class="mobile-tab"><i class="fas fa-desktop" style="color:#00ffff"></i><span>Party</span></a>
+            <a href="leaderboard.html" class="mobile-tab"><i class="fas fa-trophy"></i><span>Classement</span></a>
+            <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Liste</span></a>
+            <a href="subscriptions.html" class="mobile-tab"><i class="fas fa-gem" style="color:#ff3c00"></i><span>Offres</span></a>
             <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profil</span></a>
         </div>
     </div>
@@ -278,16 +279,9 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
         if (sideGrp) sideGrp.style.display = 'block';
     }
 
-    // --- DIAMANT PRO Mobile Teleparty ---
-    (async () => {
-        const { data: profile } = await DFAuth._supabase.from('profiles').select('subscription_type').eq('id', user.sub).single();
-        if (profile && profile.subscription_type === 'DIAMANT') {
-            const tpTab = document.getElementById('mobile-tp-tab');
-            if (tpTab) tpTab.style.display = 'flex';
-        }
-    })();
-
-    })();
+    // Mobile bar always shows options (inciting conversion)
+    
+})();
 
 // --- Search Functionality ---
 document.addEventListener('input', (e) => {
