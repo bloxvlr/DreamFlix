@@ -453,22 +453,20 @@ const AUDIO_ASSETS = {
     shine: new Audio('sound/shine.mp3')
 };
 AUDIO_ASSETS.hover.preload = 'auto';
-AUDIO_ASSETS.hover.volume = 0.08;
+AUDIO_ASSETS.hover.volume = 0.04; // Even more subtle
 AUDIO_ASSETS.shine.preload = 'auto';
-AUDIO_ASSETS.shine.volume = 0.35;
+AUDIO_ASSETS.shine.volume = 0.15; // Reduced volume for clarity
 
 let isAudioUnlocked = false;
 
 const primeAudio = () => {
     if (isAudioUnlocked) return;
-    // Play silent version to unlock
     Object.values(AUDIO_ASSETS).forEach(aud => {
         const p = aud.cloneNode(true);
         p.volume = 0;
         p.play().catch(() => {});
     });
     isAudioUnlocked = true;
-    console.log('[Audio] Elite System Primed');
     ['mousedown', 'keydown', 'touchstart'].forEach(ev => window.removeEventListener(ev, primeAudio));
 };
 ['mousedown', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, primeAudio));
@@ -482,7 +480,8 @@ window.playEliteSound = (type) => {
 
 // Event Listeners
 document.addEventListener('click', (e) => {
-    if (e.target.closest('a[href="subscriptions.html"], .mobile-tab-subs')) {
+    const isSub = e.target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
+    if (isSub) {
         window.playEliteSound('shine');
     }
 });
@@ -490,6 +489,10 @@ document.addEventListener('click', (e) => {
 document.addEventListener('mouseenter', (e) => {
     const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
     if (target) {
-        window.playEliteSound('hover');
+        // EXCLUSION: Don't play hover sound on Subscription/Offres 
+        const isSub = target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
+        if (!isSub) {
+            window.playEliteSound('hover');
+        }
     }
 }, true);
