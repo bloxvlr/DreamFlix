@@ -52,3 +52,20 @@ self.addEventListener('notificationclick', function(event) {
         })
     );
 });
+
+// Support for client-triggered alerts (via nav.js)
+self.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'SHOW_NOTIFICATION') {
+        const { title, body, url } = event.data;
+        const options = {
+            body: body,
+            icon: 'img/logo_dreamflix.png',
+            badge: 'img/logo_dreamflix.png',
+            vibrate: [200, 100, 200],
+            data: { url: url },
+            tag: 'dreamflix-admin-msg',
+            renotify: true
+        };
+        event.waitUntil(self.registration.showNotification(title, options));
+    }
+});

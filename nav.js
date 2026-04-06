@@ -27,12 +27,23 @@ window.DFNotif = {
 
     sendLocal(title, message, url = 'index.html') {
         if (Notification.permission === 'granted') {
-            const n = new Notification(title, {
-                body: message,
-                icon: 'img/logo_dreamflix.png',
-                badge: 'img/logo_dreamflix.png'
-            });
-            n.onclick = () => { window.focus(); window.location.href = url; n.close(); };
+            // Priority 1: Service Worker (Background & Persistence)
+            if (navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({
+                    type: 'SHOW_NOTIFICATION',
+                    title: title,
+                    body: message,
+                    url: url
+                });
+            } else {
+                // Fallback: Legacy Notification
+                const n = new Notification(title, {
+                    body: message,
+                    icon: 'img/logo_dreamflix.png',
+                    badge: 'img/logo_dreamflix.png'
+                });
+                n.onclick = () => { window.focus(); window.location.href = url; n.close(); };
+            }
         }
     }
 };
@@ -108,17 +119,38 @@ window.DFAlert = {
 if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
     DFAuth._supabase
         .channel('public:broadcasts')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcasts' }, payload => {
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcasts' }, async payload => {
             const user = DFAuth.getUser();
             if (!user) return;
 
-            const { title, message, url, target_email } = payload.new;
+            const { title, message, url, target_email, type } = payload.new;
 
-            // Logic: Global OR Targeted
-            const isGlobal = !target_email;
+            // 1. Check if Targeted (Private Message)
             const isTargeted = target_email && target_email.toLowerCase() === user.email.toLowerCase();
+            if (isTargeted) {
+                DFNotif.sendLocal(title, message, url);
+                DFAlert.show(title, message, url);
+                return;
+            }
 
-            if (isGlobal || isTargeted) {
+            // 2. Check if Global (Broadcast)
+            const isGlobal = !target_email;
+            if (isGlobal) {
+                // Specifique: New Content Check
+                if (type === 'NEW_CONTENT') {
+                    // Check user preference (default true if not set)
+                    const { data: profile } = await DFAuth._supabase
+                        .from('profiles')
+                        .select('notifications_episodes')
+                        .eq('id', user.sub)
+                        .single();
+                    
+                    if (profile && profile.notifications_episodes === false) {
+                        console.log("[Notification] Ignored: New Content (User opted out)");
+                        return;
+                    }
+                }
+
                 // 1. Browser Notification (for background/other tabs)
                 DFNotif.sendLocal(title, message, url);
                 

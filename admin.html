@@ -233,6 +233,17 @@
                     </div>
                     <div class="upload-status" id="upload-status"></div>
 
+                    <!-- Notification Toggle -->
+                    <div style="margin: 20px 0 10px; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 12px 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05)">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: rgba(255,255,255,0.8)">
+                            <i class="fas fa-bell" style="color:var(--brand); margin-right:8px"></i> Notifier les membres GOLD
+                        </div>
+                        <label class="sw-label">
+                            <input type="checkbox" id="notify-gold">
+                            <div class="custom-switch"></div>
+                        </label>
+                    </div>
+
                     <!-- Premium Expandable Button -->
                     <button type="submit" id="submit-btn" class="expand" style="width:100%;margin-top:20px">
                         <span id="btn-text">Post Video</span>
@@ -568,6 +579,17 @@
             }
 
             if (error) throw error;
+
+            // NEW: Send Real-Time Notification if requested
+            const notifyGold = document.getElementById('notify-gold').checked;
+            if (notifyGold && !editId) {
+                await _sb.from('broadcasts').insert([{
+                    title: "NouveautÃ© !",
+                    message: `Vient de sortir : ${contentData.title} (${contentData.year})`,
+                    url: 'index.html',
+                    type: 'NEW_CONTENT'
+                }]);
+            }
 
             fill.style.width = '100%';
             status.innerText = editId ? 'Updated successfully!' : 'Posted successfully!';
