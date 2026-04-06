@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix — Settings</title>
+    <title>DreamFlix — Paramètres</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -16,44 +16,44 @@
 
 <div class="df-page df-page-with-sidebar">
     <div class="page-shell">
-        <h1>Settings</h1>
-        <p class="page-subtitle">Manage your DreamFlix account</p>
+        <h1>Paramètres</h1>
+        <p class="page-subtitle">Gérez votre compte DreamFlix</p>
 
         <div style="max-width:640px">
 
-            <!-- Profile -->
+            <!-- Profil -->
             <div class="settings-section">
-                <h3>Profile</h3>
+                <h3>Profil</h3>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">Display Name</div>
-                        <div class="settings-sub" id="display-name-val">User</div>
+                        <div class="settings-label">Nom d'affichage</div>
+                        <div class="settings-sub" id="display-name-val">Utilisateur</div>
                     </div>
-                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Edit</button>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Modifier</button>
                 </div>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">Email</div>
-                        <div class="settings-sub" id="email-val">user@dreamflix.ai</div>
+                        <div class="settings-label">E-mail</div>
+                        <div class="settings-sub" id="email-val">utilisateur@dreamflix.ai</div>
                     </div>
-                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Edit</button>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Modifier</button>
                 </div>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">Plan</div>
+                        <div class="settings-label">Formule</div>
                         <div class="settings-sub">DreamFlix Premium</div>
                     </div>
-                    <span style="color:#46d369;font-size:0.8rem;font-weight:700">Active</span>
+                    <span style="color:#46d369;font-size:0.8rem;font-weight:700">Actif</span>
                 </div>
             </div>
 
-            <!-- Playback -->
+            <!-- Lecture -->
             <div class="settings-section">
-                <h3>Playback</h3>
+                <h3>Lecture</h3>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">Auto-Play Next Episode</div>
-                        <div class="settings-sub">Automatically plays the next episode</div>
+                        <div class="settings-label">Lecture automatique</div>
+                        <div class="settings-sub">Lance automatiquement l'épisode suivant</div>
                     </div>
                     <label class="sw-label">
                         <input type="checkbox" checked onchange="this.nextElementSibling.classList.toggle('active')">
@@ -62,8 +62,8 @@
                 </div>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">Subtitles</div>
-                        <div class="settings-sub">Show subtitles by default</div>
+                        <div class="settings-label">Sous-titres</div>
+                        <div class="settings-sub">Afficher les sous-titres par défaut</div>
                     </div>
                     <label class="sw-label">
                         <input type="checkbox" onchange="this.nextElementSibling.classList.toggle('active')">
@@ -72,8 +72,8 @@
                 </div>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">High Quality Streaming</div>
-                        <div class="settings-sub">4K UHD when available</div>
+                        <div class="settings-label">Streaming Haute Qualité</div>
+                        <div class="settings-sub">4K UHD si disponible</div>
                     </div>
                     <label class="sw-label">
                         <input type="checkbox" checked onchange="this.nextElementSibling.classList.toggle('active')">
@@ -87,8 +87,8 @@
                 <h3>Notifications</h3>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">New Episodes</div>
-                        <div class="settings-sub">Notify when a new episode drops</div>
+                        <div class="settings-label">Nouveaux épisodes</div>
+                        <div class="settings-sub">Notifier lors de la sortie d'un nouvel épisode</div>
                     </div>
                     <label class="cb-label">
                         <input type="checkbox" checked onchange="this.nextElementSibling.parentElement.classList.toggle('active')">
@@ -97,8 +97,8 @@
                 </div>
                 <div class="settings-row">
                     <div>
-                        <div class="settings-label">Friends Activity</div>
-                        <div class="settings-sub">When friends start watching</div>
+                        <div class="settings-label">Activité des amis</div>
+                        <div class="settings-sub">Quand des amis commencent à regarder</div>
                     </div>
                     <label class="cb-label">
                         <input type="checkbox" onchange="this.nextElementSibling.parentElement.classList.toggle('active')">
@@ -117,18 +117,18 @@
                     </div>
                     <div style="display:flex;gap:10px">
                         <input type="password" id="admin-code-input" class="form-input" style="width:120px;padding:8px 12px;font-size:0.8rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;outline:none" placeholder="******">
-                        <button class="btn-pill btn-pill-white" style="padding:8px 15px;font-size:0.8rem" onclick="handleAdminUnlock()">Unlock</button>
+                        <button class="btn-pill btn-pill-white" style="padding:8px 15px;font-size:0.8rem" onclick="handleAdminUnlock()">Débloquer</button>
                     </div>
                 </div>
                 <div id="admin-status-msg" style="margin-top:10px;font-size:0.75rem;display:none"></div>
             </div>
 
-            <!-- Account -->
+            <!-- Compte -->
             <div class="settings-section">
-                <h3>Account</h3>
+                <h3>Compte</h3>
                 <div class="settings-row">
-                    <div class="settings-label">Log Out</div>
-                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem;color:#E50914;border:1px solid #E50914" id="settings-logout-btn">Log Out</button>
+                    <div class="settings-label">Se déconnecter</div>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem;color:#E50914;border:1px solid #E50914" id="settings-logout-btn">Déconnexion</button>
                 </div>
             </div>
 

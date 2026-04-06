@@ -6,15 +6,15 @@ const NAV_HTML = `
     <div style="display:flex;align-items:center;gap:28px;flex:1">
         <a href="index.html" class="df-logo"><img src="img/logo_dreamflix.png" alt="DreamFlix"></a>
         <ul class="nav-links-top">
-            <li onclick="location.href='index.html'">Home</li>
-            <li onclick="location.href='series.html'">Series</li>
-            <li onclick="location.href='movies.html'">Movies</li>
-            <li onclick="location.href='mylist.html'">My List</li>
+            <li onclick="location.href='index.html'">Accueil</li>
+            <li onclick="location.href='series.html'">Séries</li>
+            <li onclick="location.href='movies.html'">Films</li>
+            <li onclick="location.href='mylist.html'">Ma Liste</li>
         </ul>
     </div>
     <div class="nav-center">
         <i class="fas fa-search nav-search-icon"></i>
-        <input type="text" class="nav-search" placeholder="Search series, movies...">
+        <input type="text" class="nav-search" placeholder="Rechercher des séries, films...">
     </div>
     <div class="nav-right" style="display:flex;align-items:center;gap:18px">
         <i class="fas fa-bell" style="cursor:pointer"></i>
@@ -39,14 +39,14 @@ const NAV_HTML = `
                 <div id="nav-admin-divider" style="display:none;border-top:1px solid rgba(255,255,255,0.08);margin:4px 0"></div>
 
                 <a href="settings.html" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;transition:0.15s" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='rgba(255,255,255,0.75)'">
-                    <i class="fas fa-cog" style="width:16px;text-align:center"></i> Settings
+                    <i class="fas fa-cog" style="width:16px;text-align:center"></i> Paramètres
                 </a>
                 <a href="mylist.html" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;transition:0.15s" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='rgba(255,255,255,0.75)'">
-                    <i class="fas fa-bookmark" style="width:16px;text-align:center"></i> My List
+                    <i class="fas fa-bookmark" style="width:16px;text-align:center"></i> Ma Liste
                 </a>
                 <div style="border-top:1px solid rgba(255,255,255,0.08);margin:4px 0"></div>
                 <div id="nav-logout-btn" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:#E50914;font-size:0.85rem;cursor:pointer;transition:0.15s" onmouseenter="this.style.opacity='0.7'" onmouseleave="this.style.opacity='1'">
-                    <i class="fas fa-sign-out-alt" style="width:16px;text-align:center"></i> Log Out
+                    <i class="fas fa-sign-out-alt" style="width:16px;text-align:center"></i> Déconnexion
                 </div>
             </div>
         </div>
@@ -57,25 +57,25 @@ const SIDEBAR_HTML = `
 <aside class="df-sidebar">
     <div class="sidebar-group" id="sidebar-admin-group" style="display:none">
         <p class="sidebar-label">Administration</p>
-        <a href="admin.html" class="sidebar-link" style="font-weight:700"><i class="fas fa-user-shield"></i> Admin Panel</a>
+        <a href="admin.html" class="sidebar-link" style="font-weight:700"><i class="fas fa-user-shield"></i> Panel Admin</a>
     </div>
     <div class="sidebar-group">
         <p class="sidebar-label">Menu</p>
-        <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
-        <a href="series.html" class="sidebar-link"><i class="fas fa-tv"></i> Series</a>
-        <a href="movies.html" class="sidebar-link"><i class="fas fa-film"></i> Movies</a>
-        <a href="popular.html" class="sidebar-link"><i class="fas fa-fire"></i> Popular</a>
-        <a href="mylist.html" class="sidebar-link"><i class="fas fa-bookmark"></i> My List</a>
+        <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Accueil</a>
+        <a href="series.html" class="sidebar-link"><i class="fas fa-tv"></i> Séries</a>
+        <a href="movies.html" class="sidebar-link"><i class="fas fa-film"></i> Films</a>
+        <a href="popular.html" class="sidebar-link"><i class="fas fa-fire"></i> Populaire</a>
+        <a href="mylist.html" class="sidebar-link"><i class="fas fa-bookmark"></i> Ma Liste</a>
     </div>
     <div class="sidebar-group">
-        <p class="sidebar-label">Show</p>
-        <a href="friends.html" class="sidebar-link"><i class="fas fa-users"></i> Friends</a>
+        <p class="sidebar-label">Réseau</p>
+        <a href="friends.html" class="sidebar-link"><i class="fas fa-users"></i> Amis</a>
         <a href="teleparty.html" class="sidebar-link"><i class="fas fa-desktop"></i> Teleparty</a>
     </div>
     <div class="sidebar-group">
-        <p class="sidebar-label">General</p>
-        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a>
-        <a href="#" class="sidebar-link" id="sidebar-logout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <p class="sidebar-label">Général</p>
+        <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Paramètres</a>
+        <a href="#" class="sidebar-link" id="sidebar-logout"><i class="fas fa-sign-out-alt"></i> Déconnexion</a>
     </div>
 </aside>`;
 
@@ -105,11 +105,11 @@ const MOBILE_BAR_HTML = `
         <div class="liquidGlass-tint"></div>
         <div class="liquidGlass-shine"></div>
         <div class="liquidGlass-icons">
-            <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Series</span></a>
-            <a href="movies.html" class="mobile-tab"><i class="fas fa-film"></i><span>Movies</span></a>
-            <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>My List</span></a>
-            <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profile</span></a>
+            <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Accueil</span></a>
+            <a href="series.html" class="mobile-tab"><i class="fas fa-tv"></i><span>Séries</span></a>
+            <a href="movies.html" class="mobile-tab"><i class="fas fa-film"></i><span>Films</span></a>
+            <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Ma Liste</span></a>
+            <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profil</span></a>
         </div>
     </div>
 </div>`;
@@ -184,7 +184,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('click', (e) => {
     if (e.target.closest('#nav-logout-btn') || e.target.closest('#sidebar-logout')) {
         e.preventDefault();
-        if (confirm('Se dÃ©connecter de DreamFlix ?')) {
+        if (confirm('Se déconnecter de DreamFlix ?')) {
             DFAuth.logOut();
         }
     }

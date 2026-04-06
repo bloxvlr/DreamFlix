@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix â€” Sign In</title>
+    <title>DreamFlix — Connexion</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <!-- Google Identity Services -->
@@ -230,10 +230,10 @@
             </div>
 
             <h1 class="login-title">Bienvenue</h1>
-            <p class="login-sub">Connectez-vous pour accÃ©der Ã  DreamFlix et profiter de toutes nos sÃ©ries et films IA.</p>
+            <p class="login-sub">Connectez-vous pour accéder à DreamFlix et profiter de toutes nos séries et films IA.</p>
 
             <div class="error-msg" id="error-msg">
-                <i class="fas fa-exclamation-circle"></i> Connexion Ã©chouÃ©e. Veuillez rÃ©essayer.
+                <i class="fas fa-exclamation-circle"></i> Connexion échouée. Veuillez réessayer.
             </div>
             <div class="loading" id="loading">
                 <div class="spinner"></div> Connexion en cours...
@@ -252,7 +252,7 @@
             <p class="login-terms">
                 En continuant, vous acceptez les
                 <a href="#">Conditions d'utilisation</a> et la
-                <a href="#">Politique de confidentialitÃ©</a> de DreamFlix.
+                <a href="#">Politique de confidentialité</a> de DreamFlix.
             </p>
         </div>
     </div>
@@ -315,7 +315,7 @@
             const CONTENT = [
                 { title: "DreamFlix IA", text: "L'avenir du cinéma est ici. Découvrez des contenus 100% générés par IA.", tag: "ORIGINAL" },
                 { title: "Séries IA", text: "Des récits profonds et des visuels époustouflants conçus par des algorithmes.", tag: "TECHNOLOGIE" },
-                { title: "Mondes Infinis", text: "Explorez des galaxies et des dimensions créées pour votre imagination.", tag: "CREATIVITE" },
+                { title: "Mondes Infinis", text: "Explorez des galaxies et des dimensions créées pour votre imagination.", tag: "CRÉATIVITÉ" },
                 { title: "Vitesse Pure", text: "Une interface instantanée, sans chargement. Le futur est immédiat.", tag: "PERFORMANCE" },
                 { title: "Teleparty", text: "Regardez vos séries avec vos amis, où qu'ils soient dans le monde.", tag: "SOCIAL" }
             ];
@@ -332,7 +332,7 @@
                 if (isText) {
                     const txt = document.createElement('div');
                     txt.className = 'big-text';
-                    txt.innerText = ["FUTURE", "BRUTAL", "IMPACT", "VISION"][i%4];
+                    txt.innerText = ["FUTUR", "BRUTAL", "IMPACT", "VISION"][i%4];
                     el.appendChild(txt);
                 } else {
                     const data = CONTENT[Math.floor(i/2) % CONTENT.length];

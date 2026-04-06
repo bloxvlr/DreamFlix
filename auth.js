@@ -140,9 +140,10 @@ function redirectIfLoggedIn(destination = 'index.html') {
 function initGoogleAuth({ onSuccess, onError } = {}) {
     google.accounts.id.initialize({
         client_id: '452977917704-rodjcu8c5kh9f37rt2oam93necl14emo.apps.googleusercontent.com',
+        locale: 'fr',
         callback: async (response) => {
             const payload = parseJwt(response.credential);
-            if (!payload) { onError?.('Invalid token'); return; }
+            if (!payload) { onError?.('Token invalide'); return; }
             const user = await saveSession(payload);
             onSuccess?.(user);
         },
@@ -155,7 +156,7 @@ function renderGoogleButton(containerId, theme = 'outline') {
     if (!el) return;
     google.accounts.id.renderButton(el, {
         type: 'standard', size: 'large', theme: theme,
-        text: 'continue_with', shape: 'pill', width: 300
+        text: 'signin_with', shape: 'pill', width: 300
     });
 }
 
