@@ -448,14 +448,16 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
     }
 });
 // --- Elite Audio Engine (Zero Latency) ---
+const isHoverCapable = window.matchMedia('(hover: hover)').matches;
+
 const AUDIO_ASSETS = {
     hover: new Audio('sound/hover.mp3'),
     shine: new Audio('sound/shine.mp3')
 };
 AUDIO_ASSETS.hover.preload = 'auto';
-AUDIO_ASSETS.hover.volume = 0.04; // Even more subtle
+AUDIO_ASSETS.hover.volume = 0.02; // Ultra subtle
 AUDIO_ASSETS.shine.preload = 'auto';
-AUDIO_ASSETS.shine.volume = 0.15; // Reduced volume for clarity
+AUDIO_ASSETS.shine.volume = 0.1; // Professional level
 
 let isAudioUnlocked = false;
 
@@ -469,30 +471,31 @@ const primeAudio = () => {
     isAudioUnlocked = true;
     ['mousedown', 'keydown', 'touchstart'].forEach(ev => window.removeEventListener(ev, primeAudio));
 };
-['mousedown', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, primeAudio));
+['mousedown', 'keydown', 'touchstart', 'click'].forEach(ev => window.addEventListener(ev, primeAudio));
 
 window.playEliteSound = (type) => {
-    if (!isAudioUnlocked || !AUDIO_ASSETS[type]) return;
+    if (!AUDIO_ASSETS[type]) return;
     const sound = AUDIO_ASSETS[type].cloneNode(true);
     sound.volume = AUDIO_ASSETS[type].volume;
-    sound.play().catch(() => {});
+    sound.play().catch(() => {
+        if (!isAudioUnlocked) primeAudio();
+    });
 };
 
-// Event Listeners
+// --- Responsive Listeners ---
+// Click (All Devices)
 document.addEventListener('click', (e) => {
     const isSub = e.target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
-    if (isSub) {
-        window.playEliteSound('shine');
-    }
+    if (isSub) window.playEliteSound('shine');
 });
 
-document.addEventListener('mouseenter', (e) => {
-    const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
-    if (target) {
-        // EXCLUSION: Don't play hover sound on Subscription/Offres 
-        const isSub = target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
-        if (!isSub) {
-            window.playEliteSound('hover');
+// Hover (Desktop Only)
+if (isHoverCapable) {
+    document.addEventListener('mouseenter', (e) => {
+        const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
+        if (target) {
+            const isSub = target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
+            if (!isSub) window.playEliteSound('hover');
         }
-    }
-}, true);
+    }, true);
+}
