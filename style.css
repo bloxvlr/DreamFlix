@@ -621,7 +621,7 @@ button.expand.loaded .expand-icon svg.second { display: block; transform: scale(
     animation: pulse-btn 2s infinite;
 }
 
-/* Subscription Cards */
+/* Subscription Cards - Enhanced */
 .pricing-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -630,57 +630,88 @@ button.expand.loaded .expand-icon svg.second { display: block; transform: scale(
     max-width: 900px;
 }
 .pricing-card {
-    background: rgba(14,14,14,0.9);
+    background: rgba(14,14,14,0.85);
     border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 24px;
-    padding: 50px 40px;
+    border-radius: 28px;
+    padding: 60px 45px;
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
     overflow: hidden;
     backdrop-filter: blur(40px);
 }
 .pricing-card:hover {
-    transform: translateY(-10px);
-    border-color: rgba(229,9,20,0.3);
+    transform: translateY(-12px);
 }
+
+.pricing-card.gold {
+    border: 1px solid rgba(255, 60, 0, 0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+}
+.pricing-card.gold:hover {
+    border-color: rgba(255, 60, 0, 0.6);
+    box-shadow: 0 30px 80px rgba(255, 60, 0, 0.15);
+}
+
 .pricing-card.diamant {
-    border-color: rgba(64, 224, 208, 0.2);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid rgba(0, 255, 255, 0.15);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
 }
-.pricing-card.diamant::after {
+.pricing-card.diamant:hover {
+    border-color: rgba(0, 255, 255, 0.6);
+    box-shadow: 0 30px 80px rgba(0, 255, 255, 0.15);
+}
+
+/* Shiny Sweep Animation for Buttons */
+@keyframes shiny-sweep {
+    0% { transform: translateX(-200%) skew(-30deg); }
+    15% { transform: translateX(200%) skew(-30deg); }
+    100% { transform: translateX(200%) skew(-30deg); }
+}
+.btn-shiny {
+    position: relative;
+    overflow: hidden;
+}
+.btn-shiny::after {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at top right, rgba(229,9,20,0.05), transparent 60%);
-    pointer-events: none;
+    top: -50%; left: -50%; width: 60px; height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: shiny-sweep 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
 }
+
 .price-value {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 900;
-    margin: 20px 0;
+    margin: 25px 0;
+    letter-spacing: -2px;
 }
 .price-value span {
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: var(--muted);
-    font-weight: 400;
+    font-weight: 500;
+    letter-spacing: 0;
 }
 .benefit-list {
     list-style: none;
     text-align: left;
-    margin: 30px 0;
-    font-size: 0.9rem;
+    margin: 40px 0;
+    font-size: 0.95rem;
 }
 .benefit-list li {
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid rgba(255,255,255,0.05);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
+    color: rgba(255,255,255,0.7);
 }
+.benefit-list li strong { color: #fff; }
 .benefit-list i {
     color: var(--brand);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    width: 20px;
+    text-align: center;
 }
 
 /* Leaderboard Page */
