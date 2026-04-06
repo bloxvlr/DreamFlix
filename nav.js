@@ -122,10 +122,10 @@ const GLOBAL_PLAYER_HTML = `
     <h2 id="player-title" style="margin-top:25px;font-size:1.8rem;font-weight:900;text-align:center;letter-spacing:-1px"></h2>
 </div>`;
 
-// --- Guard: require auth before injecting nav ---
-if (typeof DFAuth !== 'undefined') {
-    DFAuth.requireAuth();
-}
+// --- Guard: require auth ONLY on specific pages (handled in those files) ---
+// if (typeof DFAuth !== 'undefined') {
+//     DFAuth.requireAuth();
+// }
 
 // Inject HTML
 document.body.insertAdjacentHTML('afterbegin', GLASS_SVG);
@@ -138,8 +138,32 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
 (function populateUser() {
     if (typeof DFAuth === 'undefined') return;
     const user = DFAuth.getUser();
-    if (!user) return;
 
+    const profileArea = document.getElementById('nav-profile-area');
+    const sideLinks = document.querySelectorAll('.sidebar-link');
+    const myListLink = document.querySelector('a[href="mylist.html"]');
+    const settingsLink = document.querySelector('a[href="settings.html"]');
+
+    if (!user) {
+        // Guest Mode
+        if (profileArea) {
+            profileArea.innerHTML = `<button class="btn-pill" onclick="location.href='login.html'" style="background:var(--brand);color:#fff;font-size:0.8rem;padding:8px 20px">S'identifier</button>`;
+        }
+        // Hide private sidebar items
+        sideLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            if (href === 'mylist.html' || href === 'friends.html' || href === 'teleparty.html' || href === 'settings.html' || link.id === 'sidebar-logout') {
+                link.parentElement.style.display = 'none';
+            }
+        });
+        // Hide private nav items
+        document.querySelectorAll('.nav-links-top li').forEach(li => {
+            if (li.innerText === 'Ma Liste') li.style.display = 'none';
+        });
+        return;
+    }
+
+    // Logged In Mode
     const avatar = document.getElementById('nav-avatar');
     const username = document.getElementById('nav-username');
     const emailEl = document.getElementById('nav-dropdown-email');

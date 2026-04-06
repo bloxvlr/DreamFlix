@@ -161,7 +161,14 @@
 
     </div>
 
+    <script src="auth.js"></script>
     <script>
+        // Force authentication for the player page
+        if (!DFAuth.requireAuth()) {
+            // Stop execution if not logged in
+            throw new Error("Authentication required"); 
+        }
+
         // Data for available episodes
         const EPISODES = [
             { num: 1,  id: '11fw23sowu', title: 'Le début de la tentation', img: 'img/ep1.png' },

@@ -130,7 +130,18 @@ function logOut() {
 function requireAuth() {
     if (!getUser()) {
         window.location.href = 'login.html';
-    } else { startHeartbeat(); }
+        return false;
+    }
+    startHeartbeat();
+    return true;
+}
+
+function canInteract() {
+    if (!getUser()) {
+        window.location.href = 'login.html';
+        return false;
+    }
+    return true;
 }
 
 async function deleteAccount() {
@@ -218,19 +229,22 @@ const UI = {
             <div class="${isGrid ? 'df-grid-card-body' : 'df-card-body'}">
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
                     <div class="${isGrid ? 'df-grid-card-title' : 'df-card-title'}">${item.title}</div>
-                    <i class="fas fa-plus add-fav-btn" style="font-size:0.8rem;cursor:pointer;color:var(--muted)" onclick="event.stopPropagation(); DFAuth.UI.toggleFavorite('${item.id}', this)"></i>
+                    <i class="fas fa-plus add-fav-btn" style="font-size:0.8rem;cursor:pointer;color:var(--muted)" onclick="event.stopPropagation(); if(DFAuth.canInteract()) DFAuth.UI.toggleFavorite('${item.id}', this)"></i>
                 </div>
                 <div class="${isGrid ? 'df-grid-card-meta' : 'df-card-sub'}">${item.category} • ${item.year}</div>
             </div>
         `;
 
         if (item.video_url) {
-            card.addEventListener('click', () => this.openPlayer(item.video_url, item.title));
+            card.addEventListener('click', () => {
+                if (DFAuth.canInteract()) this.openPlayer(item.video_url, item.title);
+            });
         }
         return card;
     },
 
     async toggleFavorite(contentId, btnEl) {
+        if (!canInteract()) return;
         const user = getUser();
         if (!user || !_supabase) return;
 
@@ -251,4 +265,4 @@ const UI = {
     }
 };
 
-window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, deleteAccount, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };
+window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, canInteract, deleteAccount, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase, UI };

@@ -161,6 +161,11 @@
 <script src="script.js"></script>
 
 <script>
+    // Force authentication for the settings page
+    if (!DFAuth.requireAuth()) {
+        throw new Error("Authentication required"); 
+    }
+
     // Load User Data
     window.addEventListener('load', () => {
         const user = DFAuth.getUser();

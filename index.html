@@ -48,7 +48,7 @@
                                 <span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span>
                             </span>
                         </span>
-                        <span class="text"><i class="fas fa-play"></i> <a href="watch.html" target="_blank" style="color:inherit; text-decoration:none;">REGARDER</a></span>
+                        <span class="text" onclick="if(DFAuth.canInteract()) window.location.href='watch.html'"><i class="fas fa-play"></i> REGARDER</span>
                     </button>
                 </div>
                 <button class="btn-pill btn-pill-ghost"><i class="fas fa-info-circle"></i> Info</button>
@@ -156,7 +156,7 @@
 
         // 1. Manually add Skibidi TentaFruit to "Tendances"
         trendingSlider.innerHTML = `
-            <div class="df-card" onclick="window.open('watch.html', '_blank')">
+            <div class="df-card" onclick="if(DFAuth.canInteract()) window.location.href='watch.html'">
                 <img src="img/fruit image.jpg" alt="L'Île de la Skibiditentafruit">
                 <div class="df-card-body">
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
@@ -180,7 +180,7 @@
         ];
 
         const recommendedHTML = EP_DATA.map(ep => `
-            <div class="df-card" onclick="window.open('watch.html?ep=${ep.num}', '_blank')">
+            <div class="df-card" onclick="if(DFAuth.canInteract()) window.location.href='watch.html?ep=${ep.num}'">
                 <img src="${ep.img}" alt="Épisode ${ep.num}" style="filter: brightness(0.8)">
                 <div class="df-card-body">
                     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
