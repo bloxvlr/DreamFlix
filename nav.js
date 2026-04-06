@@ -1,5 +1,12 @@
-// DreamFlix â€” shared nav + mobile bar injected into every page
 // Requires: auth.js to be loaded BEFORE this file
+
+(function injectGSAP() {
+    if (typeof gsap === 'undefined') {
+        const s = document.createElement('script');
+        s.src = "https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js";
+        document.head.appendChild(s);
+    }
+})();
 
 const NAV_HTML = `
 <nav class="df-nav" id="df-nav">
@@ -294,7 +301,7 @@ if (typeof DFAuth !== 'undefined') {
         if (id === 'skibidi' || id === 'fruit-island') {
             data = {
                 title: "L'ÎLE DE LA SKIBIDITENTAFRUIT",
-                image_url: "img/header image.jpg",
+                image_url: "img/header image.png",
                 description: "The Fruit Wars of 2026 have begun. Dans cette production originale explosive, huit couples de fruits frais sont abandonnés sur une île tropicale où les intrigues politiques de jus et les smoothies à enjeux élevés déterminent leur destin. Entre des baisers d'agrumes interdits et la légende des ananas d'or des Caraïbes, qui survivra au mixeur final ? Une épopée juteuse de trahison, de passion et de vitamines.",
                 year: "2026",
                 rating: "Absurde",
@@ -325,9 +332,17 @@ if (typeof DFAuth !== 'undefined') {
     };
 
     DFAuth.UI.closeInfo = () => {
-        gsap.to('.info-content-wrap', { y: 100, opacity: 0, duration: 0.3, onComplete: () => {
-            document.getElementById('info-modal').style.display = 'none';
-        }});
+        const wrap = document.querySelector('.info-content-wrap');
+        const modal = document.getElementById('info-modal');
+        if (!wrap || !modal) return;
+
+        if (typeof gsap !== 'undefined') {
+            gsap.to(wrap, { y: 100, opacity: 0, duration: 0.3, onComplete: () => {
+                modal.style.display = 'none';
+            }});
+        } else {
+            modal.style.display = 'none';
+        }
     };
 
     // Attach Close Handler Robustly

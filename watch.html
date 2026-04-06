@@ -188,6 +188,34 @@
             { num: 16, id: 'vb87gw39la', title: 'Finale en salade', img: 'img/ep16.png' }
         ];
 
+        const listContainer = document.getElementById('sidebar-list');
+        const playerContainer = document.getElementById('main-player-container');
+        let activeEpIndex = 0;
+
+        // --- Render Sidebar ---
+        function renderSidebar() {
+            listContainer.innerHTML = '';
+            EPISODES.forEach((ep, i) => {
+                const li = document.createElement('li');
+                li.className = `ep-item ${i === activeEpIndex ? 'active' : ''}`;
+                li.onclick = () => switchEpisode(i);
+                li.innerHTML = `
+                    <div class="ep-thumb">
+                        <img src="${ep.img}" alt="Episode ${ep.num}">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="ep-info" style="flex:1">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div class="ep-num">Épisode ${ep.num}</div>
+                        </div>
+                        <div class="ep-title">${ep.title}</div>
+                        <div class="ep-duration">2-3 min</div>
+                    </div>
+                `;
+                listContainer.appendChild(li);
+            });
+        }
+
         // Initial Load with Deep Linking
         const urlParams = new URLSearchParams(window.location.search);
         const startEp = parseInt(urlParams.get('ep'));
