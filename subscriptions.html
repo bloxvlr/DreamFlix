@@ -156,12 +156,10 @@
 <script src="auth.js"></script>
 <script src="nav.js"></script>
 <script>
-    const STRIPE_PK = "pk_test_51TJEep1DXMfXUZ6e7DWsgdYaqdqlNlnN3NKMCF71zvU8BhWqVPVW9FyjiZ3pkPJNaiagvzvP8Jj6wOqpy8pe4gi900h1LwN97R";
-    
-    // --- CONFIGURATION : REMPLACER PAR VOS PRICE IDS STRIPE ---
-    const PRICE_IDS = {
-        GOLD: "price_1TJHcH1DXMfXUZ6e526cQ60M", 
-        DIAMANT: "price_456_placeholder"
+    // --- CONFIGURATION : LIENS DE PAIEMENT STRIPE (ZÃ©ro Config) ---
+    const PAYMENT_LINKS = {
+        GOLD: "https://buy.stripe.com/test_5kQ7sDh0a9K1f9k3xL0oM00", 
+        DIAMANT: "lien_diamant_placeholder"
     };
 
     function showToast(msg) {
@@ -177,34 +175,20 @@
         const btn = event.currentTarget;
         const originalContent = btn.innerHTML;
         
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initialisation...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirection...';
         btn.disabled = true;
 
-        if (PRICE_IDS[plan] === "price_123_placeholder") {
-            // MOCK MODE : Si les IDs ne sont pas configurÃ©s, on simule le succÃ¨s pour la démo
-            showToast(`⚙️ Mode Démo : Redirection vers ${plan}...`);
+        if (PAYMENT_LINKS[plan].includes('placeholder')) {
+            showToast(`âš™ï¸ Mode DÃ©mo : Redirection vers ${plan}...`);
             setTimeout(() => {
                 window.location.href = `success.html?plan=${plan}`;
             }, 1500);
             return;
         }
 
-        try {
-            const stripe = Stripe(STRIPE_PK);
-            const { error } = await stripe.redirectToCheckout({
-                lineItems: [{ price: PRICE_IDS[plan], quantity: 1 }],
-                mode: 'subscription',
-                successUrl: window.location.origin + '/success.html?plan=' + plan,
-                cancelUrl: window.location.origin + '/subscriptions.html',
-            });
-
-            if (error) throw error;
-        } catch (e) {
-            console.error('Stripe Error:', e);
-            showToast("⚠️ Erreur Stripe : VÃ©rifiez vos Price IDs.");
-            btn.innerHTML = originalContent;
-            btn.disabled = false;
-        }
+        // REDIRECTION DIRECTE VERS LE LIEN DE PAIEMENT
+        console.log(`[Stripe] Redirecting to ${plan} Payment Link`);
+        window.location.href = PAYMENT_LINKS[plan];
     }
 </script>
 </body>
