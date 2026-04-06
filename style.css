@@ -322,13 +322,28 @@ body {
 .mobile-tab i { font-size: 1.25rem; transition: transform 0.2s; }
 .mobile-tab span { font-size: 0.58rem; font-weight: 500; opacity: 0.8; }
 
-/* Special High-Value Highlights */
-.mobile-tab-fans i { color: #00ffff; text-shadow: 0 0 10px rgba(0,255,255,0.3); } 
-.mobile-tab-subs i { color: #ff3c00; text-shadow: 0 0 10px rgba(255,60,0,0.3); }
-
 /* Magnification Effect */
 .mobile-tab:hover { transform: translateY(-8px) scale(1.25); }
+
+/* RGB Diamond Effect */
+@keyframes rgb-flow {
+    0% { color: #ff0000; }
+    20% { color: #ffff00; }
+    40% { color: #00ff00; }
+    60% { color: #00ffff; }
+    80% { color: #0000ff; }
+    100% { color: #ff0000; }
+}
+
+.rgb-icon {
+    animation: rgb-flow 3s linear infinite !important;
+    text-shadow: 0 0 8px rgba(255,255,255,0.2) !important;
+}
+
+/* Home stays white, Leaderboard goes Red, Subs go RGB */
 .mobile-tab.active i { color: var(--brand); text-shadow: 0 0 15px rgba(229,9,20,0.5); }
+.mobile-tab-home.active i { color: #fff !important; text-shadow: none !important; }
+.mobile-tab-fans i { color: var(--brand) !important; text-shadow: 0 0 10px rgba(229,9,20,0.3); }
 
 /* ===================================================
    RESPONSIVE

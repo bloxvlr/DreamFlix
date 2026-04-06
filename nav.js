@@ -118,7 +118,7 @@ const SIDEBAR_HTML = `
         <a href="popular.html" class="sidebar-link"><i class="fas fa-fire"></i> Populaire</a>
         <a href="mylist.html" class="sidebar-link"><i class="fas fa-bookmark"></i> Ma Liste</a>
         <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Classement</a>
-        <a href="subscriptions.html" class="sidebar-link"><i class="fas fa-gem"></i> Abonnements</a>
+        <a href="subscriptions.html" class="sidebar-link"><i class="fas fa-gem rgb-icon"></i> Abonnements</a>
     </div>
     <div class="sidebar-group">
         <p class="sidebar-label">Social</p>
@@ -157,11 +157,11 @@ const MOBILE_BAR_HTML = `
         <div class="liquidGlass-tint"></div>
         <div class="liquidGlass-shine"></div>
         <div class="liquidGlass-icons">
-            <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Accueil</span></a>
+            <a href="index.html" class="mobile-tab mobile-tab-home"><i class="fas fa-home"></i><span>Accueil</span></a>
             <a href="teleparty.html" class="mobile-tab"><i class="fas fa-desktop"></i><span>Party</span></a>
             <a href="leaderboard.html" class="mobile-tab mobile-tab-fans"><i class="fas fa-trophy"></i><span>Classement</span></a>
             <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Liste</span></a>
-            <a href="subscriptions.html" class="mobile-tab mobile-tab-subs"><i class="fas fa-gem"></i><span>Offres</span></a>
+            <a href="subscriptions.html" class="mobile-tab mobile-tab-subs"><i class="fas fa-gem rgb-icon"></i><span>Offres</span></a>
             <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profil</span></a>
         </div>
     </div>
