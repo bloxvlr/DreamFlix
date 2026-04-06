@@ -197,7 +197,6 @@
         }
 
         renderSidebar();
-        switchEpisode(activeEpIndex); // Load determined episode
 
         // --- Watch Time Accumulator (Mobile & Efficiency Focus) ---
         let watchSecondsAccumulated = 0;
@@ -277,6 +276,9 @@
                 }
             });
         }
+
+        // --- FINAL INIT ---
+        switchEpisode(activeEpIndex);
 
         // Handle navigation protection
         window.history.pushState(null, null, window.location.href);
