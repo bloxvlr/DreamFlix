@@ -523,3 +523,67 @@ button.expand.loaded .expand-icon svg.second { display: block; transform: scale(
     color: hsl(0 0% calc(80% + (var(--active) * 20%)));
 }
 .text i { font-size: 0.8rem; }
+
+/* ===================================================
+   DREAMFLIX SPLASH LOADER (Splitting.js)
+   =================================================== */
+#df-loader {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #060506; display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.5s ease; overflow: hidden;
+}
+#df-loader.fade-out { opacity: 0; pointer-events: none; }
+.loader-container { display: grid; align-items: center; justify-items: center; }
+.loader-container > * { grid-area: 1 / 1; }
+.loader-title { font-family: 'Heebo', sans-serif; font-size: 10vmin; font-weight: 900; margin: 0; color: white; }
+.loader-title .char {
+    --duration: 2s; /* ACCELERATED TO 2S */
+    --easing: cubic-bezier(0.5, 0, 0.5, 1);
+    --text-in-delay: calc(var(--duration) * 0.2);
+    --text-in-duration: calc(var(--duration) * 0.15);
+    --delay: calc(var(--text-in-delay) + (0.15s * (1 - var(--distance-percent))));
+    animation: text-in var(--text-in-duration) var(--easing) var(--delay) backwards;
+    transform-origin: center 1em;
+}
+@keyframes text-in {
+    0% { opacity: 0; transform: translateX(calc(-0.4em * var(--char-offset))) scale(0); }
+    90% { transform: translateX(0em) scale(1.1); }
+}
+.loader-title .char[data-char="e"], .loader-title .char[data-char="i"] {
+    visibility: hidden; --squish-scale: 0.7; --squish-y: 8%;
+}
+.loader-title .char[data-char="e"]:before, .loader-title .char[data-char="i"]:before {
+    content: attr(data-char); visibility: visible; display: inline-block;
+    animation: text-squish 2s var(--easing) forwards; transform-origin: center 1em;
+}
+@keyframes text-squish {
+    47.5%, 52.5% { transform: none; }
+    50% { transform: translateY(var(--squish-y)) scaleY(var(--squish-scale)); }
+}
+.loader-dot { font-size: 5vmin; width: 1em; height: 1em; animation: dot-main 2s var(--easing) both; }
+.dot-inner {
+    position: absolute; inset: 0; border-radius: 50%; overflow: hidden; display: grid; 
+    align-items: center; justify-items: center; animation: dot-move 2s var(--easing) both;
+}
+.dot-inner > * { grid-area: 1 / 1; }
+.loader-wave { width: 200%; height: 200%; fill: #E50914; animation: wave-up 0.5s var(--easing); }
+.loader-wave.background { fill: #8b040a; animation-duration: 0.45s; }
+@keyframes wave-up {
+    0% { transform: translateY(100%) translateX(-110%); }
+    70% { transform: translateY(30%) translateX(0%); }
+}
+@keyframes dot-main {
+    from { opacity: 0; transform: scale(3); }
+    10% { opacity: 1; transform: scale(3); }
+    20% { transform: scale(1) translateY(-300%); }
+    30% { transform: translateY(1em) scaleY(0.5); }
+    40% { transform: translateY(-300%); }
+    50% { transform: translateY(-0.5em); }
+    80%, to { transform: translateY(1em); }
+}
+@keyframes dot-move {
+    from, 45% { transform: none; }
+    70% { transform: translateX(5.2em); animation-timing-function: cubic-bezier(0.5, 0, 1, 0); }
+    80% { transform: translateX(3.6em); }
+    83%, to { transform: translateX(3.7em); }
+}

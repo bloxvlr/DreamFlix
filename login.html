@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -213,9 +213,14 @@
     </div>
 
     <script>
-        // If already logged in, skip to home
+        // If already logged in AND NOT JUST LOGGED OUT, skip to home
+        const params = new URLSearchParams(window.location.search);
+        const isLogout = params.get('logout') === 'true';
+
         window.addEventListener('load', () => {
-            DFAuth.redirectIfLoggedIn('index.html');
+            if (!isLogout) {
+                DFAuth.redirectIfLoggedIn('index.html');
+            }
 
             // Init Google Auth when GIS library is ready
             const tryInit = () => {
@@ -233,8 +238,13 @@
                         }
                     });
                     DFAuth.renderGoogleButton('google-btn', 'filled_black');
-                    // Show One Tap
-                    google.accounts.id.prompt();
+                    
+                    // IF LOGOUT = TRUE, DON'T SHOW ONE TAP
+                    if (!isLogout) {
+                        google.accounts.id.prompt();
+                    } else {
+                        console.log('Logout detected: skipping One Tap prompt.');
+                    }
                 } else {
                     setTimeout(tryInit, 300);
                 }

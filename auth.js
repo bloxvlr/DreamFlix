@@ -123,8 +123,8 @@ function logOut() {
     localStorage.removeItem(SESSION_KEY);
     localStorage.removeItem('df_admin_unlocked');
     
-    // 3. Redirect to login
-    window.location.href = 'login.html';
+    // 3. Redirect to login with logout flag to avoid auto-login loops
+    window.location.href = 'login.html?logout=true';
 }
 
 function requireAuth() {
