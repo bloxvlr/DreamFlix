@@ -119,47 +119,50 @@
 
 <script>
     async function loadAdminContent() {
-        if (typeof DFAuth === 'undefined' || !DFAuth._supabase) return;
-        
-        const _sb = DFAuth._supabase;
-        const { data, error } = await _sb.from('content').select('*').order('created_at', { ascending: false });
-        
-        const trendingRow = document.getElementById('row-trending');
-        const recommendedRow = document.getElementById('row-recommended');
         const trendingSlider = document.getElementById('slider-trending');
         const recommendedSlider = document.getElementById('slider-recommended');
+        if (!trendingSlider || !recommendedSlider) return;
 
-        if (trendingRow) trendingRow.style.display = 'block';
-        if (recommendedRow) recommendedRow.style.display = 'block';
-
-        if (error || !data || data.length === 0) {
-            const placeholder = `
-                <div class="df-card" style="opacity: 0.3; cursor: default; filter: grayscale(1)">
-                    <div style="aspect-ratio:16/9; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center">
-                        <i class="fas fa-video-slash"></i>
+        // 1. Manually add Skibidi TentaFruit to "Tendances"
+        trendingSlider.innerHTML = `
+            <div class="df-card" onclick="window.open('watch.html', '_blank')">
+                <img src="img/fruit image.jpg" alt="L'Île de la Skibiditentafruit">
+                <div class="df-card-body">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                        <div class="df-card-title">Skibidi TentaFruit</div>
+                        <i class="fas fa-play" style="font-size:0.8rem;color:var(--brand)"></i>
                     </div>
-                    <div class="df-card-body">
-                        <div class="df-card-title">Aucun contenu</div>
-                        <div class="df-card-sub">Bientôt disponible...</div>
-                    </div>
+                    <div class="df-card-sub">Série • 2026</div>
                 </div>
-            `;
-            if (trendingSlider) trendingSlider.innerHTML = placeholder + placeholder + placeholder;
-            if (recommendedSlider) recommendedSlider.innerHTML = placeholder + placeholder + placeholder;
-            return;
-        }
+            </div>
+        `;
 
-        if (trendingSlider) trendingSlider.innerHTML = '';
-        if (recommendedSlider) recommendedSlider.innerHTML = '';
+        // 2. Add all 14 Episodes to "Recommandations"
+        const EP_NUMS = [1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16];
+        const recommendedHTML = EP_NUMS.map(num => `
+            <div class="df-card" onclick="window.open('watch.html?ep=${num}', '_blank')">
+                <img src="img/fruit image.jpg" alt="Épisode ${num}" style="filter: brightness(0.8)">
+                <div class="df-card-body">
+                    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+                        <div class="df-card-title">Épisode ${num}</div>
+                        <i class="fas fa-play" style="font-size:0.7rem;color:rgba(255,255,255,0.5)"></i>
+                    </div>
+                    <div class="df-card-sub">Partie ${num} • 2 min</div>
+                </div>
+            </div>
+        `).join('');
+        
+        recommendedSlider.innerHTML = recommendedHTML;
 
-        data.forEach((item, index) => {
-            const card = DFAuth.UI.createCard(item);
-            if (index < 5 && trendingSlider) {
-                trendingSlider.appendChild(card);
-            } else if (recommendedSlider) {
-                recommendedSlider.appendChild(card);
+        // 3. (Optional) Load other content from Supabase if needed
+        if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
+            const { data } = await DFAuth._supabase.from('content').select('*').limit(5);
+            if (data) {
+                data.forEach(item => {
+                    trendingSlider.appendChild(DFAuth.UI.createCard(item));
+                });
             }
-        });
+        }
 
         // Init Arrows
         document.querySelectorAll('.df-row').forEach(row => {

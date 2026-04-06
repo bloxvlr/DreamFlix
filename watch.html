@@ -243,9 +243,16 @@
             });
         }
 
-        // Initial Load
+        // Initial Load with Deep Linking
+        const urlParams = new URLSearchParams(window.location.search);
+        const startEp = parseInt(urlParams.get('ep'));
+        if (startEp) {
+            const idx = EPISODES.findIndex(e => e.num === startEp);
+            if (idx !== -1) activeEpIndex = idx;
+        }
+
         renderSidebar();
-        switchEpisode(0); // Load Episode 1 first
+        switchEpisode(activeEpIndex); // Load determined episode
 
         // Handle navigation protection
         window.history.pushState(null, null, window.location.href);
