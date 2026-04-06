@@ -448,17 +448,30 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
     }
 });
 // --- Sound System ---
+// --- Click Sound System (Shine) ---
 window.playShineSound = () => {
     const audio = new Audio('sound/shine.mp3');
-    audio.volume = 0.3; // Lower volume for a subtle "shine" effect
-    audio.play().catch(e => console.log('[Audio] Blocked by browser:', e));
+    audio.volume = 0.3; 
+    audio.play().catch(() => {});
 };
 
-// Delegate sound to Subscription links
 document.addEventListener('click', (e) => {
     const link = e.target.closest('a[href="subscriptions.html"]');
     const mobileLink = e.target.closest('.mobile-tab-subs');
-    if (link || mobileLink) {
-        window.playShineSound();
-    }
+    if (link || mobileLink) window.playShineSound();
 });
+
+// --- Hover Sound System ---
+window.playHoverSound = () => {
+    const audio = new Audio('sound/hover.mp3');
+    audio.volume = 0.08; // Very low for frequent hovers
+    audio.play().catch(() => {}); 
+};
+
+// Delegate hover sound to interactive elements
+document.addEventListener('mouseenter', (e) => {
+    const el = e.target;
+    if (el.tagName === 'BUTTON' || el.tagName === 'A' || el.classList.contains('df-card') || el.classList.contains('mobile-tab') || el.classList.contains('sidebar-link')) {
+        window.playHoverSound();
+    }
+}, true);
