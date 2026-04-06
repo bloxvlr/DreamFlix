@@ -1,3 +1,4 @@
+// DreamFlix Elite — Real-Time Engine v1.1 (PWA & Native Notifications)
 // Requires: auth.js to be loaded BEFORE this file
 
 (function injectGSAP() {
