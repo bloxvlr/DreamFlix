@@ -158,10 +158,10 @@ const MOBILE_BAR_HTML = `
         <div class="liquidGlass-shine"></div>
         <div class="liquidGlass-icons">
             <a href="index.html" class="mobile-tab"><i class="fas fa-home"></i><span>Accueil</span></a>
-            <a href="teleparty.html" class="mobile-tab"><i class="fas fa-desktop" style="color:#00ffff"></i><span>Party</span></a>
-            <a href="leaderboard.html" class="mobile-tab"><i class="fas fa-trophy"></i><span>Classement</span></a>
+            <a href="teleparty.html" class="mobile-tab"><i class="fas fa-desktop"></i><span>Party</span></a>
+            <a href="leaderboard.html" class="mobile-tab mobile-tab-fans"><i class="fas fa-trophy"></i><span>Classement</span></a>
             <a href="mylist.html" class="mobile-tab"><i class="fas fa-bookmark"></i><span>Liste</span></a>
-            <a href="subscriptions.html" class="mobile-tab"><i class="fas fa-gem" style="color:#ff3c00"></i><span>Offres</span></a>
+            <a href="subscriptions.html" class="mobile-tab mobile-tab-subs"><i class="fas fa-gem"></i><span>Offres</span></a>
             <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profil</span></a>
         </div>
     </div>
