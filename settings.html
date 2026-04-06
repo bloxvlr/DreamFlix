@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -91,12 +91,28 @@
                 </div>
             </div>
 
+            <!-- Admin Access -->
+            <div class="settings-section" id="admin-unlock-section">
+                <h3>AccÃ¨s Admin</h3>
+                <div class="settings-row">
+                    <div>
+                        <div class="settings-label">Code d'administration</div>
+                        <div class="settings-sub">Entrez le code secret pour dÃ©bloquer le panneau</div>
+                    </div>
+                    <div style="display:flex;gap:10px">
+                        <input type="password" id="admin-code-input" class="form-input" style="width:120px;padding:8px 12px;font-size:0.8rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;outline:none" placeholder="******">
+                        <button class="btn-pill btn-pill-white" style="padding:8px 15px;font-size:0.8rem" onclick="handleAdminUnlock()">Unlock</button>
+                    </div>
+                </div>
+                <div id="admin-status-msg" style="margin-top:10px;font-size:0.75rem;display:none"></div>
+            </div>
+
             <!-- Danger -->
             <div class="settings-section">
                 <h3>Account</h3>
                 <div class="settings-row">
                     <div class="settings-label">Log Out</div>
-                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem;color:#E50914;border:1px solid #E50914" onclick="if(confirm('Se dÃƒÆ’Ã‚Â©connecter ?')) location.href='index.html'">Log Out</button>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem;color:#E50914;border:1px solid #E50914" id="settings-logout-btn">Log Out</button>
                 </div>
             </div>
 
@@ -106,6 +122,40 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src='auth.js'></script><script src="nav.js"></script>
 <script src="script.js"></script>
+
+<script>
+    // Handle Logout
+    document.getElementById('settings-logout-btn').addEventListener('click', () => {
+        if(confirm('Se dÃ©connecter de DreamFlix ?')) {
+            DFAuth.logOut();
+        }
+    });
+
+    // Admin Unlock Logic
+    function handleAdminUnlock() {
+        const input = document.getElementById('admin-code-input');
+        const msg = document.getElementById('admin-status-msg');
+        const code = input.value;
+
+        if (DFAuth.tryUnlockAdmin(code)) {
+            msg.style.display = 'block';
+            msg.style.color = '#46d369';
+            msg.innerHTML = '<i class="fas fa-check-circle"></i> Admin Panel dÃ©bloquÃ© ! Rechargez la page.';
+            setTimeout(() => { location.reload(); }, 1000);
+        } else {
+            msg.style.display = 'block';
+            msg.style.color = '#ff4444';
+            msg.innerHTML = '<i class="fas fa-times-circle"></i> Code incorrect.';
+        }
+    }
+
+    // Hide section if already admin
+    window.addEventListener('load', () => {
+        if (DFAuth.isAdmin()) {
+            document.getElementById('admin-unlock-section').style.display = 'none';
+        }
+    });
+</script>
 
 </body>
 </html>

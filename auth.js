@@ -71,7 +71,21 @@ function getUser() {
 // --- Admin status check ---
 function isAdmin() {
     const user = getUser();
-    return (user && user.email === ADMIN_EMAIL);
+    const isEmailAdmin = (user && user.email === ADMIN_EMAIL);
+    const isUnlocked = localStorage.getItem('df_admin_unlocked') === 'true';
+    return isEmailAdmin || isUnlocked;
+}
+
+function tryUnlockAdmin(code) {
+    if (!code) return false;
+    // Decode stored ADMIN_CHECK (1456395)
+    try {
+        if (code === atob(ADMIN_CHECK)) {
+            localStorage.setItem('df_admin_unlocked', 'true');
+            return true;
+        }
+    } catch (e) { console.error('Admin Check Error:', e); }
+    return false;
 }
 
 function requireAdmin() {
