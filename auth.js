@@ -5,18 +5,23 @@
 const SESSION_KEY = 'df_user';
 const ADMIN_EMAIL = 'the.furtive.guys@gmail.com';
 
-// Initialize Supabase Client (from config.js)
+// Supabase Configuration (Public Anon Key provided for Client Use)
+const SUPABASE_URL = "https://pcmaxibgvpatazpxuqkd.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjbWF4aWJndnBhdGF6cHh1cWtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1NTA1MzAsImV4cCI6MjA5MDEyNjUzMH0.-hqsL58wE8DT6S7biILN_R88BXaQCY_8i9AwsLVHG6c";
+
+// Obfuscated Admin Secret (Base64 mtq1njm5nq==)
+const ADMIN_CHECK = "MTQ1NjM5NQ=="; 
+
+// Initialize Supabase Client
 const { createClient } = supabase;
-const _supabase = createClient(window.DFConfig.SUPABASE_URL, window.DFConfig.SUPABASE_ANON_KEY);
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- Decode a Google JWT (id_token) ---
 function parseJwt(token) {
     try {
         const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
         return JSON.parse(atob(base64));
-    } catch {
-        return null;
-    }
+    } catch { return null; }
 }
 
 // --- Save user session & Synchronize with Supabase ---
@@ -30,20 +35,15 @@ async function saveSession(payload) {
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(user));
 
-    // Sync Profile to Supabase (Profiles Table)
     try {
-        const { error } = await _supabase.from('profiles').upsert({
-            id: payload.sub, // Using Google sub as unique ID
+        await _supabase.from('profiles').upsert({
+            id: payload.sub,
             email: payload.email,
             full_name: payload.name,
             avatar_url: payload.picture,
             last_seen: new Date().toISOString()
-        }, { onConflict: 'email' });
-        
-        if (error) console.error('Supabase Sync Error:', error);
-    } catch (e) {
-        console.error('Supabase Profile Sync failed:', e);
-    }
+        });
+    } catch (e) { console.error('Supabase Sync failed:', e); }
 
     return user;
 }
@@ -62,7 +62,7 @@ function getUser() {
     } catch { return null; }
 }
 
-// --- Admin Checks ---
+// --- Admin Checks (Email or persistent unlock flag) ---
 function isAdmin() {
     const user = getUser();
     const isUnlocked = localStorage.getItem('df_admin_unlocked') === 'true';
@@ -75,12 +75,19 @@ function requireAdmin() {
     }
 }
 
+// --- Unlock Admin via Code ---
+function tryUnlockAdmin(code) {
+    if (btoa(code) === ADMIN_CHECK) {
+        localStorage.setItem('df_admin_unlocked', 'true');
+        return true;
+    }
+    return false;
+}
+
 // --- Heartbeat: Keep user online status updated ---
 async function startHeartbeat() {
     const user = getUser();
     if (!user) return;
-    
-    // Update last_seen every 2 minutes
     setInterval(async () => {
         await _supabase.from('profiles').update({ 
             last_seen: new Date().toISOString() 
@@ -92,21 +99,18 @@ async function startHeartbeat() {
 function logOut() {
     google?.accounts?.id?.disableAutoSelect();
     localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem('df_admin_unlocked');
     window.location.href = 'login.html';
 }
 
 function requireAuth() {
     if (!getUser()) {
         window.location.href = 'login.html';
-    } else {
-        startHeartbeat();
-    }
+    } else { startHeartbeat(); }
 }
 
 function redirectIfLoggedIn(destination = 'index.html') {
-    if (getUser()) {
-        window.location.href = destination;
-    }
+    if (getUser()) { window.location.href = destination; }
 }
 
 function initGoogleAuth({ onSuccess, onError } = {}) {
@@ -114,10 +118,7 @@ function initGoogleAuth({ onSuccess, onError } = {}) {
         client_id: '452977917704-rodjcu8c5kh9f37rt2oam93necl14emo.apps.googleusercontent.com',
         callback: async (response) => {
             const payload = parseJwt(response.credential);
-            if (!payload) {
-                onError?.('Invalid token');
-                return;
-            }
+            if (!payload) { onError?.('Invalid token'); return; }
             const user = await saveSession(payload);
             onSuccess?.(user);
         },
@@ -135,4 +136,4 @@ function renderGoogleButton(containerId, theme = 'outline') {
     }
 }
 
-window.DFAuth = { getUser, isAdmin, requireAdmin, logOut, requireAuth, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase };
+window.DFAuth = { getUser, isAdmin, tryUnlockAdmin, requireAdmin, logOut, requireAuth, redirectIfLoggedIn, initGoogleAuth, renderGoogleButton, _supabase };

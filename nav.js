@@ -131,10 +131,9 @@ document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
 
     // --- Easter Egg: Admin Code ---
     const searchInput = document.querySelector('.nav-search');
-    if (searchInput && window.DFConfig?.ADMIN_CODE) {
+    if (searchInput) {
         searchInput.addEventListener('input', (e) => {
-            if (e.target.value === window.DFConfig.ADMIN_CODE) {
-                localStorage.setItem('df_admin_unlocked', 'true');
+            if (DFAuth.tryUnlockAdmin(e.target.value)) {
                 window.location.href = 'admin.html';
             }
         });
