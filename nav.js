@@ -447,65 +447,36 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
-// --- Elite Audio Engine (Zero Latency) ---
-const isHoverCapable = window.matchMedia('(hover: hover)').matches;
-
+// --- Elite Audio Engine (Shine Only) ---
 const AUDIO_ASSETS = {
-    hover: new Audio('sound/hover.mp3'),
     shine: new Audio('sound/shine.mp3')
 };
-AUDIO_ASSETS.hover.preload = 'auto';
-AUDIO_ASSETS.hover.volume = 0.02; // Ultra subtle
 AUDIO_ASSETS.shine.preload = 'auto';
-AUDIO_ASSETS.shine.volume = 0.1; // Professional level
+AUDIO_ASSETS.shine.volume = 0.15; // Balanced for clarity
 
 let isAudioUnlocked = false;
-let lastHoveredElement = null;
 
 const primeAudio = () => {
     if (isAudioUnlocked) return;
-    Object.values(AUDIO_ASSETS).forEach(aud => {
-        const p = aud.cloneNode(true);
-        p.volume = 0;
-        p.play().catch(() => {});
-    });
+    const p = AUDIO_ASSETS.shine.cloneNode(true);
+    p.volume = 0;
+    p.play().catch(() => {});
     isAudioUnlocked = true;
     ['mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'mouseover'].forEach(ev => window.removeEventListener(ev, primeAudio));
 };
 ['mousedown', 'keydown', 'touchstart', 'click', 'mousemove', 'mouseover'].forEach(ev => window.addEventListener(ev, primeAudio, { passive: true }));
 
 window.playEliteSound = (type) => {
-    if (!AUDIO_ASSETS[type]) return;
-    const sound = AUDIO_ASSETS[type].cloneNode(true);
-    sound.volume = AUDIO_ASSETS[type].volume;
+    if (type !== 'shine' || !AUDIO_ASSETS.shine) return;
+    const sound = AUDIO_ASSETS.shine.cloneNode(true);
+    sound.volume = AUDIO_ASSETS.shine.volume;
     sound.play().catch(() => {
         if (!isAudioUnlocked) primeAudio();
     });
 };
 
-// --- Responsive Listeners ---
-// Click (All Devices)
+// --- Click Listener (Subscriptions/Offres Only) ---
 document.addEventListener('click', (e) => {
     const isSub = e.target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
     if (isSub) window.playEliteSound('shine');
 });
-
-// Hover (Desktop Only)
-if (isHoverCapable) {
-    document.addEventListener('mouseover', (e) => {
-        const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
-        if (target && target !== lastHoveredElement) {
-            lastHoveredElement = target;
-            const isSub = target.closest('a[href="subscriptions.html"], .mobile-tab-subs');
-            if (!isSub) window.playEliteSound('hover');
-        }
-    }, true);
-
-    document.addEventListener('mouseout', (e) => {
-        const target = e.target.closest('a, button, .df-card, .mobile-tab, .sidebar-link');
-        // Only reset if we are leaving the component entirely (not moving child-to-child)
-        if (target && !target.contains(e.relatedTarget)) {
-            lastHoveredElement = null;
-        }
-    }, true);
-}
