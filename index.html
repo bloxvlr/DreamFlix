@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix â€” Home</title>
+    <title>DreamFlix — Home</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -28,7 +28,7 @@
                 <span class="df-hero-rating">18+</span>
                 <span>3 Seasons</span>
             </div>
-            <p class="df-hero-desc">Un avocat aveugle combat le crime dans Hell's Kitchen, New York. La justice est aveugle â€” mais pas la vengeance. Ressentez chaque impact, chaque choix moral.</p>
+            <p class="df-hero-desc">Un avocat aveugle combat le crime dans Hell's Kitchen, New York. La justice est aveugle — mais pas la vengeance. Ressentez chaque impact, chaque choix moral.</p>
             <div class="df-hero-actions">
                 <button class="btn-pill btn-pill-white"><i class="fas fa-play"></i> Watch</button>
                 <button class="btn-pill btn-pill-ghost"><i class="fas fa-info-circle"></i> More Info</button>
@@ -38,68 +38,40 @@
     </div>
 
     <!-- Catalog -->
-    <div class="df-catalog">
+    <div class="df-catalog" id="catalog-container">
 
-        <div class="df-row">
+        <div class="df-row" id="row-continue" style="display:none">
             <div class="df-row-header">
                 Continue Watching
                 <span class="df-row-more">See all <i class="fas fa-chevron-right"></i></span>
             </div>
             <div class="df-slider-wrap">
                 <button class="df-arrow left"><i class="fas fa-chevron-left"></i></button>
-                <div class="df-slider">
-                    <div class="df-card">
-                        <img src="img/daredevil_hero.png" alt="Daredevil">
-                        <div class="df-progress"><div class="df-progress-fill" style="width:72%"></div></div>
-                        <div class="df-card-body"><div class="df-card-title">Daredevil S3</div><div class="df-card-sub">E15 Â· 18 min left</div></div>
-                    </div>
-                    <div class="df-card">
-                        <img src="img/viral_chaos.jpg" alt="Viral Chaos">
-                        <div class="df-progress"><div class="df-progress-fill" style="width:30%"></div></div>
-                        <div class="df-card-body"><div class="df-card-title">Viral Chaos S1</div><div class="df-card-sub">E3 Â· 41 min left</div></div>
-                    </div>
-                    <div class="df-card">
-                        <img src="img/daredevil_hero.png" alt="Daredevil S2">
-                        <div class="df-progress"><div class="df-progress-fill" style="width:90%"></div></div>
-                        <div class="df-card-body"><div class="df-card-title">Daredevil S2</div><div class="df-card-sub">E13 Â· 4 min left</div></div>
-                    </div>
-                    <div class="df-card"><img src="img/daredevil_hero.png" alt=""></div>
-                    <div class="df-card"><img src="img/viral_chaos.jpg" alt=""></div>
-                </div>
+                <div class="df-slider" id="slider-continue"></div>
                 <button class="df-arrow right"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
-        <div class="df-row">
+        <div class="df-row" id="row-trending" style="display:none">
             <div class="df-row-header">Trending Now</div>
             <div class="df-slider-wrap">
                 <button class="df-arrow left"><i class="fas fa-chevron-left"></i></button>
-                <div class="df-slider">
-                    <div class="df-card"><img src="img/daredevil_hero.png" alt=""><div class="df-card-body"><div class="df-card-title">Daredevil</div></div></div>
-                    <div class="df-card"><img src="img/viral_chaos.jpg" alt=""><div class="df-card-body"><div class="df-card-title">Viral Chaos</div></div></div>
-                    <div class="df-card"><img src="img/daredevil_hero.png" alt=""></div>
-                    <div class="df-card"><img src="img/viral_chaos.jpg" alt=""></div>
-                    <div class="df-card"><img src="img/daredevil_hero.png" alt=""></div>
-                </div>
+                <div class="df-slider" id="slider-trending"></div>
                 <button class="df-arrow right"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
-        <div class="df-row">
+        <div class="df-row" id="row-recommended" style="display:none">
             <div class="df-row-header">Recommended For You</div>
             <div class="df-slider-wrap">
                 <button class="df-arrow left"><i class="fas fa-chevron-left"></i></button>
-                <div class="df-slider">
-                    <div class="df-card"><img src="img/viral_chaos.jpg" alt=""><div class="df-card-body"><div class="df-card-title">Viral Chaos</div><div class="df-card-sub">Series â€¢ 2026</div></div></div>
-                    <div class="df-card"><img src="img/daredevil_hero.png" alt=""><div class="df-card-body"><div class="df-card-title">Daredevil</div><div class="df-card-sub">Series â€¢ 2024</div></div></div>
-                    <div class="df-card"><img src="img/daredevil_hero.png" alt=""></div>
-                    <div class="df-card"><img src="img/viral_chaos.jpg" alt=""></div>
-                </div>
+                <div class="df-slider" id="slider-recommended"></div>
                 <button class="df-arrow right"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
     </div>
+
 </div>
 
 <!-- Video Player Modal -->
@@ -109,63 +81,76 @@
     <h2 id="player-title" style="margin-top:20px;font-size:1.5rem;font-weight:900"></h2>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src='auth.js'></script><script src="nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
+<script src="nav.js"></script>
 <script src="script.js"></script>
 
 <script>
     // --- Dynamic Content Loader (Supabase) ---
     async function loadAdminContent() {
+        if (typeof DFAuth === 'undefined' || !DFAuth._supabase) return;
+        
         const _sb = DFAuth._supabase;
         const { data, error } = await _sb.from('content').select('*').order('created_at', { ascending: false });
-        if (error || !data.length) return;
+        
+        if (error || !data || data.length === 0) {
+            console.log('No Supabase content found.');
+            return;
+        }
 
-        // Create a new row for "New Releases"
-        const catalog = document.querySelector('.df-catalog');
-        const newRow = document.createElement('div');
-        newRow.className = 'df-row';
-        newRow.innerHTML = `
-            <div class="df-row-header">
-                <i class="fas fa-sparkles" style="color:var(--brand);margin-right:10px"></i> Admin Releases
-            </div>
-            <div class="df-slider-wrap">
-                <button class="df-arrow left"><i class="fas fa-chevron-left"></i></button>
-                <div class="df-slider" id="supabase-slider">
-                    <!-- Cards injected here -->
-                </div>
-                <button class="df-arrow right"><i class="fas fa-chevron-right"></i></button>
-            </div>
-        `;
-        catalog.prepend(newRow);
+        // Show Rows
+        const trendingRow = document.getElementById('row-trending');
+        const recommendedRow = document.getElementById('row-recommended');
+        const trendingSlider = document.getElementById('slider-trending');
+        const recommendedSlider = document.getElementById('slider-recommended');
 
-        const slider = document.getElementById('supabase-slider');
-        data.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'df-card';
-            card.innerHTML = `
-                <img src="${item.image_url}" alt="${item.title}">
-                <div class="df-card-body">
-                    <div class="df-card-title">${item.title}</div>
-                    <div class="df-card-sub">${item.category} • ${item.year}</div>
-                </div>
-            `;
+        if (trendingRow) trendingRow.style.display = 'block';
+        if (recommendedRow) recommendedRow.style.display = 'block';
+
+        data.forEach((item, index) => {
+            const card = createCard(item);
             
-            // Play video on click if URL exists
-            if (item.video_url) {
-                card.addEventListener('click', () => {
-                    openPlayer(item.video_url, item.title);
+            // First 5 go to trending, others to recommended
+            if (index < 5 && trendingSlider) {
+                trendingSlider.appendChild(card);
+            } else if (recommendedSlider) {
+                recommendedSlider.appendChild(card);
+            }
+        });
+
+        // Initialize arrows for all dynamic rows
+        document.querySelectorAll('.df-row').forEach(row => {
+            const slider = row.querySelector('.df-slider');
+            const leftBtn = row.querySelector('.df-arrow.left');
+            const rightBtn = row.querySelector('.df-arrow.right');
+            
+            if (slider && leftBtn && rightBtn) {
+                [leftBtn, rightBtn].forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const dir = btn.classList.contains('right') ? 1 : -1;
+                        slider.scrollBy({ left: slider.clientWidth * 0.8 * dir, behavior: 'smooth' });
+                    });
                 });
             }
-            
-            slider.appendChild(card);
         });
+    }
 
-        // Re-init slider arrows for the new row
-        newRow.querySelectorAll('.df-arrow').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const dir = btn.classList.contains('right') ? 1 : -1;
-                slider.scrollBy({ left: slider.clientWidth * 0.8 * dir, behavior: 'smooth' });
-            });
-        });
+    function createCard(item) {
+        const card = document.createElement('div');
+        card.className = 'df-card';
+        card.innerHTML = `
+            <img src="${item.image_url}" alt="${item.title}">
+            <div class="df-card-body">
+                <div class="df-card-title">${item.title}</div>
+                <div class="df-card-sub">${item.category} • ${item.year}</div>
+            </div>
+        `;
+        
+        if (item.video_url) {
+            card.addEventListener('click', () => openPlayer(item.video_url, item.title));
+        }
+        return card;
     }
 
     function openPlayer(url, title) {
@@ -173,32 +158,32 @@
         const player = document.getElementById('player-el');
         const titleEl = document.getElementById('player-title');
         
+        if (!modal || !player || !titleEl) return;
+
         player.src = url;
         titleEl.innerText = title;
         modal.style.display = 'flex';
         player.play();
         
-        // Hide nav/sidebar
-        document.getElementById('df-nav').style.opacity = '0';
-        document.querySelector('.df-sidebar').style.opacity = '0';
+        if (document.getElementById('df-nav')) document.getElementById('df-nav').style.opacity = '0';
+        if (document.querySelector('.df-sidebar')) document.querySelector('.df-sidebar').style.opacity = '0';
     }
 
     function closePlayer() {
         const modal = document.getElementById('video-modal');
         const player = document.getElementById('player-el');
         
+        if (!modal || !player) return;
+
         player.pause();
         player.src = '';
         modal.style.display = 'none';
         
-        // Restore nav/sidebar
-        document.getElementById('df-nav').style.opacity = '1';
-        document.querySelector('.df-sidebar').style.opacity = '1';
+        if (document.getElementById('df-nav')) document.getElementById('df-nav').style.opacity = '1';
+        if (document.querySelector('.df-sidebar')) document.querySelector('.df-sidebar').style.opacity = '1';
     }
 
     window.addEventListener('load', loadAdminContent);
-</script></body>
+</script>
+</body>
 </html>
-
-
-
