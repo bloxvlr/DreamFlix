@@ -120,6 +120,7 @@
 
         /* Mobile Styles */
         @media (max-width: 1024px) {
+            .floating-controls { top: 20px; left: 20px; }
             .page-player { flex-direction: column; overflow-y: scroll; scrollbar-width: none; }
             .main-viewport { flex: none; height: 75vh; padding: 20px; }
             .episodes-sidebar { width: 100%; border-left: none; overflow-y: visible; flex: none; }
@@ -132,7 +133,7 @@
     <div class="page-player">
         
         <div class="floating-controls">
-            <button class="back-btn" onclick="window.close()"><i class="fas fa-arrow-left"></i></button>
+            <button class="back-btn" onclick="location.href='index.html'"><i class="fas fa-arrow-left"></i></button>
         </div>
 
         <div class="main-viewport">
