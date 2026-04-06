@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -36,6 +36,13 @@
         .content-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 10px; }
         .btn-delete { color: #ff4444; cursor: pointer; padding: 8px; transition: 0.2s; }
         .btn-delete:hover { opacity: 0.7; }
+        .btn-edit { color: #46d369; cursor: pointer; padding: 8px; transition: 0.2s; }
+        .btn-edit:hover { opacity: 0.7; }
+
+        /* Progress Bar */
+        .progress-container { display: none; margin-top: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; height: 10px; }
+        .progress-fill { height: 100%; background: var(--brand); width: 0%; transition: width 0.3s; }
+        .upload-status { font-size: 0.75rem; color: var(--muted); margin-top: 5px; text-align: center; }
 
         @media (max-width: 1024px) { .admin-grid { grid-template-columns: 1fr; } }
     </style>
@@ -74,16 +81,25 @@
 
             <!-- Content Manager -->
             <div class="admin-card">
-                <h2><i class="fas fa-plus-circle"></i> Post New Content</h2>
+                <h2 id="form-title"><i class="fas fa-plus-circle"></i> Post New Content</h2>
                 <form id="add-content-form">
+                    <input type="hidden" id="edit-id">
                     <div class="form-group">
                         <label class="form-label">Titre</label>
                         <input type="text" id="title" class="form-input" placeholder="ex: Daredevil: The New Hero" required>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Image URL</label>
-                        <input type="url" id="image_url" class="form-input" placeholder="https://..." required>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
+                        <div class="form-group">
+                            <label class="form-label">Thumbnail (JPG/PNG)</label>
+                            <input type="file" id="thumb-file" class="form-input" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Video (MP4)</label>
+                            <input type="file" id="video-file" class="form-input" accept="video/mp4">
+                        </div>
                     </div>
+
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px">
                         <div class="form-group">
                             <label class="form-label">CatÃ©gorie</label>
@@ -97,7 +113,14 @@
                             <input type="text" id="year" class="form-input" placeholder="2024">
                         </div>
                     </div>
-                    <button type="submit" class="btn-pill btn-pill-white" style="width:100%;margin-top:10px">Post Video</button>
+
+                    <div class="progress-container" id="progress-container">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="upload-status" id="upload-status"></div>
+
+                    <button type="submit" id="submit-btn" class="btn-pill btn-pill-white" style="width:100%;margin-top:10px">Post Video</button>
+                    <button type="button" id="cancel-edit" class="btn-pill btn-pill-ghost" style="width:100%;margin-top:10px;display:none">Cancel Edit</button>
                 </form>
 
                 <h2 style="margin-top:40px"><i class="fas fa-list-ul"></i> Manage Posted</h2>
@@ -165,11 +188,37 @@
                     <img src="${item.image_url}" style="width:40px;height:40px;border-radius:4px;object-fit:cover">
                     <div style="font-size:0.85rem;font-weight:600">${item.title}</div>
                 </div>
-                <i class="fas fa-trash btn-delete" onclick="deleteItem('${item.id}')"></i>
+                <div style="display:flex;gap:10px">
+                    <i class="fas fa-edit btn-edit" onclick="editItem('${item.id}')"></i>
+                    <i class="fas fa-trash btn-delete" onclick="deleteItem('${item.id}')"></i>
+                </div>
             `;
             list.appendChild(div);
         });
     }
+
+    async function editItem(id) {
+        const { data, error } = await _sb.from('content').select('*').eq('id', id).single();
+        if (error) return;
+
+        document.getElementById('form-title').innerHTML = '<i class="fas fa-edit"></i> Edit Content';
+        document.getElementById('edit-id').value = data.id;
+        document.getElementById('title').value = data.title;
+        document.getElementById('category').value = data.category;
+        document.getElementById('year').value = data.year;
+        
+        document.getElementById('submit-btn').innerText = 'Update Content';
+        document.getElementById('cancel-edit').style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('cancel-edit').addEventListener('click', () => {
+        document.getElementById('add-content-form').reset();
+        document.getElementById('edit-id').value = '';
+        document.getElementById('form-title').innerHTML = '<i class="fas fa-plus-circle"></i> Post New Content';
+        document.getElementById('submit-btn').innerText = 'Post Video';
+        document.getElementById('cancel-edit').style.display = 'none';
+    });
 
     async function deleteItem(id) {
         if (!confirm('Delete this video?')) return;
@@ -177,31 +226,85 @@
         if (!error) loadContent();
     }
 
+    async function uploadFile(file, bucket) {
+        if (!file) return null;
+        const ext = file.name.split('.').pop();
+        const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${ext}`;
+        const filePath = fileName;
+
+        const { data, error } = await _sb.storage.from(bucket).upload(filePath, file);
+        if (error) throw error;
+
+        const { data: { publicUrl } } = _sb.storage.from(bucket).getPublicUrl(filePath);
+        return publicUrl;
+    }
+
     document.getElementById('add-content-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const btn = e.target.querySelector('button');
-        btn.innerText = 'Posting...';
+        const btn = document.getElementById('submit-btn');
+        const progress = document.getElementById('progress-container');
+        const fill = document.getElementById('progress-fill');
+        const status = document.getElementById('upload-status');
+        const editId = document.getElementById('edit-id').value;
+
         btn.disabled = true;
-
-        const newItem = {
-            title: document.getElementById('title').value,
-            image_url: document.getElementById('image_url').value,
-            category: document.getElementById('category').value,
-            year: document.getElementById('year').value || '2024',
-            rating: '18+',
-            match_percent: '99%'
-        };
-
-        const { error } = await _sb.from('content').insert([newItem]);
+        progress.style.display = 'block';
         
-        btn.innerText = 'Post Video';
-        btn.disabled = false;
+        try {
+            status.innerText = 'Uploading files...';
+            fill.style.width = '30%';
 
-        if (!error) {
-            e.target.reset();
-            loadContent();
-        } else {
-            alert('Error: ' + error.message);
+            const thumbFile = document.getElementById('thumb-file').files[0];
+            const videoFile = document.getElementById('video-file').files[0];
+
+            let imageUrl = null;
+            let videoUrl = null;
+
+            if (thumbFile) imageUrl = await uploadFile(thumbFile, 'thumbnails');
+            fill.style.width = '60%';
+            
+            if (videoFile) videoUrl = await uploadFile(videoFile, 'videos');
+            fill.style.width = '90%';
+
+            const contentData = {
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                year: document.getElementById('year').value || '2024',
+                rating: '18+',
+                match_percent: '99%'
+            };
+
+            if (imageUrl) contentData.image_url = imageUrl;
+            if (videoUrl) contentData.video_url = videoUrl;
+
+            let error;
+            if (editId) {
+                const { error: err } = await _sb.from('content').update(contentData).eq('id', editId);
+                error = err;
+            } else {
+                // For new posts, ensure imageUrl is present (even if fallback)
+                if (!imageUrl) contentData.image_url = 'https://via.placeholder.com/1280x720';
+                const { error: err } = await _sb.from('content').insert([contentData]);
+                error = err;
+            }
+
+            if (error) throw error;
+
+            fill.style.width = '100%';
+            status.innerText = editId ? 'Updated successfully!' : 'Posted successfully!';
+            
+            setTimeout(() => {
+                document.getElementById('cancel-edit').click(); 
+                loadContent();
+                progress.style.display = 'none';
+                fill.style.width = '0%';
+                btn.disabled = false;
+            }, 1000);
+
+        } catch (err) {
+            alert('Error: ' + err.message);
+            btn.disabled = false;
+            progress.style.display = 'none';
         }
     });
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -102,6 +102,13 @@
     </div>
 </div>
 
+<!-- Video Player Modal -->
+<div id="video-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9999;flex-direction:column;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(10px)">
+    <div style="position:absolute;top:30px;right:40px;color:#fff;font-size:2rem;cursor:pointer" onclick="closePlayer()"><i class="fas fa-times"></i></div>
+    <video id="player-el" controls style="max-width:90%;max-height:80vh;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.8)"></video>
+    <h2 id="player-title" style="margin-top:20px;font-size:1.5rem;font-weight:900"></h2>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src='auth.js'></script><script src="nav.js"></script>
 <script src="script.js"></script>
 
@@ -116,7 +123,7 @@
         const catalog = document.querySelector('.df-catalog');
         const newRow = document.createElement('div');
         newRow.className = 'df-row';
-        newRow.innerHTML = 
+        newRow.innerHTML = `
             <div class="df-row-header">
                 <i class="fas fa-sparkles" style="color:var(--brand);margin-right:10px"></i> Admin Releases
             </div>
@@ -127,20 +134,28 @@
                 </div>
                 <button class="df-arrow right"><i class="fas fa-chevron-right"></i></button>
             </div>
-        ;
+        `;
         catalog.prepend(newRow);
 
         const slider = document.getElementById('supabase-slider');
         data.forEach(item => {
             const card = document.createElement('div');
             card.className = 'df-card';
-            card.innerHTML = 
-                <img src="\" alt="\">
+            card.innerHTML = `
+                <img src="${item.image_url}" alt="${item.title}">
                 <div class="df-card-body">
-                    <div class="df-card-title">\</div>
-                    <div class="df-card-sub">\ • \</div>
+                    <div class="df-card-title">${item.title}</div>
+                    <div class="df-card-sub">${item.category} • ${item.year}</div>
                 </div>
-            ;
+            `;
+            
+            // Play video on click if URL exists
+            if (item.video_url) {
+                card.addEventListener('click', () => {
+                    openPlayer(item.video_url, item.title);
+                });
+            }
+            
             slider.appendChild(card);
         });
 
@@ -152,6 +167,35 @@
             });
         });
     }
+
+    function openPlayer(url, title) {
+        const modal = document.getElementById('video-modal');
+        const player = document.getElementById('player-el');
+        const titleEl = document.getElementById('player-title');
+        
+        player.src = url;
+        titleEl.innerText = title;
+        modal.style.display = 'flex';
+        player.play();
+        
+        // Hide nav/sidebar
+        document.getElementById('df-nav').style.opacity = '0';
+        document.querySelector('.df-sidebar').style.opacity = '0';
+    }
+
+    function closePlayer() {
+        const modal = document.getElementById('video-modal');
+        const player = document.getElementById('player-el');
+        
+        player.pause();
+        player.src = '';
+        modal.style.display = 'none';
+        
+        // Restore nav/sidebar
+        document.getElementById('df-nav').style.opacity = '1';
+        document.querySelector('.df-sidebar').style.opacity = '1';
+    }
+
     window.addEventListener('load', loadAdminContent);
 </script></body>
 </html>
