@@ -2,23 +2,6 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Splitting Animation (Loader) ---
-    if (typeof Splitting !== 'undefined') {
-        Splitting();
-    }
-
-    // --- Loader Lifecycle (Fade-out after 2.2s) ---
-    const loader = document.getElementById('df-loader');
-    if (loader) {
-        setTimeout(() => {
-            loader.classList.add('fade-out');
-            setTimeout(() => {
-                loader.remove();
-                document.body.style.overflow = 'auto'; // Restore scrolling
-            }, 500);
-        }, 2200);
-    }
-
     // --- Lenis Smooth Scroll ---
     const lenis = new Lenis({
         duration: 1.2,
