@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>DreamFlix — L'Ile de la Skibiditentafruit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Wistia Core API -->
+    <script src="https://fast.wistia.com/player.js" async></script>
+    <style>
+        :root { --brand: #e50914; --accent: #ff003c; --bg: #000; --sidebar: #0f0f0f; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg); color: #fff; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            height: 100vh;
+        }
+
+        /* Layout Structure */
+        .page-player {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Main Viewport Area */
+        .main-viewport {
+            flex: 1;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            overflow: hidden;
+        }
+
+        /* Ambient Glow Layer behind main video */
+        .ambilight-bg {
+            position: absolute; inset: 0; z-index: -1;
+            background: radial-gradient(circle at center, rgba(229, 9, 20, 0.3) 0%, rgba(0,0,0,1) 80%);
+            opacity: 0.6; filter: blur(60px); animation: ambilightPulse 8s infinite alternate ease-in-out;
+        }
+        @keyframes ambilightPulse {
+            0% { transform: scale(1); opacity: 0.4; }
+            100% { transform: scale(1.1); opacity: 0.7; }
+        }
+
+        .video-stage {
+            width: 100%; 
+            max-width: 56.25vh; /* 9:16 vertical focus */
+            height: 90vh;
+            position: relative;
+            box-shadow: 0 0 150px rgba(0,0,0,0.9);
+            z-index: 10;
+        }
+
+        /* Episode Sidebar Selector */
+        .episodes-sidebar {
+            width: 400px;
+            background: var(--sidebar);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow-y: scroll;
+            scrollbar-width: thin;
+        }
+        .episodes-sidebar::-webkit-scrollbar { width: 5px; }
+        .episodes-sidebar::-webkit-scrollbar-thumb { background: #333; }
+
+        .sidebar-header {
+            padding: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky; top: 0; background: var(--sidebar); z-index: 20;
+        }
+        .sidebar-header h2 { font-size: 1.2rem; font-weight: 900; color: #fff; letter-spacing: 1px; }
+        .sidebar-header p { font-size: 0.8rem; color: #888; margin-top: 5px; }
+
+        .ep-list { list-style: none; padding: 20px; }
+        .ep-item {
+            display: flex; gap: 15px; padding: 15px;
+            border-radius: 12px; cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid transparent;
+            margin-bottom: 10px;
+        }
+        .ep-item:hover { background: rgba(255,255,255,0.03); transform: translateX(5px); }
+        .ep-item.active { background: rgba(229, 9, 20, 0.1); border-color: var(--brand); }
+
+        .ep-thumb {
+            width: 100px; height: 160px; /* Vertical thumbnails as the show is vertical */
+            background: #222; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .ep-thumb img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+        .ep-thumb i { position: absolute; font-size: 1.2rem; color: #fff; opacity: 0; transition: 0.2s; }
+        .ep-item:hover .ep-thumb i { opacity: 1; transform: scale(1.2); }
+
+        .ep-info { display: flex; flex-direction: column; justify-content: center; }
+        .ep-info .ep-num { font-size: 0.75rem; font-weight: 700; color: var(--brand); text-transform: uppercase; margin-bottom: 4px; }
+        .ep-info .ep-title { font-size: 0.95rem; font-weight: 700; color: #eee; line-height: 1.4; }
+        .ep-info .ep-duration { font-size: 0.75rem; color: #666; margin-top: 8px; }
+
+        /* Floating UI */
+        .floating-controls {
+            position: absolute; top: 40px; left: 40px;
+            z-index: 100;
+        }
+        .back-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; backdrop-filter: blur(10px); transition: 0.2s;
+        }
+        .back-btn:hover { background: var(--brand); transform: scale(1.1); }
+
+        /* Mobile Styles */
+        @media (max-width: 1024px) {
+            .page-player { flex-direction: column; overflow-y: scroll; scrollbar-width: none; }
+            .main-viewport { flex: none; height: 75vh; padding: 20px; }
+            .episodes-sidebar { width: 100%; border-left: none; overflow-y: visible; flex: none; }
+            .video-stage { max-width: 85vw; height: auto; aspect-ratio: 9/16; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-player">
+        
+        <div class="floating-controls">
+            <button class="back-btn" onclick="window.close()"><i class="fas fa-arrow-left"></i></button>
+        </div>
+
+        <div class="main-viewport">
+            <div class="ambilight-bg"></div>
+            <div class="video-stage" id="main-player-container">
+                <!-- Video load in here dynamically -->
+            </div>
+        </div>
+
+        <div class="episodes-sidebar">
+            <div class="sidebar-header">
+                <h2>L'Ile de la Skibiditentafruit</h2>
+                <p>Disponible : 14 épisodes sur 16</p>
+            </div>
+            <ul class="ep-list" id="sidebar-list">
+                <!-- Episodes auto-generated -->
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // Data for available episodes
+        const EPISODES = [
+            { num: 1, id: '11fw23sowu', title: 'Le début de la tentation' },
+            { num: 2, id: 'sus4nihbct', title: 'Smoothies fatals' },
+            { num: 3, id: 'k9ebfe9p7t', title: 'Bananito voit rouge' },
+            { num: 4, id: 'xfvs6sgxl8', title: 'Trahison fruitée' },
+            { num: 6, id: 'qp3b52ule9', title: 'Le retour du ver' },
+            { num: 7, id: 'vyp8uc535n', title: 'La villa explose' },
+            { num: 8, id: 'd3z3tvibaq', title: 'Pomita en larmes' },
+            { num: 9, id: 'wdefzrrk8o', title: 'Choc exotique' },
+            { num: 10, id: '0fzex7oke7', title: 'Clash acidulé' },
+            { num: 11, id: 'pgv4soog38', title: 'Cerise sur le gâteau' },
+            { num: 12, id: '5kuqfb5f3z', title: 'Le grand mix' },
+            { num: 14, id: '8370hytydw', title: 'Presque la fin' },
+            { num: 15, id: 'd3m3z3rqo3', title: 'L\'avant-dernier jus' },
+            { num: 16, id: 'vb87gw39la', title: 'Finale en salade' }
+        ];
+
+        const listContainer = document.getElementById('sidebar-list');
+        const playerContainer = document.getElementById('main-player-container');
+        let activeEpIndex = 0;
+
+        // --- Render Sidebar ---
+        function renderSidebar() {
+            listContainer.innerHTML = '';
+            EPISODES.forEach((ep, i) => {
+                const li = document.createElement('li');
+                li.className = `ep-item ${i === activeEpIndex ? 'active' : ''}`;
+                li.onclick = () => switchEpisode(i);
+                li.innerHTML = `
+                    <div class="ep-thumb">
+                        <img src="img/fruit image.jpg" alt="Episode ${ep.num}">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="ep-info">
+                        <div class="ep-num">Partie ${ep.num}</div>
+                        <div class="ep-title">${ep.title}</div>
+                        <div class="ep-duration">2-3 min</div>
+                    </div>
+                `;
+                listContainer.appendChild(li);
+            });
+        }
+
+        // --- Switch Video Logic ---
+        function switchEpisode(index) {
+            activeEpIndex = index;
+            const ep = EPISODES[activeEpIndex];
+            
+            // Clean player area
+            playerContainer.innerHTML = '';
+            
+            // Inject new Wistia Embed
+            const scriptEmbed = document.createElement('script');
+            scriptEmbed.src = `https://fast.wistia.com/embed/${ep.id}.js`;
+            scriptEmbed.async = true;
+            scriptEmbed.setAttribute('type', 'module');
+            
+            const playerTag = document.createElement('wistia-player');
+            playerTag.setAttribute('media-id', ep.id);
+            playerTag.setAttribute('aspect', '0.5625');
+            
+            playerContainer.appendChild(scriptEmbed);
+            playerContainer.appendChild(playerTag);
+
+            // Re-render sidebar active state
+            renderSidebar();
+            
+            // Re-attach API listener for next episode
+            attachApiListener();
+        }
+
+        // --- Autoscroll / Next Episode Link ---
+        function attachApiListener() {
+            window._wq = window._wq || [];
+            _wq.push({
+                id: "_all",
+                onReady: function(video) {
+                    video.bind("end", function() {
+                        console.log("EP Finished, loading next...");
+                        if (activeEpIndex < EPISODES.length - 1) {
+                            switchEpisode(activeEpIndex + 1);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initial Load
+        renderSidebar();
+        switchEpisode(0); // Load Episode 1 first
+
+        // Handle navigation protection
+        window.history.pushState(null, null, window.location.href);
+        window.onpopstate = function() { window.history.go(1); };
+    </script>
+</body>
+</html>
