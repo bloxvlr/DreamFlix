@@ -29,7 +29,7 @@
                         <div class="settings-label">Nom d'affichage</div>
                         <div class="settings-sub" id="display-name-val">Utilisateur</div>
                     </div>
-                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Modifier</button>
+                    <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem" onclick="handleNicknameChange()">Modifier</button>
                 </div>
                 <div class="settings-row">
                     <div>
@@ -41,7 +41,7 @@
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">Formule</div>
-                        <div class="settings-sub">DreamFlix Premium</div>
+                        <div class="settings-sub" id="formule-val">Normal</div>
                     </div>
                     <span style="color:#46d369;font-size:0.8rem;font-weight:700">Actif</span>
                 </div>
@@ -167,17 +167,62 @@
     }
 
     // Load User Data
-    window.addEventListener('load', () => {
+    window.addEventListener('load', async () => {
         const user = DFAuth.getUser();
         if (user) {
             document.getElementById('display-name-val').innerText = user.name;
             document.getElementById('email-val').innerText = user.email;
+            
+            // Fetch subscription & refresh name
+            const { data: profile } = await DFAuth._supabase.from('profiles').select('subscription_type, full_name').eq('id', user.sub).single();
+            if (profile) {
+                const type = profile.subscription_type || 'FREE';
+                document.getElementById('formule-val').innerText = type === 'DIAMANT' ? 'DIAMANT PRO' : (type === 'GOLD' ? 'GOLD' : 'Normal');
+                document.getElementById('display-name-val').innerText = profile.full_name;
+            }
         }
 
         if (DFAuth.isAdmin()) {
             document.getElementById('admin-unlock-section').style.display = 'none';
         }
     });
+
+    // Nickname Change logic
+    async function handleNicknameChange() {
+        if (!DFAuth.canInteract()) return;
+        const user = DFAuth.getUser();
+        
+        const { data: profile, error: fetchError } = await DFAuth._supabase.from('profiles').select('last_name_change_at').eq('id', user.sub).single();
+        
+        if (profile && profile.last_name_change_at) {
+            const lastChange = new Date(profile.last_name_change_at);
+            const now = new Date();
+            const diffDays = Math.floor((now - lastChange) / (1000 * 60 * 60 * 24));
+            
+            if (diffDays < 14) {
+                alert(`[PRESTIGE] Vous ne pouvez changer de pseudo que tous les 14 jours. Revenez dans ${14 - diffDays} jours.`);
+                return;
+            }
+        }
+
+        const newName = prompt("Entrez votre nouveau pseudo (Visible sur le Classement) :");
+        if (!newName || newName.trim().length < 2) return;
+        if (newName.length > 20) return alert("Pseudonyme trop long (Max 20 caract.)");
+
+        const { error } = await DFAuth._supabase.from('profiles').update({
+            full_name: newName,
+            last_name_change_at: new Date().toISOString()
+        }).eq('id', user.sub);
+
+        if (error) {
+            alert('Erreur: ' + error.message);
+        } else {
+            alert('Pseudo mis à jour avec succès !');
+            // Update local session
+            localStorage.setItem('df_user', JSON.stringify({ ...user, name: newName }));
+            location.reload();
+        }
+    }
 
     // Handle Logout
     document.getElementById('settings-logout-btn').addEventListener('click', () => {

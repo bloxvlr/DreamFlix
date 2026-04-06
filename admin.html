@@ -90,7 +90,7 @@
                 <div id="grant-status" style="margin-top:15px;font-size:0.75rem;text-align:center;font-weight:700"></div>
             </div>
 
-            <!-- NEW: Account & Access -->
+            <!-- Account & Moderation -->
             <div class="admin-card">
                 <h2><i class="fas fa-id-card"></i> Moderation</h2>
                 <div class="form-group">
@@ -100,13 +100,6 @@
                 <div class="form-group">
                     <label class="form-label">New Full Name (Rename)</label>
                     <input type="text" id="mod-name" class="form-input" placeholder="Enter new pseudo">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Teleparty Status</label>
-                    <select id="mod-tp-access" class="form-input">
-                        <option value="false">LOCKED (Teaser)</option>
-                        <option value="true">AUTHORIZED (Full App)</option>
-                    </select>
                 </div>
                 <button onclick="applyModeration()" class="tp-btn-red" style="width:100%;margin-top:20px;font-weight:900">
                     Save Moderation
@@ -262,7 +255,6 @@
     async function applyModeration() {
         const email = document.getElementById('mod-email').value.trim();
         const newName = document.getElementById('mod-name').value.trim();
-        const tpStatus = document.getElementById('mod-tp-access').value === 'true';
         const status = document.getElementById('mod-status');
 
         if (!email) {
@@ -271,15 +263,18 @@
             return;
         }
 
+        if (!newName) {
+            status.style.color = '#ff4444';
+            status.innerText = 'Error: New name required.';
+            return;
+        }
+
         status.style.color = '#808080';
         status.innerText = 'Applying changes...';
 
-        let updateData = { teleparty_access: tpStatus };
-        if (newName) updateData.full_name = newName;
-
         const { error } = await _sb
             .from('profiles')
-            .update(updateData)
+            .update({ full_name: newName })
             .eq('email', email);
 
         if (error) {
@@ -287,10 +282,9 @@
             status.innerText = 'Fail: ' + error.message;
         } else {
             status.style.color = '#46d369';
-            status.innerText = `Success: Changes applied to ${email}.`;
+            status.innerText = `Success: ${email} renamed to ${newName}.`;
             setTimeout(() => { status.innerText = ''; }, 4000);
             loadOnlineUsers();
-            if (newName) loadLeaderboard?.(); // If it exists on this page context
         }
     }
 

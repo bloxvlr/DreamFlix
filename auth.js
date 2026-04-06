@@ -31,12 +31,21 @@ function parseJwt(token) {
 
 // --- Save user session & Update Supabase ---
 async function saveSession(payload) {
+    let existingProfile = null;
+    if (_supabase) {
+        try {
+            const { data } = await _supabase.from('profiles').select('*').eq('id', payload.sub).single();
+            existingProfile = data;
+        } catch(e) {}
+    }
+
     const user = {
-        name:    payload.name,
+        name:    existingProfile?.full_name || payload.name,
         email:   payload.email,
         picture: payload.picture,
         sub:     payload.sub,
         exp:     payload.exp,
+        plan:    existingProfile?.subscription_type || 'FREE'
     };
     localStorage.setItem(SESSION_KEY, JSON.stringify(user));
 
@@ -45,7 +54,7 @@ async function saveSession(payload) {
             await _supabase.from('profiles').upsert({
                 id: payload.sub,
                 email: payload.email,
-                full_name: payload.name,
+                full_name: user.name,
                 avatar_url: payload.picture,
                 last_seen: new Date().toISOString()
             });
