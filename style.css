@@ -334,3 +334,192 @@ body {
     .btn-pill { padding: 10px 22px; font-size: 0.85rem; }
     .df-catalog { padding: 15px 4% 80px; }
 }
+
+/* ===================================================
+   ULTRA-PREMIUM UI EFFECTS (Liquid Card Glow & Animated Inputs)
+   =================================================== */
+
+:root {
+    --light-size: 300px;
+}
+
+/* Card Glow Effect */
+.df-card, .df-grid-card {
+    position: relative;
+    transition: transform 0.3s;
+}
+
+.df-card:before, .df-grid-card:before {
+    content: "";
+    background-image: 
+        conic-gradient(from 0deg at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        #FFBD8C 0%, #E50914 11%, #E50914 15%, #F882FF 27%, #F882FF 31%, #8785FE 42%, #8785FE 46%, #9AFCFF 55%, #9AFCFF 59%, #99FD9C 70%, #99FD9C 74%, #FFFD84 87%, #FFFD84 91%, #FFBD8C 100%), 
+        radial-gradient(calc(var(--light-size)*1.5) circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        rgba(255,255,255,.7), rgba(0, 0, 0, .5) 50%), 
+        radial-gradient(calc(var(--light-size)*1.5) circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+        transparent, rgba(33,22,44,0.3) 60%, transparent 120%);
+    background-blend-mode: hue, color-dodge;
+    border-radius: inherit;
+    opacity: 0;
+    width: calc(100% + 4px); height: calc(100% + 4px);
+    position: absolute; left: -2px; top: -2px;
+    z-index: -1;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+}
+
+.df-card:hover:before, .df-grid-card:hover:before {
+    opacity: 1;
+}
+
+/* Expandable Premium Button */
+button.expand {
+    --button-height: 48px;
+    overflow: hidden; outline: none;
+    background-color: #1a1a1a;
+    border-radius: 12px;
+    padding: 12px 25px;
+    font-size: 0.95rem;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    cursor: pointer; position: relative;
+    transition: padding 0.3s, background 0.3s;
+    font-weight: 600;
+}
+button.expand:hover { background: #222; }
+
+.expand-icon {
+    position: absolute; top: 0; right: 0;
+    height: var(--button-height);
+    width: var(--button-height);
+    border-left: 1px solid rgba(255,255,255,0.1);
+    display: flex; justify-content: center; align-items: center;
+    transform: translateX(calc(var(--button-height) + 1px));
+    transition: transform 0.3s;
+}
+.expand-icon svg { width: 14px; height: 14px; transition: transform 0.3s; }
+.expand-icon svg.second { display: none; transform: scale(0); }
+
+button.expand:hover, button.expand.loading { padding-right: calc(25px + var(--button-height)); }
+button.expand:hover > .expand-icon, button.expand.loading > .expand-icon { transform: translateX(0); }
+button.expand.loading > .expand-icon > svg { transform: scale(0); }
+
+.loader {
+    width: 24px; height: 24px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: rotate 0.8s linear infinite;
+    position: absolute; opacity: 0; transition: opacity 0.3s;
+}
+@keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+button.expand.loading span.loader { opacity: 1; }
+button.expand.loaded span.loader { opacity: 0 !important; }
+button.expand.loaded .expand-icon svg.first { display: none; }
+button.expand.loaded .expand-icon svg.second { display: block; transform: scale(1.5); }
+
+/* Premium Switches & Checkboxes */
+.cb-label, .rb-label, .sw-label {
+    --toggle: rgba(255,255,255,0.05);
+    --toggle-border: rgba(255,255,255,0.2);
+    --toggle-inner: #fff;
+    position: relative; cursor: pointer; display: inline-flex; align-items: center;
+    gap: 12px;
+}
+.cb-label input, .rb-label input, .sw-label input { display: none; }
+
+.custom-switch {
+    width: 44px; height: 24px;
+    background: var(--toggle);
+    border: 1px solid var(--toggle-border);
+    border-radius: 20px;
+    transition: background 0.3s, border-color 0.3s;
+    position: relative;
+}
+.custom-switch:after {
+    content: ""; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; background: #fff;
+    border-radius: 50%; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.sw-label input:checked + .custom-switch { background: var(--brand); border-color: var(--brand); }
+.sw-label input:checked + .custom-switch:after { transform: translateX(20px); }
+
+.custom-checkbox { width: 22px; height: 22px; border: 2px solid var(--toggle-border); border-radius: 6px; position: relative; transition: 0.3s; }
+.sw-label input:checked + .custom-checkbox { background: var(--brand); border-color: var(--brand); }
+.sw-label input:checked + .custom-checkbox:after {
+    content: "\f00c"; font-family: "Font Awesome 6 Free"; font-weight: 900;
+    font-size: 0.7rem; color: #fff; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+}
+
+/* ===================================================
+   GALACTIC WATCH BUTTON (Hero Section)
+   =================================================== */
+.galaxy-button {
+    --transition: 0.25s;
+    --spark: 1.8s;
+    --hue: 0; /* DreamFlix Red */
+    --active: 0;
+    position: relative; scale: calc(1 + (var(--active) * 0.1));
+    transition: scale var(--transition); display: inline-block;
+}
+.galaxy-button button {
+    --cut: 0.1em;
+    --bg: radial-gradient(120% 120% at 126% 126%, hsl(var(--hue) calc(var(--active) * 97%) 98% / calc(var(--active) * 0.9)) 40%, transparent 50%) calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat, 
+          radial-gradient(120% 120% at 120% 120%, hsl(var(--hue) calc(var(--active) * 97%) 70% / calc(var(--active) * 1)) 30%, transparent 70%) calc(100px - (var(--active) * 100px)) 0 / 100% 100% no-repeat,
+          hsl(var(--hue) calc(var(--active) * 100%) calc(12% - (var(--active) * 8%)));
+    background: var(--bg);
+    font-size: 0.95rem; font-weight: 700; border: 0; cursor: pointer;
+    padding: 12px 28px; display: flex; align-items: center; gap: 10px;
+    white-space: nowrap; border-radius: 2rem; position: relative;
+    box-shadow: 0 0 calc(var(--active) * 3em) calc(var(--active) * 1em) hsl(var(--hue) 97% 61% / 0.5);
+    transition: box-shadow var(--transition), scale var(--transition), background var(--transition);
+    transform-style: preserve-3d; perspective: 100vmin; overflow: hidden;
+    color: #fff;
+}
+.galaxy-button:hover { --active: 1; }
+.galaxy-button:active { scale: 1; }
+
+.star {
+    height: calc(var(--size) * 1px); aspect-ratio: 1;
+    background: white; border-radius: 50%; position: absolute;
+    opacity: var(--alpha); top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(10deg) rotate(0deg) translateY(calc(var(--distance) * 1px));
+    animation: orbit calc(var(--duration) * 1s) calc(var(--delay) * -1s) infinite linear;
+}
+@keyframes orbit { to { transform: translate(-50%, -50%) rotate(10deg) rotate(360deg) translateY(calc(var(--distance) * 1px)); } }
+.galaxy {
+    position: absolute; width: 100%; aspect-ratio: 1;
+    top: 50%; left: 50%; translate: -50% -50%;
+    overflow: hidden; opacity: var(--active); transition: opacity var(--transition);
+}
+.galaxy__ring {
+    height: 200%; width: 200%; position: absolute;
+    top: 50%; left: 50%; border-radius: 50%;
+    transform: translate(-28%, -40%) rotateX(-24deg) rotateY(-30deg) rotateX(90deg);
+    transform-style: preserve-3d;
+}
+.spark {
+    position: absolute; inset: 0; border-radius: 2rem; rotate: 0deg;
+    overflow: hidden; mask: linear-gradient(white, transparent 50%);
+    animation: flip calc(var(--spark) * 2) infinite steps(2, end);
+}
+@keyframes flip { to { rotate: 360deg; } }
+.spark:before {
+    content: ""; position: absolute; width: 200%; aspect-ratio: 1;
+    top: 0%; left: 50%; z-index: -1; translate: -50% -15%;
+    rotate: 0; transform: rotate(-90deg);
+    opacity: calc((var(--active)) + 0.4);
+    background: conic-gradient(from 0deg, transparent 0 340deg, white 360deg);
+    transition: opacity var(--transition);
+    animation: rotate-spark var(--spark) linear infinite both;
+}
+@keyframes rotate-spark { to { transform: rotate(90deg); } }
+.backdrop { position: absolute; inset: 0.1em; background: var(--bg); border-radius: 2rem; transition: background var(--transition); }
+.text {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; gap: 8px;
+    color: hsl(0 0% calc(80% + (var(--active) * 20%)));
+}
+.text i { font-size: 0.8rem; }

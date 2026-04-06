@@ -64,5 +64,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // --- Liquid Card Glow (Desktop) ---
+    document.addEventListener('pointermove', (e) => {
+        const cards = document.querySelectorAll('.df-card, .df-grid-card');
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
+
+    // --- Galactic Button Particles ---
+    const RANDOM = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+    const starParticles = document.querySelectorAll('.star');
+    starParticles.forEach(p => {
+        p.setAttribute('style', `
+            --angle: ${RANDOM(0, 360)};
+            --duration: ${RANDOM(6, 20)};
+            --delay: ${RANDOM(1, 10)};
+            --alpha: ${RANDOM(40, 90) / 100};
+            --size: ${RANDOM(2, 6)};
+            --distance: ${RANDOM(40, 200)};
+        `);
+    });
+
     console.log(`DreamFlix loaded on: ${page}`);
 });

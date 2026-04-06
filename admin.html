@@ -119,7 +119,20 @@
                     </div>
                     <div class="upload-status" id="upload-status"></div>
 
-                    <button type="submit" id="submit-btn" class="btn-pill btn-pill-white" style="width:100%;margin-top:10px">Post Video</button>
+                    <!-- Premium Expandable Button -->
+                    <button type="submit" id="submit-btn" class="expand" style="width:100%;margin-top:20px">
+                        <span id="btn-text">Post Video</span>
+                        <span class="expand-icon">
+                            <svg class="first" xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 32 32">
+                                <path d="M8.489 31.975c-0.271 0-0.549-0.107-0.757-0.316-0.417-0.417-0.417-1.098 0-1.515l14.258-14.264-14.050-14.050c-0.417-0.417-0.417-1.098 0-1.515s1.098-0.417 1.515 0l14.807 14.807c0.417 0.417 0.417 1.098 0 1.515l-15.015 15.022c-0.208 0.208-0.486 0.316-0.757 0.316z" />
+                            </svg>
+                            <span class="loader"></span>
+                            <svg class="second" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 5L8 15l-5-4" />
+                            </svg>
+                        </span>
+                    </button>
+                    
                     <button type="button" id="cancel-edit" class="btn-pill btn-pill-ghost" style="width:100%;margin-top:10px;display:none">Cancel Edit</button>
                 </form>
 
@@ -247,6 +260,7 @@
         const status = document.getElementById('upload-status');
         const editId = document.getElementById('edit-id').value;
 
+        btn.classList.add('loading');
         btn.disabled = true;
         progress.style.display = 'block';
         
@@ -293,20 +307,33 @@
             fill.style.width = '100%';
             status.innerText = editId ? 'Updated successfully!' : 'Posted successfully!';
             
+            // Trigger Button Completion
+            btn.classList.add('loaded');
             setTimeout(() => {
-                document.getElementById('cancel-edit').click(); 
-                loadContent();
-                progress.style.display = 'none';
-                fill.style.width = '0%';
-                btn.disabled = false;
-            }, 1000);
+                btn.classList.add('finished');
+                setTimeout(() => {
+                    btn.classList.remove('loading', 'loaded', 'finished');
+                    btn.disabled = false;
+                    document.getElementById('cancel-edit').click();
+                    loadContent();
+                    progress.style.display = 'none';
+                    fill.style.width = '0%';
+                }, 2000);
+            }, 700);
 
         } catch (err) {
+            console.error(err);
             alert('Error: ' + err.message);
+            btn.classList.remove('loading');
             btn.disabled = false;
             progress.style.display = 'none';
         }
     });
+
+    // Handle Edit State for Button
+    function updateBtnText(text) {
+        document.getElementById('btn-text').innerText = text;
+    }
 
     // --- Init ---
     loadOnlineUsers();

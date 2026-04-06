@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Settings</title>
+    <title>DreamFlix — Settings</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lenis@1.1.2/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
 <body>
 <div id="nav-placeholder"></div>
@@ -26,14 +27,14 @@
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">Display Name</div>
-                        <div class="settings-sub">User_1234</div>
+                        <div class="settings-sub" id="display-name-val">User</div>
                     </div>
                     <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Edit</button>
                 </div>
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">Email</div>
-                        <div class="settings-sub">user@dreamflix.ai</div>
+                        <div class="settings-sub" id="email-val">user@dreamflix.ai</div>
                     </div>
                     <button class="btn-pill btn-pill-ghost" style="padding:8px 20px;font-size:0.8rem">Edit</button>
                 </div>
@@ -54,21 +55,30 @@
                         <div class="settings-label">Auto-Play Next Episode</div>
                         <div class="settings-sub">Automatically plays the next episode</div>
                     </div>
-                    <div class="toggle on"></div>
+                    <label class="sw-label">
+                        <input type="checkbox" checked onchange="this.nextElementSibling.classList.toggle('active')">
+                        <div class="custom-switch active"></div>
+                    </label>
                 </div>
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">Subtitles</div>
                         <div class="settings-sub">Show subtitles by default</div>
                     </div>
-                    <div class="toggle"></div>
+                    <label class="sw-label">
+                        <input type="checkbox" onchange="this.nextElementSibling.classList.toggle('active')">
+                        <div class="custom-switch"></div>
+                    </label>
                 </div>
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">High Quality Streaming</div>
                         <div class="settings-sub">4K UHD when available</div>
                     </div>
-                    <div class="toggle on"></div>
+                    <label class="sw-label">
+                        <input type="checkbox" checked onchange="this.nextElementSibling.classList.toggle('active')">
+                        <div class="custom-switch active"></div>
+                    </label>
                 </div>
             </div>
 
@@ -80,24 +90,30 @@
                         <div class="settings-label">New Episodes</div>
                         <div class="settings-sub">Notify when a new episode drops</div>
                     </div>
-                    <div class="toggle on"></div>
+                    <label class="cb-label">
+                        <input type="checkbox" checked onchange="this.nextElementSibling.parentElement.classList.toggle('active')">
+                        <div class="custom-checkbox active"></div>
+                    </label>
                 </div>
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">Friends Activity</div>
                         <div class="settings-sub">When friends start watching</div>
                     </div>
-                    <div class="toggle on"></div>
+                    <label class="cb-label">
+                        <input type="checkbox" onchange="this.nextElementSibling.parentElement.classList.toggle('active')">
+                        <div class="custom-checkbox"></div>
+                    </label>
                 </div>
             </div>
 
             <!-- Admin Access -->
             <div class="settings-section" id="admin-unlock-section">
-                <h3>AccÃ¨s Admin</h3>
+                <h3>Accès Admin</h3>
                 <div class="settings-row">
                     <div>
                         <div class="settings-label">Code d'administration</div>
-                        <div class="settings-sub">Entrez le code secret pour dÃ©bloquer le panneau</div>
+                        <div class="settings-sub">Entrez le code secret pour débloquer le panneau</div>
                     </div>
                     <div style="display:flex;gap:10px">
                         <input type="password" id="admin-code-input" class="form-input" style="width:120px;padding:8px 12px;font-size:0.8rem;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;outline:none" placeholder="******">
@@ -107,7 +123,7 @@
                 <div id="admin-status-msg" style="margin-top:10px;font-size:0.75rem;display:none"></div>
             </div>
 
-            <!-- Danger -->
+            <!-- Account -->
             <div class="settings-section">
                 <h3>Account</h3>
                 <div class="settings-row">
@@ -120,13 +136,28 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src='auth.js'></script><script src="nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="auth.js"></script>
+<script src="nav.js"></script>
 <script src="script.js"></script>
 
 <script>
+    // Load User Data
+    window.addEventListener('load', () => {
+        const user = DFAuth.getUser();
+        if (user) {
+            document.getElementById('display-name-val').innerText = user.name;
+            document.getElementById('email-val').innerText = user.email;
+        }
+
+        if (DFAuth.isAdmin()) {
+            document.getElementById('admin-unlock-section').style.display = 'none';
+        }
+    });
+
     // Handle Logout
     document.getElementById('settings-logout-btn').addEventListener('click', () => {
-        if(confirm('Se dÃ©connecter de DreamFlix ?')) {
+        if(confirm('Se déconnecter de DreamFlix ?')) {
             DFAuth.logOut();
         }
     });
@@ -140,7 +171,7 @@
         if (DFAuth.tryUnlockAdmin(code)) {
             msg.style.display = 'block';
             msg.style.color = '#46d369';
-            msg.innerHTML = '<i class="fas fa-check-circle"></i> Admin Panel dÃ©bloquÃ© ! Rechargez la page.';
+            msg.innerHTML = '<i class="fas fa-check-circle"></i> Admin Panel débloqué ! Rechargez la page.';
             setTimeout(() => { location.reload(); }, 1000);
         } else {
             msg.style.display = 'block';
@@ -148,18 +179,7 @@
             msg.innerHTML = '<i class="fas fa-times-circle"></i> Code incorrect.';
         }
     }
-
-    // Hide section if already admin
-    window.addEventListener('load', () => {
-        if (DFAuth.isAdmin()) {
-            document.getElementById('admin-unlock-section').style.display = 'none';
-        }
-    });
 </script>
 
 </body>
 </html>
-
-
-
-
