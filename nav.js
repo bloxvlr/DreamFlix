@@ -130,8 +130,8 @@ if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
 
             const { title, message, url, target_email, type } = payload.new;
 
-            // 0. Check if PUSH_TEST (Priority Diagnostic)
-            if (type === 'PUSH_TEST') {
+            // 0. Check if PUSH_TEST or PUSH_ADMIN (Priority Diagnostic/Annoucement)
+            if (type === 'PUSH_TEST' || type === 'PUSH_ADMIN') {
                 await DFNotif.sendLocal(title, message, url);
                 DFAlert.show(title, message, url);
                 return;
