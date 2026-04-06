@@ -80,10 +80,13 @@
                         <div class="settings-label">Nouveaux épisodes <i class="fas fa-crown" style="color:#FFD700; font-size:0.7rem; margin-left:5px"></i></div>
                         <div class="settings-sub" id="notif-episodes-sub">Notifier lors de la sortie d'un nouvel épisode (GOLD)</div>
                     </div>
-                    <label class="cb-label" id="notif-episodes-label">
-                        <input type="checkbox" id="notif-episodes-toggle" onchange="updateProfileSetting('notifications_episodes', this.checked)">
-                        <div class="custom-checkbox"></div>
-                    </label>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px">
+                        <label class="cb-label" id="notif-episodes-label">
+                            <input type="checkbox" id="notif-episodes-toggle" onchange="updateProfileSetting('notifications_episodes', this.checked)">
+                            <div class="custom-checkbox"></div>
+                        </label>
+                        <button id="btn-test-notif" class="btn-pill btn-pill-ghost" style="font-size:0.65rem; padding:4px 8px; display:none" onclick="sendTestNotif()">Tester</button>
+                    </div>
                 </div>
             </div>
 
@@ -176,6 +179,7 @@
                     document.getElementById('notif-episodes-sub').innerHTML += " <span style='color:var(--brand);font-weight:700'>[RESERVÉ GOLD]</span>";
                 } else {
                     setToggle('notif-episodes-toggle', profile.notifications_episodes);
+                    document.getElementById('btn-test-notif').style.display = 'block';
                 }
             }
         }
@@ -203,6 +207,13 @@
         if (!DFAuth.canInteract()) return;
         const user = DFAuth.getUser();
         
+        // NEW: Handle Notification Permission
+        if (column === 'notifications_episodes' && value === true) {
+            DFNotif.requestPermission(() => {
+                DFNotif.sendLocal("DreamFlix", "Les notifications sont activées !");
+            });
+        }
+
         // Visual feedback
         const el = document.getElementById(window.event.target.id);
         if (el && el.nextElementSibling) el.nextElementSibling.style.opacity = '0.5';
@@ -301,6 +312,14 @@
             }
         } else {
             alert('Veuillez taper "suprimer" correctement pour confirmer.');
+        }
+    }
+
+    function sendTestNotif() {
+        if (Notification.permission === 'granted') {
+            DFNotif.sendLocal("DreamFlix", "Ceci est un test de notification Premium ! 🍿");
+        } else {
+            DFNotif.requestPermission(() => DFNotif.sendLocal("DreamFlix", "Test réussi !"));
         }
     }
 </script>

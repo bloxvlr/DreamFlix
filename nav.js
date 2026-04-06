@@ -8,6 +8,50 @@
     }
 })();
 
+// --- Notification Manager ---
+window.DFNotif = {
+    async register() {
+        if ('serviceWorker' in navigator) {
+            try {
+                await navigator.serviceWorker.register('sw.js');
+                console.log('[Notification] Service Worker Active');
+            } catch(e) { console.warn('[Notification] SW Error:', e); }
+        }
+    },
+
+    async requestPermission(callback) {
+        if (!("Notification" in window)) return;
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted' && callback) callback();
+    },
+
+    sendLocal(title, message, url = 'index.html') {
+        if (Notification.permission === 'granted') {
+            const n = new Notification(title, {
+                body: message,
+                icon: 'img/logo_dreamflix.png',
+                badge: 'img/logo_dreamflix.png'
+            });
+            n.onclick = () => { window.focus(); window.location.href = url; n.close(); };
+        }
+    }
+};
+
+// Start Realtime Listener for Platinum/Gold Alerts
+if (typeof DFAuth !== 'undefined' && DFAuth._supabase) {
+    DFAuth._supabase
+        .channel('public:broadcasts')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'broadcasts' }, payload => {
+            const user = DFAuth.getUser();
+            if (user && (user.plan === 'GOLD' || user.plan === 'DIAMANT')) {
+                DFNotif.sendLocal(payload.new.title, payload.new.message, payload.new.url);
+            }
+        })
+        .subscribe();
+}
+
+DFNotif.register();
+
 const NAV_HTML = `
 <nav class="df-nav" id="df-nav">
     <div style="display:flex;align-items:center;gap:28px;flex:1">
