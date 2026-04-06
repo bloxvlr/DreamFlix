@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamFlix — Sign In</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Google Identity Services -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="auth.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --brand: #E50914;
+            --bg: #000;
+            --text: #fff;
+            --muted: #808080;
+        }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Inter', system-ui, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Background Hero --- */
+        .login-bg {
+            position: fixed; inset: 0;
+            background: url('img/daredevil_hero.png') center/cover no-repeat;
+            filter: brightness(0.35);
+            z-index: 0;
+        }
+        .login-bg-gradient {
+            position: fixed; inset: 0;
+            background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+            z-index: 1;
+        }
+
+        /* --- Nav Logo --- */
+        .login-nav {
+            position: relative; z-index: 10;
+            padding: 28px 5%;
+        }
+        .login-nav img { width: 130px; mix-blend-mode: screen; }
+
+        /* --- Card --- */
+        .login-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative; z-index: 10;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: rgba(0, 0, 0, 0.82);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 50px 44px;
+            width: 100%;
+            max-width: 420px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            text-align: center;
+        }
+
+        .login-logo-wrap { margin-bottom: 30px; }
+        .login-logo-wrap img { width: 150px; mix-blend-mode: screen; }
+
+        .login-title {
+            font-size: 1.9rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .login-sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 38px;
+            line-height: 1.5;
+        }
+
+        /* --- Google Button Container --- */
+        #google-btn {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .divider {
+            display: flex; align-items: center; gap: 12px;
+            margin: 20px 0;
+            color: rgba(255,255,255,0.2);
+            font-size: 0.75rem;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1;
+            height: 1px; background: rgba(255,255,255,0.1);
+        }
+
+        /* --- Email fallback (placeholder only, not functional) --- */
+        .email-input {
+            width: 100%; padding: 14px 18px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px; color: #fff;
+            font-size: 0.9rem; outline: none;
+            transition: border 0.2s;
+            font-family: inherit;
+        }
+        .email-input:focus { border-color: rgba(255,255,255,0.3); }
+        .email-input::placeholder { color: rgba(255,255,255,0.3); }
+
+        .btn-main {
+            width: 100%; padding: 14px;
+            background: var(--brand); color: #fff;
+            border: none; border-radius: 12px;
+            font-weight: 700; font-size: 0.95rem;
+            cursor: pointer; margin-top: 14px;
+            transition: opacity 0.2s;
+        }
+        .btn-main:hover { opacity: 0.88; }
+
+        .login-terms {
+            font-size: 0.72rem;
+            color: rgba(255,255,255,0.3);
+            margin-top: 28px;
+            line-height: 1.6;
+        }
+        .login-terms a { color: rgba(255,255,255,0.5); }
+
+        /* Error Message */
+        .error-msg {
+            display: none;
+            background: rgba(229,9,20,0.15);
+            border: 1px solid rgba(229,9,20,0.3);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.82rem;
+            color: #ff6b6b;
+            margin-bottom: 16px;
+        }
+        .error-msg.visible { display: block; }
+
+        /* Loading spinner */
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin: 10px 0;
+        }
+        .loading.visible { display: flex; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .login-card { padding: 36px 24px; }
+            .login-title { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-bg"></div>
+    <div class="login-bg-gradient"></div>
+
+    <!-- Logo top left -->
+    <nav class="login-nav">
+        <img src="img/Logo dreamflix.png" alt="DreamFlix">
+    </nav>
+
+    <div class="login-wrapper">
+        <div class="login-card">
+
+            <div class="login-logo-wrap">
+                <img src="img/Logo dreamflix.png" alt="DreamFlix">
+            </div>
+
+            <h1 class="login-title">Bienvenue</h1>
+            <p class="login-sub">Connectez-vous pour accéder à DreamFlix et profiter de toutes nos séries et films IA.</p>
+
+            <div class="error-msg" id="error-msg">
+                <i class="fas fa-exclamation-circle"></i> Connexion échouée. Veuillez réessayer.
+            </div>
+            <div class="loading" id="loading">
+                <div class="spinner"></div> Connexion en cours...
+            </div>
+
+            <!-- Google Sign-In Button (rendered by GIS) -->
+            <div id="google-btn"></div>
+
+            <div class="divider">ou continuez avec</div>
+
+            <!-- Email fallback (visual only) -->
+            <input type="email" class="email-input" placeholder="Adresse e-mail">
+            <input type="password" class="email-input" placeholder="Mot de passe" style="margin-top:10px">
+            <button class="btn-main">Se connecter</button>
+
+            <p class="login-terms">
+                En continuant, vous acceptez les
+                <a href="#">Conditions d'utilisation</a> et la
+                <a href="#">Politique de confidentialité</a> de DreamFlix.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // If already logged in, skip to home
+        window.addEventListener('load', () => {
+            DFAuth.redirectIfLoggedIn('index.html');
+
+            // Init Google Auth when GIS library is ready
+            const tryInit = () => {
+                if (typeof google !== 'undefined' && google.accounts) {
+                    DFAuth.initGoogleAuth({
+                        onSuccess: (user) => {
+                            document.getElementById('loading').classList.add('visible');
+                            document.getElementById('error-msg').classList.remove('visible');
+                            // Small delay for UX
+                            setTimeout(() => { window.location.href = 'index.html'; }, 800);
+                        },
+                        onError: () => {
+                            document.getElementById('error-msg').classList.add('visible');
+                            document.getElementById('loading').classList.remove('visible');
+                        }
+                    });
+                    DFAuth.renderGoogleButton('google-btn', 'filled_black');
+                    // Show One Tap
+                    google.accounts.id.prompt();
+                } else {
+                    setTimeout(tryInit, 300);
+                }
+            };
+            tryInit();
+        });
+    </script>
+</body>
+</html>

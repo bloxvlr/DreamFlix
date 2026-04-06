@@ -1,4 +1,5 @@
 // DreamFlix — shared nav + mobile bar injected into every page
+// Requires: auth.js to be loaded BEFORE this file
 
 const NAV_HTML = `
 <nav class="df-nav" id="df-nav">
@@ -15,9 +16,33 @@ const NAV_HTML = `
         <i class="fas fa-search nav-search-icon"></i>
         <input type="text" class="nav-search" placeholder="Search series, movies...">
     </div>
-    <div class="nav-right">
-        <i class="fas fa-bell"></i>
-        <div class="nav-avatar"></div>
+    <div class="nav-right" style="display:flex;align-items:center;gap:18px">
+        <i class="fas fa-bell" style="cursor:pointer"></i>
+        <div id="nav-profile-area" style="display:flex;align-items:center;gap:10px;cursor:pointer;position:relative">
+            <img id="nav-avatar" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
+                 style="width:34px;height:34px;border-radius:8px;object-fit:cover;border:2px solid rgba(255,255,255,0.15)">
+            <span id="nav-username" style="font-size:0.82rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+            <i class="fas fa-caret-down" style="font-size:0.75rem;color:#808080"></i>
+            <!-- Profile Dropdown -->
+            <div id="nav-dropdown" style="
+                display:none;position:absolute;top:calc(100% + 12px);right:0;
+                background:rgba(10,10,10,0.97);border:1px solid rgba(255,255,255,0.1);
+                border-radius:14px;min-width:190px;padding:8px 0;
+                backdrop-filter:blur(20px);box-shadow:0 20px 50px rgba(0,0,0,0.8);z-index:5000;
+            ">
+                <div id="nav-dropdown-email" style="padding:12px 18px 8px;font-size:0.72rem;color:#808080;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:4px"></div>
+                <a href="settings.html" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;transition:0.15s" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='rgba(255,255,255,0.75)'">
+                    <i class="fas fa-cog" style="width:16px;text-align:center"></i> Settings
+                </a>
+                <a href="mylist.html" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:rgba(255,255,255,0.75);font-size:0.85rem;text-decoration:none;transition:0.15s" onmouseenter="this.style.color='#fff'" onmouseleave="this.style.color='rgba(255,255,255,0.75)'">
+                    <i class="fas fa-bookmark" style="width:16px;text-align:center"></i> My List
+                </a>
+                <div style="border-top:1px solid rgba(255,255,255,0.08);margin:4px 0"></div>
+                <div id="nav-logout-btn" style="display:flex;align-items:center;gap:12px;padding:11px 18px;color:#E50914;font-size:0.85rem;cursor:pointer;transition:0.15s" onmouseenter="this.style.opacity='0.7'" onmouseleave="this.style.opacity='1'">
+                    <i class="fas fa-sign-out-alt" style="width:16px;text-align:center"></i> Log Out
+                </div>
+            </div>
+        </div>
     </div>
 </nav>`;
 
@@ -39,7 +64,7 @@ const SIDEBAR_HTML = `
     <div class="sidebar-group">
         <p class="sidebar-label">General</p>
         <a href="settings.html" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a>
-        <a href="#" class="sidebar-link" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        <a href="#" class="sidebar-link" id="sidebar-logout"><i class="fas fa-sign-out-alt"></i> Log Out</a>
     </div>
 </aside>`;
 
@@ -52,15 +77,73 @@ const MOBILE_BAR_HTML = `
     <a href="settings.html" class="mobile-tab"><i class="fas fa-user"></i><span>Profile</span></a>
 </div>`;
 
-// Inject into page
+// --- Guard: require auth before injecting nav ---
+if (typeof DFAuth !== 'undefined') {
+    DFAuth.requireAuth();
+}
+
+// Inject HTML
 document.getElementById('nav-placeholder')?.insertAdjacentHTML('afterend', NAV_HTML);
 document.getElementById('sidebar-placeholder')?.insertAdjacentHTML('afterend', SIDEBAR_HTML);
 document.body.insertAdjacentHTML('beforeend', MOBILE_BAR_HTML);
 
-// Log out
-document.addEventListener('click', e => {
-    if (e.target.closest('#logout-btn')) {
+// --- Populate user info in navbar ---
+(function populateUser() {
+    if (typeof DFAuth === 'undefined') return;
+    const user = DFAuth.getUser();
+    if (!user) return;
+
+    const avatar = document.getElementById('nav-avatar');
+    const username = document.getElementById('nav-username');
+    const emailEl = document.getElementById('nav-dropdown-email');
+
+    if (avatar && user.picture) {
+        avatar.src = user.picture;
+        avatar.onerror = () => { avatar.src = 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'; };
+    }
+    if (username) {
+        username.textContent = user.name?.split(' ')[0] || 'User';
+    }
+    if (emailEl) {
+        emailEl.textContent = user.email || '';
+    }
+})();
+
+// --- Profile Dropdown Toggle ---
+document.addEventListener('click', (e) => {
+    const area = document.getElementById('nav-profile-area');
+    const dropdown = document.getElementById('nav-dropdown');
+    if (!area || !dropdown) return;
+
+    if (area.contains(e.target)) {
+        dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    } else {
+        dropdown.style.display = 'none';
+    }
+});
+
+// --- Logout Buttons ---
+document.addEventListener('click', (e) => {
+    if (e.target.closest('#nav-logout-btn') || e.target.closest('#sidebar-logout')) {
         e.preventDefault();
-        if (confirm('Se déconnecter de DreamFlix ?')) location.href = 'index.html';
+        if (confirm('Se déconnecter de DreamFlix ?')) {
+            DFAuth.logOut();
+        }
+    }
+});
+
+// --- Mobile Bar Active Page ---
+const _page = location.pathname.split('/').pop() || 'index.html';
+document.querySelectorAll('.mobile-tab').forEach(tab => {
+    const href = tab.getAttribute('href') || '';
+    if (href === _page || ((_page === '' || _page === 'index.html') && href === 'index.html')) {
+        tab.classList.add('active');
+    }
+});
+
+// --- Sidebar Active Link ---
+document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => {
+    if ((link.getAttribute('href') || '').includes(_page)) {
+        link.classList.add('active');
     }
 });
