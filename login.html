@@ -56,16 +56,28 @@
         }
         .login-nav img { width: 140px; mix-blend-mode: screen; opacity: 0.9; }
 
-        /* --- Card Placement --- */
         .login-wrapper {
             flex: 1;
             display: flex;
-            align-items: flex-start; /* Move to top */
-            justify-content: center;
+            flex-direction: column; /* Stack Card then Info */
+            align-items: center; /* Center horizontally */
+            justify-content: flex-start; /* Place at the top */
             position: relative; z-index: 10;
             padding: 20px;
             padding-top: 60px; /* Spacing from top */
         }
+
+        /* --- NEW: Explainer and Hook --- */
+        .login-info {
+            max-width: 420px; text-align: center; margin-top: 50px;
+            color: #fff; background: rgba(0,0,0,0.4); 
+            padding: 30px; border-radius: 20px; border: 1px solid rgba(229, 9, 20, 0.1);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        }
+        .info-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 12px; color: var(--brand); letter-spacing: 1px; }
+        .info-text { font-size: 0.88rem; line-height: 1.6; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
+        .info-hook { font-size: 0.92rem; color: #fff; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
+        .info-hook i { color: #ffd700; margin-right: 6px; }
 
         .login-card {
             background: rgba(0, 0, 0, 0.82);
@@ -218,6 +230,20 @@
                 <a href="#">Conditions d'utilisation</a> et la
                 <a href="#">Politique de confidentialitÃ©</a> de DreamFlix.
             </p>
+        </div>
+
+        <!-- NEW: Explainer and Hook below the card -->
+        <div class="login-info">
+            <h2 class="info-title">Bienvenue dans l'Infini</h2>
+            <p class="info-text">
+                DreamFlix est la première plateforme de streaming dédiée exclusivement aux contenus 
+                générés par Intelligence Artificielle. Explorez des récits sans limites et des mondes 
+                visuels créés pour l'avenir du cinéma.
+            </p>
+            <div class="info-hook">
+                <i class="fas fa-bolt"></i> Plus de 100 nouvelles séries IA ajoutées chaque semaine.
+                <br><strong>L'impossible est désormais à portée de clic. Relevez le défi.</strong>
+            </div>
         </div>
     </div>
 
