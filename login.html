@@ -28,7 +28,7 @@
                 var(--bg);
             color: var(--text);
             font-family: 'Inter', system-ui, Arial, sans-serif;
-            min-height: 250vh; /* Keep for warp effect */
+            min-height: 600vh; /* Much longer scroll for full exploration */
             display: flex;
             flex-direction: column;
             -webkit-font-smoothing: antialiased;
@@ -67,29 +67,53 @@
             padding-top: 60px; /* Spacing from top */
         }
 
-        /* --- NEW: Explainer and Hook --- */
-        .login-info {
-            max-width: 420px; text-align: center; margin-top: 50px;
-            color: #fff; background: rgba(0,0,0,0.4); 
-            padding: 30px; border-radius: 20px; border: 1px solid rgba(229, 9, 20, 0.1);
-            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        /* --- 3D BRUTAL SCROLL WORLD --- */
+        .depth-mask {
+            position: fixed; inset: 0; pointer-events: none; z-index: 5;
+            background: radial-gradient(circle at center, transparent 0%, #000 85%);
         }
-        .info-title { font-size: 1.2rem; font-weight: 900; margin-bottom: 12px; color: var(--brand); letter-spacing: 1px; }
-        .info-text { font-size: 0.88rem; line-height: 1.6; color: rgba(255,255,255,0.7); margin-bottom: 20px; }
-        .info-hook { font-size: 0.92rem; color: #fff; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-        .info-hook i { color: #ffd700; margin-right: 6px; }
+        .noise {
+            position: fixed; inset: 0; pointer-events: none; z-index: 6; opacity: 0.15; mix-blend-mode: overlay;
+            background: url('data:image/svg+xml;utf8,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="ns"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23ns)"/%3E%3C/svg%3E');
+        }
+        .viewport {
+            position: fixed; inset: 0; perspective: 800px; overflow: hidden; z-index: 2; pointer-events: none;
+        }
+        .world {
+            position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; will-change: transform;
+        }
+        .item { position: absolute; left: 0; top: 0; backface-visibility: hidden; transform-origin: center; display: flex; align-items: center; justify-content: center; }
+        
+        .card-3d {
+            width: 320px; height: 420px; transform: translate(-50%, -50%); /* Larger card */
+            background: rgba(10, 10, 10, 0.7); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 2.5rem; display: flex; flex-direction: column;
+            justify-content: space-between; backdrop-filter: blur(10px);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5); border-left: 2px solid var(--brand);
+        }
+        .card-3d h2 { font-size: 2.5rem; font-weight: 900; line-height: 1; text-transform: uppercase; color: #fff; margin: 0; }
+        .card-3d .card-tag { font-family: monospace; font-size: 0.7rem; color: var(--brand); text-transform: uppercase; margin-bottom: 15px; }
+        .card-3d p { font-size: 0.85rem; color: rgba(255,255,255,0.6); line-height: 1.5; margin-top: auto; }
+
+        .big-text {
+            font-size: 12vw; font-weight: 900; color: transparent;
+            -webkit-text-stroke: 1.5px rgba(229, 9, 20, 0.3);
+            text-transform: uppercase; white-space: nowrap; transform: translate(-50%, -50%);
+        }
 
         .login-card {
-            background: rgba(0, 0, 0, 0.82);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 50px 44px;
+            position: relative;
+            background: rgba(10, 10, 10, 0.7); 
+            border: 1px solid rgba(255, 255, 255, 0.12); /* Clean static glass edge */
+            border-radius: 24px;
+            padding: 55px 48px;
             width: 100%;
-            max-width: 420px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 25px 60px rgba(0,0,0,0.8);
+            max-width: 440px;
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.9);
             text-align: center;
+            overflow: visible;
         }
 
         .login-logo-wrap { margin-bottom: 30px; }
@@ -231,20 +255,13 @@
                 <a href="#">Politique de confidentialitÃ©</a> de DreamFlix.
             </p>
         </div>
+    </div>
 
-        <!-- NEW: Explainer and Hook below the card -->
-        <div class="login-info">
-            <h2 class="info-title">Bienvenue dans l'Infini</h2>
-            <p class="info-text">
-                DreamFlix est la première plateforme de streaming dédiée exclusivement aux contenus 
-                générés par Intelligence Artificielle. Explorez des récits sans limites et des mondes 
-                visuels créés pour l'avenir du cinéma.
-            </p>
-            <div class="info-hook">
-                <i class="fas fa-bolt"></i> Plus de 100 nouvelles séries IA ajoutées chaque semaine.
-                <br><strong>L'impossible est désormais à portée de clic. Relevez le défi.</strong>
-            </div>
-        </div>
+    <!-- 3D Brutal World -->
+    <div class="depth-mask"></div>
+    <div class="noise"></div>
+    <div class="viewport" id="viewport">
+        <div class="world" id="world"></div>
     </div>
 
     <script>
@@ -257,65 +274,128 @@
                 DFAuth.redirectIfLoggedIn('index.html');
             }
 
-            // --- 1. LENIS INITIALIZATION ---
+            // --- 1. CORE ANIMATION ENGINE (LENIS) ---
             const lenis = new Lenis({
                 duration: 1.2,
                 easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
                 smoothWheel: true,
             });
-            function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+            let scrollPos = 0;
+            let velocity = 0;
+            lenis.on('scroll', (e) => {
+                scrollPos = e.scroll;
+                velocity = e.velocity;
+            });
+            function raf(time) {
+                lenis.raf(time);
+                updateScene(scrollPos, velocity);
+                requestAnimationFrame(raf);
+            }
             requestAnimationFrame(raf);
 
-            // --- 2. STARS ANIMATION LOGIC ---
-            const container = document.getElementById('star-container');
-            const count = 100;
-            const stars = [];
-
-            for (let i = 0; i < count; i++) {
+            // --- 2. 3D SCENE & STARS INITIALIZATION ---
+            const world = document.getElementById('world');
+            const viewport = document.getElementById('viewport');
+            const starContainer = document.getElementById('star-container');
+            const items = [];
+            
+            // Generate Stars
+            for (let i = 0; i < 120; i++) {
                 const s = document.createElement('div');
                 s.className = 'star';
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
+                const x = Math.random() * 100, y = Math.random() * 100;
                 const isStatic = Math.random() < 0.2;
-                const z = isStatic ? 0 : 0.1 + Math.random() * 0.4;
-                const size = isStatic ? 1 + Math.random() : 1 + Math.random() * 2;
-
-                s.style.left = x + '%';
-                s.style.top = y + '%';
-                s.style.width = size + 'px';
-                s.style.height = size + 'px';
-                s.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
-                s.style.animationDelay = (Math.random() * 5) + 's';
-
-                container.appendChild(s);
-                stars.push({ el: s, initialY: y, speed: z });
+                const zDist = isStatic ? 0 : 0.1 + Math.random() * 0.4;
+                s.style.cssText = `left:${x}%; top:${y}%; width:2px; height:2px; --duration:${2+Math.random()*4}s; animation-delay:${Math.random()*5}s;`;
+                starContainer.appendChild(s);
+                items.push({ el: s, initialY: y, speed: zDist, type: 'star' });
             }
 
-            // Sync stars with Scroll Velocity (WARP SPEED)
-            lenis.on('scroll', ({ scroll, velocity }) => {
-                const stretch = Math.max(1, Math.min(1 + Math.abs(velocity) * 0.12, 5));
-                stars.forEach(star => {
-                    if (star.speed === 0) return;
-                    let pos = (star.initialY - (scroll * star.speed * 0.04)) % 100;
-                    if (pos < 0) pos += 100;
-                    star.el.style.top = pos + '%';
-                    star.el.style.transform = `scaleY(${stretch})`;
-                });
-            });
+            // Generate 3D Presentation Items
+            const CONTENT = [
+                { title: "DreamFlix IA", text: "L'avenir du cinéma est ici. Découvrez des contenus 100% générés par IA.", tag: "ORIGINAL" },
+                { title: "Séries IA", text: "Des récits profonds et des visuels époustouflants conçus par des algorithmes.", tag: "TECHNOLOGIE" },
+                { title: "Mondes Infinis", text: "Explorez des galaxies et des dimensions créées pour votre imagination.", tag: "CREATIVITE" },
+                { title: "Vitesse Pure", text: "Une interface instantanée, sans chargement. Le futur est immédiat.", tag: "PERFORMANCE" },
+                { title: "Teleparty", text: "Regardez vos séries avec vos amis, où qu'ils soient dans le monde.", tag: "SOCIAL" }
+            ];
 
-            // --- 3. GOOGLE AUTH INITIALIZATION ---
+            const Z_GAP = 1200; // More space between cards
+            const ITEM_COUNT = 15; // More items for a longer tunnel
+            const LOOP_SIZE = ITEM_COUNT * Z_GAP;
+
+            for (let i = 0; i < ITEM_COUNT; i++) {
+                const isText = i % 3 === 0;
+                const el = document.createElement('div');
+                el.className = 'item';
+                
+                if (isText) {
+                    const txt = document.createElement('div');
+                    txt.className = 'big-text';
+                    txt.innerText = ["FUTURE", "BRUTAL", "IMPACT", "VISION"][i%4];
+                    el.appendChild(txt);
+                } else {
+                    const data = CONTENT[Math.floor(i/2) % CONTENT.length];
+                    const card = document.createElement('div');
+                    card.className = 'card-3d';
+                    card.innerHTML = `<div class="card-tag">0${i+1} // ${data.tag}</div><h2>${data.title}</h2><p>${data.text}</p>`;
+                    el.appendChild(card);
+                }
+
+                world.appendChild(el);
+                items.push({
+                    el, type: isText ? 'text' : 'card',
+                    x: (Math.random() - 0.5) * window.innerWidth * 0.7,
+                    y: (Math.random() - 0.5) * window.innerHeight * 0.6,
+                    rotZ: (Math.random() - 0.5) * 15,
+                    baseZ: -i * Z_GAP
+                });
+            }
+
+            // --- 3. RENDER LOOP (UNIFIED) ---
+            function updateScene(scroll, vel) {
+                // Warp Effect
+                const warp = Math.min(Math.abs(vel) * 2, 400);
+                viewport.style.perspective = `${800 - warp}px`;
+                const stretch = Math.max(1, Math.min(1 + Math.abs(vel) * 0.12, 5));
+
+                items.forEach(item => {
+                    if (item.type === 'star') {
+                        if (item.speed === 0) return;
+                        let pos = (item.initialY - (scroll * item.speed * 0.04)) % 100;
+                        if (pos < 0) pos += 100;
+                        item.el.style.top = pos + '%';
+                        item.el.style.transform = `scaleY(${stretch})`;
+                    } else {
+                    const speedFactor = 2.2; // Slower approach for better readability
+                    let z = item.baseZ + (scroll * speedFactor);
+                    let vizZ = z % LOOP_SIZE;
+                    if (vizZ > 500) vizZ -= LOOP_SIZE;
+                    if (vizZ < -LOOP_SIZE + 500) vizZ += LOOP_SIZE;
+
+                    let alpha = 1;
+                    const maxDepth = -5000;
+                    if (vizZ < maxDepth) alpha = 0;
+                    else if (vizZ < maxDepth + 1500) alpha = (vizZ - maxDepth) / 1500;
+                    if (vizZ > 0) alpha = 1 - (vizZ / 500);
+                    item.el.style.opacity = Math.max(0, alpha);
+
+                        if (alpha > 0) {
+                            item.el.style.transform = `translate3d(${item.x}px, ${item.y}px, ${vizZ}px) rotateZ(${item.rotZ}deg) scaleY(${item.type === 'text' ? 1 : 1})`;
+                        }
+                    }
+                });
+            }
+
+            // --- 4. GOOGLE AUTH LOGIC ---
             const tryInit = () => {
                 if (typeof google !== 'undefined' && google.accounts) {
                     DFAuth.initGoogleAuth({
-                        onSuccess: (user) => {
+                        onSuccess: () => {
                             document.getElementById('loading').classList.add('visible');
-                            document.getElementById('error-msg').classList.remove('visible');
                             setTimeout(() => { window.location.href = 'index.html'; }, 800);
                         },
-                        onError: () => {
-                            document.getElementById('error-msg').classList.add('visible');
-                            document.getElementById('loading').classList.remove('visible');
-                        }
+                        onError: () => { document.getElementById('error-msg').classList.add('visible'); }
                     });
                     DFAuth.renderGoogleButton('google-btn', 'filled_black');
                     if (!isLogout) google.accounts.id.prompt();
