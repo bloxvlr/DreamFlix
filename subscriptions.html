@@ -171,6 +171,7 @@
 
     async function handleStripeCheckout(plan) {
         if (!DFAuth.requireAuth()) return;
+        if (typeof window.playShineSound === 'function') window.playShineSound();
 
         const btn = event.currentTarget;
         const originalContent = btn.innerHTML;

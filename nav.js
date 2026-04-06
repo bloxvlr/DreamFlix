@@ -447,4 +447,18 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
+// --- Sound System ---
+window.playShineSound = () => {
+    const audio = new Audio('sound/shine.mp3');
+    audio.volume = 0.3; // Lower volume for a subtle "shine" effect
+    audio.play().catch(e => console.log('[Audio] Blocked by browser:', e));
+};
 
+// Delegate sound to Subscription links
+document.addEventListener('click', (e) => {
+    const link = e.target.closest('a[href="subscriptions.html"]');
+    const mobileLink = e.target.closest('.mobile-tab-subs');
+    if (link || mobileLink) {
+        window.playShineSound();
+    }
+});
