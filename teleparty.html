@@ -144,30 +144,8 @@
             font-size: 0.8rem; font-weight: 900;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
-        }
-        .tp-step-text strong { font-size: 0.87rem; display: block; margin-bottom: 2px; }
+                .tp-step-text strong { font-size: 0.87rem; display: block; margin-bottom: 2px; }
         .tp-step-text span { font-size: 0.78rem; color: rgba(255,255,255,0.45); }
-
-        /* CTA */
-        .tp-notify-section {
-            display: flex; flex-direction: column; align-items: center; gap: 14px;
-        }
-        .tp-notify-text {
-            font-size: 0.8rem;
-            color: rgba(255,255,255,0.35);
-        }
-        .tp-lock-icon {
-            font-size: 4rem;
-            margin-bottom: 12px;
-            display: block;
-            filter: grayscale(1);
-            opacity: 0.4;
-        }
-
-        @media(max-width: 600px) {
-            .tp-features { grid-template-columns: 1fr 1fr; }
-            .tp-how { padding: 22px 18px; }
-        }
     </style>
 </head>
 <body>
@@ -180,31 +158,28 @@
         <div class="tp-glow-1"></div>
         <div class="tp-glow-2"></div>
         <div class="tp-soon-card">
-            <div class="tp-badge">
-                <div class="tp-badge-dot"></div>
-                Bientôt disponible
-            </div>
+            <div class="tp-badge"><div class="tp-badge-dot"></div>Bientôt disponible</div>
             <h1 class="tp-soon-title">Regardez ensemble.<br><span>Partout dans le monde.</span></h1>
             <p class="tp-soon-desc">
-                <strong style="color:#fff">DreamFlix Teleparty</strong> est notre fonctionnalité de Watch Party synchronisée. 
-                Vivez l'expérience avec vos amis en temps réel.
+                <strong style="color:#fff">DreamFlix Teleparty</strong> est notre fonctionnalité de Watch Party. 
+                Vivez l'expérience avec vos amis en temps réel. Accès restreint à la Bêta.
             </p>
             <div class="tp-features">
                 <div class="tp-feature-card">
                     <div class="tp-feature-icon"><i class="fas fa-bolt"></i></div>
                     <div class="tp-feature-title">Sync Instantanée</div>
-                    <div class="tp-feature-desc">Play, pause et avance rapide synchronisés en temps réel.</div>
+                    <div class="tp-feature-desc">Play, pause et avance rapide synchronisés.</div>
                 </div>
                 <div class="tp-feature-card">
                     <div class="tp-feature-icon"><i class="fas fa-comment-dots"></i></div>
                     <div class="tp-feature-title">Chat en Direct</div>
-                    <div class="tp-feature-desc">Réagissez ensemble avec un chat intégré à côté de la vidéo.</div>
+                    <div class="tp-feature-desc">Réagissez ensemble avec un chat intégré.</div>
                 </div>
             </div>
             <div class="tp-notify-section">
-                <i class="fas fa-lock tp-lock-icon"></i>
-                <p style="font-size:0.95rem;color:rgba(255,255,255,0.5);max-width:380px;line-height:1.6;">
-                    L'accès à la Bêta Teleparty est restreint aux membres autorisés par l'administration.
+                <i class="fas fa-lock tp-lock-icon" style="font-size:3rem;margin-bottom:20px;opacity:0.3"></i>
+                <p style="font-size:0.95rem;color:rgba(255,255,255,0.5);max-width:380px">
+                    L'accès est réservé aux membres autorisés par l'administration.
                 </p>
             </div>
         </div>
@@ -215,42 +190,50 @@
 <div id="tp-app" style="display:none">
     <div class="df-page df-page-with-sidebar">
         <div class="page-shell">
-            <h1><i class="fas fa-users-viewfinder" style="color:var(--brand);margin-right:15px"></i>Teleparty Beta</h1>
-            <p class="page-subtitle">Créez une room et partagez le code à vos amis autorisés.</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:30px">
+                <div>
+                    <h1><i class="fas fa-users-viewfinder" style="color:var(--brand);margin-right:15px"></i>Teleparty Beta</h1>
+                    <p class="page-subtitle">Synchronisation en temps réel avec vos amis.</p>
+                </div>
+                <div id="tp-room-badge" style="display:none;background:rgba(229,9,20,0.1);border:1px solid rgba(229,9,20,0.3);padding:10px 20px;border-radius:12px">
+                    <span style="font-size:0.7rem;text-transform:uppercase;color:var(--muted);display:block">Room Code</span>
+                    <strong id="display-room-code" style="font-size:1.2rem;letter-spacing:2px;color:var(--brand)">------</strong>
+                </div>
+            </div>
 
-            <div style="display:grid;grid-template-columns:1fr 350px;gap:30px;margin-top:40px">
-                <!-- Room Controls -->
-                <div class="admin-card">
-                    <h2 style="margin-bottom:10px">Votre Session</h2>
-                    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:25px">Lancez une synchronisation en temps réel.</p>
-                    
-                    <div id="tp-setup-ui">
-                        <button onclick="createRoom()" class="tp-btn-red" style="width:100%;margin-bottom:15px">CRÉER UNE ROOM</button>
-                        <div style="display:flex;gap:10px">
-                            <input type="text" id="room-code-input" class="form-input" placeholder="Code à 6 chiffres">
-                            <button onclick="joinRoom()" class="btn-pill" style="white-space:nowrap">Rejoindre</button>
+            <div style="display:grid;grid-template-columns:1fr 350px;gap:25px">
+                <div class="tp-main">
+                    <div id="tp-setup-card" class="admin-card" style="text-align:center;padding:60px 20px">
+                        <i class="fas fa-tv" style="font-size:3rem;color:rgba(255,255,255,0.1);margin-bottom:20px"></i>
+                        <h2>Démarrer une session</h2>
+                        <div style="max-width:300px;margin:30px auto">
+                            <button onclick="createRoom()" class="tp-btn-red btn-shiny" style="width:100%;margin-bottom:15px">CRÉER UNE SALLE</button>
+                            <div style="display:flex;gap:10px">
+                                <input type="text" id="room-code-input" class="form-input" placeholder="CODE" style="text-align:center;text-transform:uppercase">
+                                <button onclick="joinRoom()" class="btn-pill" style="white-space:nowrap">Rejoindre</button>
+                            </div>
                         </div>
                     </div>
 
-                    <div id="tp-active-ui" style="display:none">
-                        <div style="background:rgba(0,0,0,0.3);padding:20px;border-radius:12px;text-align:center">
-                            <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Code de la Room</div>
-                            <div id="current-room-code" style="font-size:2rem;font-weight:900;letter-spacing:5px;color:var(--brand);margin:10px 0">------</div>
-                            <button onclick="leaveRoom()" class="btn-pill btn-pill-ghost">Quitter la salle</button>
+                    <div id="tp-player-card" class="admin-card" style="display:none;padding:0;overflow:hidden;background:#000">
+                        <div style="padding:15px 25px;background:rgba(255,255,255,0.03);display:flex;justify-content:space-between;align-items:center">
+                            <select id="tp-ep-select" class="form-input" style="width:250px;margin:0;background:transparent;border:none;font-weight:700" onchange="changeEpisode(this.value)">
+                            </select>
+                            <button onclick="leaveRoom()" class="btn-pill btn-pill-ghost" style="font-size:0.75rem"><i class="fas fa-sign-out-alt"></i> Quitter</button>
                         </div>
+                        <div id="wistia-player-container" style="width:100%;aspect-ratio:16/9"></div>
                     </div>
                 </div>
 
-                <!-- Chat Shell -->
-                <div class="admin-card" style="display:flex;flex-direction:column;height:500px">
-                    <h2><i class="fas fa-comments"></i> Chat</h2>
-                    <div id="tp-chat-messages" style="flex:1;overflow-y:auto;font-size:0.85rem;padding:10px 0">
-                        <div style="color:var(--muted);font-style:italic">Rejoignez une salle pour chatter...</div>
+                <div class="admin-card" style="display:flex;flex-direction:column;height:650px;padding:25px">
+                    <h2 style="font-size:1rem"><i class="fas fa-comments" style="color:var(--brand)"></i> CHAT</h2>
+                    <div id="tp-messages" style="flex:1;overflow-y:auto;margin:20px 0;font-size:0.85rem;display:flex;flex-direction:column;gap:10px">
+                        <div style="color:var(--muted);font-style:italic">En attente d'une salle...</div>
                     </div>
-                    <div style="display:flex;gap:10px;margin-top:15px">
+                    <form id="tp-chat-form" style="display:flex;gap:10px" onsubmit="sendChat(event)">
                         <input type="text" id="tp-chat-input" class="form-input" placeholder="Message..." disabled>
-                        <button class="btn-pill" style="padding:0 15px"><i class="fas fa-paper-plane"></i></button>
-                    </div>
+                        <button type="submit" class="btn-pill" style="width:44px;flex-shrink:0"><i class="fas fa-paper-plane"></i></button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -258,56 +241,138 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://fast.wistia.com/assets/external/E-v1.js" async></script>
 <script src="auth.js"></script>
 <script src="nav.js"></script>
 <script>
+    const EPISODES = [
+        { num: 1,  id: '11fw23sowu', title: 'Le début de la tentation' },
+        { num: 2,  id: 'sus4nihbct', title: 'Smoothies fatals' },
+        { num: 3,  id: 'k9ebfe9p7t', title: 'Bananito voit rouge' },
+        { num: 4,  id: 'xfvs6sgxl8', title: 'Trahison fruitée' },
+        { num: 6,  id: 'qp3b52ule9', title: 'Le retour du ver' },
+        { num: 7,  id: 'vyp8uc535n', title: 'La villa explose' },
+        { num: 8,  id: 'd3z3tvibaq', title: 'Pomita en larmes' },
+        { num: 9,  id: '50e26gctw5', title: 'L\'arrivée du milliardaire' },
+        { num: 10, id: '65fctd26y5', title: 'Le baiser interdit' },
+        { num: 11, id: '85ctd26y56', title: 'Une journée au spa' },
+        { num: 12, id: '95ctd26y57', title: 'Bal Masqué' },
+        { num: 14, id: '15ctd26y59', title: 'Nuit d\'orage' },
+        { num: 15, id: '25ctd26y60', title: 'Dernier choix' },
+        { num: 16, id: '35ctd26y61', title: 'La grande finale' }
+    ];
+
+    let currentChannel = null;
+    let wistiaApi = null;
+    let myId = Math.random().toString(36).substring(7);
+    let isInternalUpdate = false;
+
     async function checkTelepartyAccess() {
         const user = DFAuth.getUser();
-        if (!user || !DFAuth._supabase) {
-            window.location.href = 'login.html';
-            return;
-        }
-
+        if (!user || !DFAuth._supabase) { window.location.href = 'login.html'; return; }
         try {
-            const { data: profile, error } = await DFAuth._supabase
-                .from('profiles')
-                .select('teleparty_access')
-                .eq('id', user.sub)
-                .single();
-
-            if (error) throw error;
-
-            if (profile && profile.teleparty_access === true) {
+            const { data: profile } = await DFAuth._supabase.from('profiles').select('teleparty_access, full_name').eq('id', user.sub).single();
+            if (profile && profile.teleparty_access) {
                 document.getElementById('tp-app').style.display = 'block';
+                initEpSelect();
             } else {
                 document.getElementById('tp-teaser').style.display = 'block';
             }
-        } catch (e) {
-            console.error('Access check failed:', e);
-            document.getElementById('tp-teaser').style.display = 'block';
+        } catch (e) { document.getElementById('tp-teaser').style.display = 'block'; }
+    }
+
+    function initEpSelect() {
+        const select = document.getElementById('tp-ep-select');
+        select.innerHTML = EPISODES.map(e => `<option value="${e.id}">Épisode ${e.num} : ${e.title}</option>`).join('');
+    }
+
+    function initRoom(code) {
+        if (currentChannel) currentChannel.unsubscribe();
+        document.getElementById('tp-setup-card').style.display = 'none';
+        document.getElementById('tp-player-card').style.display = 'block';
+        document.getElementById('tp-room-badge').style.display = 'block';
+        document.getElementById('display-room-code').innerText = code;
+        document.getElementById('tp-chat-input').disabled = false;
+        document.getElementById('tp-messages').innerHTML = `<div style="color:var(--brand);font-weight:700">Système : Connecté à la salle ${code}</div>`;
+
+        currentChannel = DFAuth._supabase.channel('teleparty:' + code);
+        currentChannel
+            .on('broadcast', { event: 'media_sync' }, ({ payload }) => {
+                if (payload.senderId === myId || !wistiaApi) return;
+                isInternalUpdate = true;
+                if (payload.type === 'play') wistiaApi.play();
+                if (payload.type === 'pause') wistiaApi.pause();
+                if (payload.type === 'seek') wistiaApi.time(payload.time);
+                if (payload.type === 'change') {
+                    document.getElementById('tp-ep-select').value = payload.vidId;
+                    loadWistia(payload.vidId);
+                }
+                setTimeout(() => { isInternalUpdate = false; }, 800);
+            })
+            .on('broadcast', { event: 'chat' }, ({ payload }) => { addMessage(payload.user, payload.text); })
+            .subscribe();
+
+        loadWistia(EPISODES[0].id);
+    }
+
+    function loadWistia(id) {
+        const container = document.getElementById('wistia-player-container');
+        container.innerHTML = `<div class="wistia_embed wistia_async_${id}" style="width:100%;height:100%"></div>`;
+        window._wq = window._wq || [];
+        _wq.push({
+            id: id,
+            onReady: (video) => {
+                wistiaApi = video;
+                video.bind('play', () => { if(!isInternalUpdate) broadcastState('play'); });
+                video.bind('pause', () => { if(!isInternalUpdate) broadcastState('pause'); });
+                video.bind('seek', (t) => { if(!isInternalUpdate) broadcastState('seek', t); });
+            }
+        });
+    }
+
+    function broadcastState(type, time = null) {
+        if (!currentChannel) return;
+        currentChannel.send({
+            type: 'broadcast',
+            event: 'media_sync',
+            payload: { type, time: time || (wistiaApi ? wistiaApi.time() : 0), senderId: myId }
+        });
+    }
+
+    function createRoom() { initRoom(Math.random().toString(36).substring(2, 8).toUpperCase()); }
+    function joinRoom() {
+        const code = document.getElementById('room-code-input').value.trim().toUpperCase();
+        if (code.length < 3) return alert('Code invalide');
+        initRoom(code);
+    }
+    function leaveRoom() { location.reload(); }
+    function changeEpisode(vidId) {
+        loadWistia(vidId);
+        if (currentChannel) {
+            currentChannel.send({ type: 'broadcast', event: 'media_sync', payload: { type: 'change', vidId, senderId: myId } });
         }
     }
 
-    // Placeholder Room Logic
-    function createRoom() {
-        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-        document.getElementById('tp-setup-ui').style.display = 'none';
-        document.getElementById('tp-active-ui').style.display = 'block';
-        document.getElementById('current-room-code').innerText = code;
-        document.getElementById('tp-chat-input').disabled = false;
-        document.getElementById('tp-chat-messages').innerHTML = '<div><strong style="color:var(--brand)">Système :</strong> Salle créée. Bonne séance !</div>';
+    async function sendChat(e) {
+        e.preventDefault();
+        const input = document.getElementById('tp-chat-input');
+        const text = input.value.trim();
+        if (!text || !currentChannel) return;
+        const user = DFAuth.getUser();
+        currentChannel.send({ type: 'broadcast', event: 'chat', payload: { user: user.name, text, senderId: myId } });
+        addMessage('Moi', text, true);
+        input.value = '';
     }
 
-    function leaveRoom() {
-        if(!confirm('Quitter la salle ?')) return;
-        document.getElementById('tp-setup-ui').style.display = 'block';
-        document.getElementById('tp-active-ui').style.display = 'none';
-        document.getElementById('tp-chat-input').disabled = true;
+    function addMessage(user, text, isMe = false) {
+        const msg = document.createElement('div');
+        msg.innerHTML = `<strong style="color:${isMe ? 'var(--brand)' : '#fff'}">${user} :</strong> ${text}`;
+        const container = document.getElementById('tp-messages');
+        container.appendChild(msg);
+        container.scrollTop = container.scrollHeight;
     }
 
     checkTelepartyAccess();
 </script>
-</body>
-</html>
 </body>
 </html>
