@@ -94,19 +94,37 @@
         const _sb = DFAuth._supabase;
         const { data, error } = await _sb.from('content').select('*').order('created_at', { ascending: false });
         
-        if (error || !data || data.length === 0) {
-            console.log('No Supabase content found.');
-            return;
-        }
-
-        // Show Rows
+        // Target Rows and Sliders
         const trendingRow = document.getElementById('row-trending');
         const recommendedRow = document.getElementById('row-recommended');
         const trendingSlider = document.getElementById('slider-trending');
         const recommendedSlider = document.getElementById('slider-recommended');
 
+        // Always show the rows as requested
         if (trendingRow) trendingRow.style.display = 'block';
         if (recommendedRow) recommendedRow.style.display = 'block';
+
+        if (error || !data || data.length === 0) {
+            // Show placeholder if no content
+            const placeholder = `
+                <div class="df-card" style="opacity: 0.3; cursor: default; filter: grayscale(1)">
+                    <div style="aspect-ratio:16/9; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center">
+                        <i class="fas fa-video-slash"></i>
+                    </div>
+                    <div class="df-card-body">
+                        <div class="df-card-title">Aucun contenu</div>
+                        <div class="df-card-sub">BientÃ´t disponible...</div>
+                    </div>
+                </div>
+            `;
+            if (trendingSlider) trendingSlider.innerHTML = placeholder + placeholder + placeholder;
+            if (recommendedSlider) recommendedSlider.innerHTML = placeholder + placeholder + placeholder;
+            return;
+        }
+
+        // Clear placeholders and fill with real data
+        if (trendingSlider) trendingSlider.innerHTML = '';
+        if (recommendedSlider) recommendedSlider.innerHTML = '';
 
         data.forEach((item, index) => {
             const card = createCard(item);
