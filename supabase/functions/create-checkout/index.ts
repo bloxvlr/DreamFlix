@@ -11,15 +11,35 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+  // 1. GESTION DU CORS (ESSENTIEL)
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
 
   try {
-    const { plan, user_id, email } = await req.json()
+    // 2. VÉRIFICATION DU CORPS DE LA REQUÊTE
+    const body = await req.text()
+    if (!body) {
+      throw new Error("Le corps de la requête est vide. Vérifiez l'appel depuis le client.")
+    }
+
+    const { plan, user_id, email } = JSON.parse(body) as { plan: 'GOLD' | 'DIAMANT', user_id: string, email: string }
+    console.log(`[Checkout] Requête reçue pour le plan: ${plan}, User: ${user_id}`)
 
     // Mapping des plans vers tes Price IDs Stripe
-    const prices = {
+    const prices: Record<string, string> = {
       'GOLD': 'price_1TJHcH1DXMfXUZ6e526cQ60M', 
       'DIAMANT': 'price_1TJe721DXMfXUZ6eygr7DMSP', 
+    }
+
+    if (!prices[plan]) {
+      throw new Error(`Plan inconnu: ${plan}`)
+    }
+
+    // 3. VÉRIFICATION DE LA CLÉ STRIPE
+    const stripeKey = Deno.env.get('STRIPE_SECRET_KEY')
+    if (!stripeKey) {
+      throw new Error("La clé STRIPE_SECRET_KEY est manquante dans les secrets Supabase.")
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -36,11 +56,15 @@ serve(async (req) => {
       }
     })
 
+    console.log(`[Checkout] Session créée avec succès: ${session.id}`)
+
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
+
   } catch (error) {
+    console.error(`[Checkout Error] ${error.message}`)
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
