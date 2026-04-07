@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DreamFlix â€” Paiement RÃ©ussi</title>
+    <title>DreamFlix — Paiement Réussi</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -84,8 +84,8 @@
     <div class="success-box">
         <div class="success-icon"><i class="fas fa-check-circle"></i></div>
         <div id="plan-label" class="plan-badge">Activation en cours...</div>
-        <h1>Paiement ConfirmÃ© !</h1>
-        <p>Bienvenue parmi l'Ã©lite de DreamFlix. Votre compte est en train d'Ãªtre promu vers son nouveau rang de prestige.</p>
+        <h1>Paiement Confirmé !</h1>
+        <p>Bienvenue parmi l'élite de DreamFlix. Votre compte est en train d'être promu vers son nouveau rang de prestige.</p>
         
         <div class="loader-bar">
             <div class="loader-fill" id="loader"></div>
@@ -101,27 +101,47 @@
             const plan = urlParams.get('plan');
             const label = document.getElementById('plan-label');
             const loader = document.getElementById('loader');
+            const user = DFAuth.getUser();
+
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
 
             if (plan) {
                 label.innerText = `GRADE : ${plan}`;
                 label.className = `plan-badge ${plan}`;
                 
-                // Trigger the upgrade in database via auth.js helper
-                try {
-                    const success = await DFAuth.upgradePlan(plan);
-                    if (success) {
-                        loader.style.width = '100%';
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 3500);
-                    } else {
-                        throw new Error("Upgrade failed");
+                // On écoute les changements en temps réel sur le profil de l'utilisateur
+                const profileChannel = DFAuth._supabase
+                    .channel('public:profiles')
+                    .on('postgres_changes', { 
+                        event: 'UPDATE', 
+                        schema: 'public', 
+                        table: 'profiles',
+                        filter: `id=eq.${user.sub}`
+                    }, payload => {
+                        console.log('Profil mis à jour !', payload);
+                        if (payload.new.subscription_type === plan) {
+                            loader.style.width = '100%';
+                            setTimeout(() => {
+                                // Rafraîchir la session locale avant de rediriger
+                                const updatedUser = { ...user, plan: plan };
+                                localStorage.setItem('df_user', JSON.stringify(updatedUser));
+                                window.location.href = 'index.html';
+                            }, 2000);
+                        }
+                    })
+                    .subscribe();
+
+                // Petit timeout de sécurité
+                setTimeout(() => {
+                    const statusText = document.querySelector('div[style*="Synchronisation"]');
+                    if (statusText && loader.style.width !== '100%') {
+                        statusText.innerHTML = "La synchronisation est un peu longue... <br><button onclick='location.reload()' style='background:none;border:1px solid #444;color:#888;padding:5px 10px;margin-top:10px;cursor:pointer;border-radius:10px'>Réessayer</button>";
                     }
-                } catch (e) {
-                    console.error(e);
-                    alert("Erreur lors de l'activation. Votre paiement est validÃ©, mais la DB n'a pas pu se mettre Ã  jour. Contactez le support.");
-                    window.location.href = 'index.html';
-                }
+                }, 30000);
+
             } else {
                 window.location.href = 'index.html';
             }

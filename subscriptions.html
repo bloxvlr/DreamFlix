@@ -156,39 +156,38 @@
 <script src="auth.js"></script>
 <script src="nav.js"></script>
 <script>
-    // --- CONFIGURATION : LIENS DE PAIEMENT STRIPE (ZÃ©ro Config) ---
-    const PAYMENT_LINKS = {
-        GOLD: "https://buy.stripe.com/test_5kQ7sDh0a9K1f9k3xL0oM00", 
-        DIAMANT: "lien_diamant_placeholder"
-    };
-
-    function showToast(msg) {
-        const t = document.getElementById('tp-toast');
-        t.innerText = msg;
-        t.classList.add('show');
-        setTimeout(() => t.classList.remove('show'), 3000);
-    }
 
     async function handleStripeCheckout(plan) {
         if (!DFAuth.requireAuth()) return;
+        const user = DFAuth.getUser();
 
         const btn = event.currentTarget;
-        const originalContent = btn.innerHTML;
-        
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Redirection...';
         btn.disabled = true;
 
-        if (PAYMENT_LINKS[plan].includes('placeholder')) {
-            showToast(`âš™ï¸ Mode DÃ©mo : Redirection vers ${plan}...`);
-            setTimeout(() => {
-                window.location.href = `success.html?plan=${plan}`;
-            }, 1500);
-            return;
-        }
+        try {
+            // CALL SUPABASE EDGE FUNCTION
+            // This is the secure way: redirecting to a server-generated URL
+            const { data, error } = await DFAuth._supabase.functions.invoke('create-checkout', {
+                body: { 
+                    plan: plan,
+                    user_id: user.sub,
+                    email: user.email
+                }
+            });
 
-        // REDIRECTION DIRECTE VERS LE LIEN DE PAIEMENT
-        console.log(`[Stripe] Redirecting to ${plan} Payment Link`);
-        window.location.href = PAYMENT_LINKS[plan];
+            if (error) throw error;
+            if (data?.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error("Pas d'URL de paiement reçue.");
+            }
+        } catch (err) {
+            console.error('Checkout error:', err);
+            showToast("❌ Erreur de connexion à Stripe.");
+            btn.innerHTML = 'S\'abonner maintenant <i class="fas fa-arrow-right"></i>';
+            btn.disabled = false;
+        }
     }
 </script>
 </body>
