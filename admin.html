@@ -84,18 +84,23 @@
                         <option value="DIAMANT">DIAMANT PRO</option>
                     </select>
                 </div>
-                <button onclick="updateUserPlan(event)" id="plan-btn" class="expand" style="width:100%;margin-top:20px">
-                    <span>Update Plan</span>
-                    <span class="expand-icon">
-                        <svg class="first" xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 32 32">
-                            <path d="M8.489 31.975c-0.271 0-0.549-0.107-0.757-0.316-0.417-0.417-0.417-1.098 0-1.515l14.258-14.264-14.050-14.050c-0.417-0.417-0.417-1.098 0-1.515s1.098-0.417 1.515 0l14.807 14.807c0.417 0.417 0.417 1.098 0 1.515l-15.015 15.022c-0.208 0.208-0.486 0.316-0.757 0.316z" />
-                        </svg>
-                        <span class="loader"></span>
-                        <svg class="second" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
-                            <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 5L8 15l-5-4" />
-                        </svg>
-                    </span>
-                </button>
+                <div style="display:flex; gap:10px; margin-top:20px">
+                    <button onclick="resetToFree(event)" class="btn-pill btn-pill-ghost" style="padding:10px; border-color:#ff4444; color:#ff4444; font-size:0.75rem; white-space:nowrap" title="Remettre rapidement ce compte en FREE pour tester à nouveau">
+                        <i class="fas fa-undo"></i> Reset FREE
+                    </button>
+                    <button onclick="updateUserPlan(event)" id="plan-btn" class="expand" style="flex:1">
+                        <span>Update Plan</span>
+                        <span class="expand-icon">
+                            <svg class="first" xmlns="http://www.w3.org/2000/svg" fill="#fff" viewBox="0 0 32 32">
+                                <path d="M8.489 31.975c-0.271 0-0.549-0.107-0.757-0.316-0.417-0.417-0.417-1.098 0-1.515l14.258-14.264-14.050-14.050c-0.417-0.417-0.417-1.098 0-1.515s1.098-0.417 1.515 0l14.807 14.807c0.417 0.417 0.417 1.098 0 1.515l-15.015 15.022c-0.208 0.208-0.486 0.316-0.757 0.316z" />
+                            </svg>
+                            <span class="loader"></span>
+                            <svg class="second" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none">
+                                <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 5L8 15l-5-4" />
+                            </svg>
+                        </span>
+                    </button>
+                </div>
                 <div id="grant-status" style="margin-top:15px;font-size:0.75rem;text-align:center;font-weight:700"></div>
             </div>
 
@@ -307,6 +312,32 @@
             `;
             list.appendChild(li);
         });
+    }
+
+    async function resetToFree(e) {
+        const email = document.getElementById('target-email').value.trim();
+        const status = document.getElementById('grant-status');
+
+        if (!email) {
+            status.style.color = '#ff4444';
+            status.innerText = 'Error: Email required to reset.';
+            return;
+        }
+
+        const { error } = await _sb
+            .from('profiles')
+            .update({ subscription_type: 'FREE' })
+            .eq('email', email);
+
+        if (error) {
+            status.style.color = '#ff4444';
+            status.innerText = 'Fail: ' + error.message;
+        } else {
+            status.style.color = '#46d369';
+            status.innerText = `Success: Plan reset to FREE for ${email}.`;
+            setTimeout(() => { status.innerText = ''; }, 3000);
+            loadOnlineUsers();
+        }
     }
 
     async function updateUserPlan(e) {
