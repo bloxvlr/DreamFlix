@@ -109,33 +109,36 @@
             }
 
             if (plan) {
-                label.innerText = `GRADE : ${plan}`;
-                label.className = `plan-badge ${plan}`;
+                // Clean input for display
+                const safePlan = plan.toUpperCase();
+                label.innerText = `GRADE : ${safePlan}`;
+                label.className = `plan-badge ${safePlan}`;
                 
-                // On écoute les changements en temps réel sur le profil de l'utilisateur
-                const profileChannel = DFAuth._supabase
-                    .channel('public:profiles')
-                    .on('postgres_changes', { 
-                        event: 'UPDATE', 
-                        schema: 'public', 
-                        table: 'profiles',
-                        filter: `id=eq.${user.sub}`
-                    }, payload => {
-                        console.log('Profil mis à jour !', payload);
-                        if (payload.new.subscription_type === plan) {
-                            loader.style.width = '100%';
-                            setTimeout(() => {
-                                // Rafraîchir la session locale avant de rediriger
-                                const updatedUser = { ...user, plan: plan };
-                                localStorage.setItem('df_user', JSON.stringify(updatedUser));
-                                window.location.href = 'index.html';
-                            }, 2000);
-                        }
-                    })
-                    .subscribe();
+                // Polling: On interroge Supabase toutes les 2 secondes
+                console.log("Démarrage de la vérification pour le plan : " + safePlan);
+                const checkInterval = setInterval(async () => {
+                    const { data: profile, error } = await DFAuth._supabase
+                        .from('profiles')
+                        .select('subscription_type')
+                        .eq('id', user.sub)
+                        .single();
+
+                    if (profile && (profile.subscription_type === safePlan || profile.subscription_type === plan)) {
+                        console.log("Paiement validé par le Webhook !");
+                        clearInterval(checkInterval);
+                        loader.style.width = '100%';
+                        setTimeout(() => {
+                            // Rafraîchir la session locale avant de rediriger
+                            const updatedUser = { ...user, plan: safePlan };
+                            localStorage.setItem('df_user', JSON.stringify(updatedUser));
+                            window.location.href = 'index.html';
+                        }, 2000);
+                    }
+                }, 2000);
 
                 // Petit timeout de sécurité
                 setTimeout(() => {
+                    clearInterval(checkInterval);
                     const statusText = document.querySelector('div[style*="Synchronisation"]');
                     if (statusText && loader.style.width !== '100%') {
                         statusText.innerHTML = "La synchronisation est un peu longue... <br><button onclick='location.reload()' style='background:none;border:1px solid #444;color:#888;padding:5px 10px;margin-top:10px;cursor:pointer;border-radius:10px'>Réessayer</button>";
