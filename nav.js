@@ -195,7 +195,10 @@ const NAV_HTML = `
         <div id="nav-profile-area" style="display:flex;align-items:center;gap:10px;cursor:pointer;position:relative">
             <img id="nav-avatar" src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
                  style="width:34px;height:34px;border-radius:8px;object-fit:cover;border:2px solid rgba(255,255,255,0.15)">
-            <span id="nav-username" style="font-size:0.82rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+            <div style="display:flex;flex-direction:column;justify-content:center">
+                <span id="nav-username" style="font-size:0.82rem;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700"></span>
+                <span id="nav-plan-badge" style="font-size:0.6rem;font-weight:900;letter-spacing:0.5px;text-transform:uppercase;margin-top:2px;"></span>
+            </div>
             <i class="fas fa-caret-down" style="font-size:0.75rem;color:#808080"></i>
             <!-- Profile Dropdown -->
             <div id="nav-dropdown" style="
@@ -387,6 +390,21 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
     }
     if (username) {
         username.textContent = user.name?.split(' ')[0] || 'User';
+    }
+    const planBadge = document.getElementById('nav-plan-badge');
+    if (planBadge) {
+        if (user.plan === 'DIAMANT') {
+            planBadge.textContent = 'PACK DIAMANT';
+            planBadge.style.color = '#00ffff';
+            planBadge.style.textShadow = '0 0 5px rgba(0,255,255,0.5)';
+        } else if (user.plan === 'GOLD') {
+            planBadge.textContent = 'PACK GOLD';
+            planBadge.style.color = '#ff3c00';
+            planBadge.style.textShadow = '0 0 5px rgba(255,60,0,0.5)';
+        } else {
+            planBadge.textContent = 'PACK FREE';
+            planBadge.style.color = '#808080';
+        }
     }
     if (emailEl) {
         emailEl.textContent = user.email || '';
