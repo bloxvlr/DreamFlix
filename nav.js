@@ -433,11 +433,11 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
 function showGreetingToast(user) {
     if (!user) return;
     
-    // Check if already greeted
-    if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
-        return;
-    }
-    sessionStorage.setItem('dreamflix_greeted', 'true');
+    // Pour tester, on commente la vérification de session
+    // if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
+    //     return;
+    // }
+    // sessionStorage.setItem('dreamflix_greeted', 'true');
 
     const hour = new Date().getHours();
     let greeting = "Bonjour";
@@ -446,44 +446,49 @@ function showGreetingToast(user) {
 
     const firstName = user.name ? user.name.split(' ')[0] : 'Membre';
 
-    const toast = document.createElement('div');
-    toast.style.position = 'fixed';
-    toast.style.top = '-100px';
-    toast.style.left = '50%';
-    toast.style.transform = 'translateX(-50%)';
-    toast.style.background = 'rgba(20, 20, 20, 0.9)';
-    toast.style.backdropFilter = 'blur(20px)';
-    toast.style.webkitBackdropFilter = 'blur(20px)';
-    toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
-    toast.style.borderRadius = '50px';
-    toast.style.padding = '10px 24px 10px 10px';
-    toast.style.display = 'flex';
-    toast.style.alignItems = 'center';
-    toast.style.gap = '14px';
-    toast.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
-    toast.style.zIndex = '9999999';
-    toast.style.color = '#fff';
-    toast.style.fontSize = '0.95rem';
-    toast.style.fontWeight = '500';
-    toast.style.transition = 'top 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+    // Remove existing if any
+    const existing = document.getElementById('df-greeting-toast');
+    if (existing) existing.remove();
 
-    toast.innerHTML = `
-        <img src="${user.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.2)">
-        <span>${greeting}, <strong style="color:var(--brand)">${firstName}</strong></span>
+    const modal = document.createElement('div');
+    modal.id = 'df-greeting-toast';
+    // Structure inspirée de DFAlert
+    modal.style = `
+        position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-60px) scale(0.95);
+        z-index: 1000000; opacity: 0; pointer-events: none;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     `;
 
-    // Add to body after a slight delay to ensure painted
+    modal.innerHTML = `
+        <div style="
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 50px;
+            padding: 10px 24px 10px 10px; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        ">
+            <img src="${user.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--brand);">
+            <div style="color:#fff;font-size:1rem;font-weight:700;letter-spacing:0.5px;">
+                ${greeting}, <span style="color:var(--brand)">${firstName}</span> !
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Double requestAnimationFrame garantit que le navigateur a dessiné l'élément avant d'animer
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.style.opacity = '1';
+            modal.style.transform = 'translateX(-50%) translateY(0) scale(1)';
+        });
+    });
+
+    // Disparition au bout de 4.5 secondes
     setTimeout(() => {
-        document.body.appendChild(toast);
-        // Force reflow
-        void toast.offsetWidth;
-        toast.style.top = '30px';
-        
-        setTimeout(() => {
-            toast.style.top = '-100px';
-            setTimeout(() => toast.remove(), 1000);
-        }, 4500);
-    }, 500);
+        modal.style.opacity = '0';
+        modal.style.transform = 'translateX(-50%) translateY(-60px) scale(0.95)';
+        setTimeout(() => modal.remove(), 600);
+    }, 4500);
 }
 
 // --- Search Functionality ---
