@@ -589,3 +589,58 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
     }
 });
 
+// --- Greeting Notification ---
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        const u = DFAuth.getUser();
+        if (!u) return;
+
+        if (sessionStorage.getItem('dreamflix_greeted')) return;
+        sessionStorage.setItem('dreamflix_greeted', 'true');
+
+        const hour = new Date().getHours();
+        let greeting = "Bonjour";
+        if (hour >= 18) greeting = "Bonsoir";
+        else if (hour >= 12) greeting = "Bonne après-midi";
+
+        const firstName = u.name ? u.name.split(' ')[0] : 'Membre';
+
+        const toast = document.createElement('div');
+        toast.style.position = 'fixed';
+        toast.style.top = '-100px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = 'rgba(20, 20, 20, 0.75)';
+        toast.style.backdropFilter = 'blur(16px)';
+        toast.style.webkitBackdropFilter = 'blur(16px)';
+        toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        toast.style.borderRadius = '50px';
+        toast.style.padding = '10px 24px 10px 10px';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '12px';
+        toast.style.boxShadow = '0 10px 40px rgba(0,0,0,0.6)';
+        toast.style.zIndex = '9999';
+        toast.style.color = '#fff';
+        toast.style.fontSize = '0.9rem';
+        toast.style.fontWeight = '400';
+        toast.style.transition = 'top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+        toast.innerHTML = `
+            <img src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
+            <span>${greeting}, <strong>${firstName}</strong> !</span>
+        `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.style.top = '25px';
+        }, 500);
+
+        setTimeout(() => {
+            toast.style.top = '-100px';
+            setTimeout(() => toast.remove(), 1000);
+        }, 4500);
+    }, 1000); // wait for DFAuth to initialize user
+});
+
