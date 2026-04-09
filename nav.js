@@ -600,14 +600,12 @@ function triggerGreeting() {
             return;
         }
 
-        // Pour pouvoir tester à chaque fois qu'on rafraîchit (on enlève la vérif sessionStorage temporairement ou on la garde pour plus tard)
-        // Check if already greeted this session
-        if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
-            console.log("Already greeted in this session.");
-            return;
-        }
-        
-        sessionStorage.setItem('dreamflix_greeted', 'true');
+        // CHECK COMMENTÉ LE TEMPS QUE TU TESTES (il va s'afficher à chaque rechargement pour le moment)
+        // if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
+        //    console.log("Already greeted in this session.");
+        //    return;
+        // }
+        // sessionStorage.setItem('dreamflix_greeted', 'true');
 
         const hour = new Date().getHours();
         let greeting = "Bonjour";
