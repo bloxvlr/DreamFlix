@@ -590,12 +590,23 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
 });
 
 // --- Greeting Notification ---
-document.addEventListener('DOMContentLoaded', () => {
+function triggerGreeting() {
     setTimeout(() => {
+        // Prevent crashing if auth.js isn't ready
+        if (typeof DFAuth === 'undefined') return;
         const u = DFAuth.getUser();
-        if (!u) return;
+        if (!u) {
+            console.log("No user found for greeting.");
+            return;
+        }
 
-        if (sessionStorage.getItem('dreamflix_greeted')) return;
+        // Pour pouvoir tester à chaque fois qu'on rafraîchit (on enlève la vérif sessionStorage temporairement ou on la garde pour plus tard)
+        // Check if already greeted this session
+        if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
+            console.log("Already greeted in this session.");
+            return;
+        }
+        
         sessionStorage.setItem('dreamflix_greeted', 'true');
 
         const hour = new Date().getHours();
@@ -610,37 +621,46 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.style.top = '-100px';
         toast.style.left = '50%';
         toast.style.transform = 'translateX(-50%)';
-        toast.style.background = 'rgba(20, 20, 20, 0.75)';
-        toast.style.backdropFilter = 'blur(16px)';
-        toast.style.webkitBackdropFilter = 'blur(16px)';
-        toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        toast.style.background = 'rgba(20, 20, 20, 0.85)';
+        toast.style.backdropFilter = 'blur(20px)';
+        toast.style.webkitBackdropFilter = 'blur(20px)';
+        toast.style.border = '1px solid rgba(255, 255, 255, 0.15)';
         toast.style.borderRadius = '50px';
-        toast.style.padding = '10px 24px 10px 10px';
+        toast.style.padding = '12px 24px 12px 12px'; // slightly bigger
         toast.style.display = 'flex';
         toast.style.alignItems = 'center';
-        toast.style.gap = '12px';
-        toast.style.boxShadow = '0 10px 40px rgba(0,0,0,0.6)';
-        toast.style.zIndex = '9999';
+        toast.style.gap = '14px';
+        toast.style.boxShadow = '0 20px 40px rgba(0,0,0,0.8)';
+        toast.style.zIndex = '999999'; // ensure it's on top of everything
         toast.style.color = '#fff';
-        toast.style.fontSize = '0.9rem';
-        toast.style.fontWeight = '400';
+        toast.style.fontSize = '0.95rem';
+        toast.style.fontWeight = '500';
         toast.style.transition = 'top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
 
         toast.innerHTML = `
-            <img src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
-            <span>${greeting}, <strong>${firstName}</strong> !</span>
+            <img src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
+            <span>${greeting}, <strong style="color:var(--brand)">${firstName}</strong> !</span>
         `;
 
         document.body.appendChild(toast);
 
+        // Slide down
         setTimeout(() => {
-            toast.style.top = '25px';
-        }, 500);
+            toast.style.top = '30px'; 
+        }, 300);
 
+        // Slide up and remove
         setTimeout(() => {
             toast.style.top = '-100px';
             setTimeout(() => toast.remove(), 1000);
-        }, 4500);
-    }, 1000); // wait for DFAuth to initialize user
-});
+        }, 5000);
+    }, 1200); // give time for DFAuth to definitely fetch user
+}
+
+// Trigger safely based on how script is loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', triggerGreeting);
+} else {
+    triggerGreeting();
+}
 
