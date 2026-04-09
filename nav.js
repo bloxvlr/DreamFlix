@@ -410,6 +410,11 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
         emailEl.textContent = user.email || '';
     }
 
+    // Trigger Notification
+    if (typeof showGreetingToast === 'function') {
+        showGreetingToast(user);
+    }
+
     // --- Admin Link Logic ---
     if (DFAuth.isAdmin()) {
         const navLink = document.getElementById('nav-admin-link');
@@ -423,6 +428,63 @@ document.body.insertAdjacentHTML('beforeend', GLOBAL_PLAYER_HTML);
     // Mobile bar always shows options (inciting conversion)
     
 })();
+
+// --- Greeting Notification ---
+function showGreetingToast(user) {
+    if (!user) return;
+    
+    // Check if already greeted
+    if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
+        return;
+    }
+    sessionStorage.setItem('dreamflix_greeted', 'true');
+
+    const hour = new Date().getHours();
+    let greeting = "Bonjour";
+    if (hour >= 18) greeting = "Bonsoir";
+    else if (hour >= 12) greeting = "Bonne après-midi";
+
+    const firstName = user.name ? user.name.split(' ')[0] : 'Membre';
+
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.top = '-100px';
+    toast.style.left = '50%';
+    toast.style.transform = 'translateX(-50%)';
+    toast.style.background = 'rgba(20, 20, 20, 0.9)';
+    toast.style.backdropFilter = 'blur(20px)';
+    toast.style.webkitBackdropFilter = 'blur(20px)';
+    toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+    toast.style.borderRadius = '50px';
+    toast.style.padding = '10px 24px 10px 10px';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.style.gap = '14px';
+    toast.style.boxShadow = '0 30px 60px rgba(0,0,0,0.8)';
+    toast.style.zIndex = '9999999';
+    toast.style.color = '#fff';
+    toast.style.fontSize = '0.95rem';
+    toast.style.fontWeight = '500';
+    toast.style.transition = 'top 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+    toast.innerHTML = `
+        <img src="${user.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,255,255,0.2)">
+        <span>${greeting}, <strong style="color:var(--brand)">${firstName}</strong></span>
+    `;
+
+    // Add to body after a slight delay to ensure painted
+    setTimeout(() => {
+        document.body.appendChild(toast);
+        // Force reflow
+        void toast.offsetWidth;
+        toast.style.top = '30px';
+        
+        setTimeout(() => {
+            toast.style.top = '-100px';
+            setTimeout(() => toast.remove(), 1000);
+        }, 4500);
+    }, 500);
+}
 
 // --- Search Functionality ---
 document.addEventListener('input', (e) => {
@@ -588,77 +650,4 @@ document.querySelectorAll('.sidebar-link:not(#sidebar-logout)').forEach(link => 
         link.classList.add('active');
     }
 });
-
-// --- Greeting Notification ---
-function triggerGreeting() {
-    setTimeout(() => {
-        // Prevent crashing if auth.js isn't ready
-        if (typeof DFAuth === 'undefined') return;
-        const u = DFAuth.getUser();
-        if (!u) {
-            console.log("No user found for greeting.");
-            return;
-        }
-
-        // CHECK COMMENTÉ LE TEMPS QUE TU TESTES (il va s'afficher à chaque rechargement pour le moment)
-        // if (sessionStorage.getItem('dreamflix_greeted') === 'true') {
-        //    console.log("Already greeted in this session.");
-        //    return;
-        // }
-        // sessionStorage.setItem('dreamflix_greeted', 'true');
-
-        const hour = new Date().getHours();
-        let greeting = "Bonjour";
-        if (hour >= 18) greeting = "Bonsoir";
-        else if (hour >= 12) greeting = "Bonne après-midi";
-
-        const firstName = u.name ? u.name.split(' ')[0] : 'Membre';
-
-        const toast = document.createElement('div');
-        toast.style.position = 'fixed';
-        toast.style.top = '-100px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = 'rgba(20, 20, 20, 0.85)';
-        toast.style.backdropFilter = 'blur(20px)';
-        toast.style.webkitBackdropFilter = 'blur(20px)';
-        toast.style.border = '1px solid rgba(255, 255, 255, 0.15)';
-        toast.style.borderRadius = '50px';
-        toast.style.padding = '12px 24px 12px 12px'; // slightly bigger
-        toast.style.display = 'flex';
-        toast.style.alignItems = 'center';
-        toast.style.gap = '14px';
-        toast.style.boxShadow = '0 20px 40px rgba(0,0,0,0.8)';
-        toast.style.zIndex = '999999'; // ensure it's on top of everything
-        toast.style.color = '#fff';
-        toast.style.fontSize = '0.95rem';
-        toast.style.fontWeight = '500';
-        toast.style.transition = 'top 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-
-        toast.innerHTML = `
-            <img src="${u.picture || 'https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png'}" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-            <span>${greeting}, <strong style="color:var(--brand)">${firstName}</strong> !</span>
-        `;
-
-        document.body.appendChild(toast);
-
-        // Slide down
-        setTimeout(() => {
-            toast.style.top = '30px'; 
-        }, 300);
-
-        // Slide up and remove
-        setTimeout(() => {
-            toast.style.top = '-100px';
-            setTimeout(() => toast.remove(), 1000);
-        }, 5000);
-    }, 1200); // give time for DFAuth to definitely fetch user
-}
-
-// Trigger safely based on how script is loaded
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', triggerGreeting);
-} else {
-    triggerGreeting();
-}
 
