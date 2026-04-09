@@ -26,10 +26,10 @@ serve(async (req) => {
     const { plan, user_id, email } = JSON.parse(body) as { plan: 'GOLD' | 'DIAMANT', user_id: string, email: string }
     console.log(`[Checkout] Requête reçue pour le plan: ${plan}, User: ${user_id}`)
 
-    // Mapping des plans vers tes Price IDs Stripe
+    // Mapping des plans vers tes Price IDs Stripe (Paiement Unique / A vie)
     const prices: Record<string, string> = {
-      'GOLD': 'price_1TJHcH1DXMfXUZ6e526cQ60M', 
-      'DIAMANT': 'price_1TJe721DXMfXUZ6eygr7DMSP', 
+      'GOLD': 'price_1TKNnF1E637e5G6go8w6V027', 
+      'DIAMANT': 'price_1TKNnr1E637e5G6gebY9NBEZ', 
     }
 
     if (!prices[plan]) {
@@ -47,7 +47,7 @@ serve(async (req) => {
       line_items: [
         { price: prices[plan], quantity: 1 },
       ],
-      mode: 'subscription',
+      mode: 'payment',
       success_url: `${req.headers.get('origin')}/success.html?plan=${plan}`,
       cancel_url: `${req.headers.get('origin')}/subscriptions.html`,
       metadata: {
